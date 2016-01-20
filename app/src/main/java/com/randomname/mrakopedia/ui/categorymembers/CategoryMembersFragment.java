@@ -22,12 +22,15 @@ import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -35,6 +38,7 @@ import rx.schedulers.Schedulers;
  */
 public class CategoryMembersFragment extends RxBaseFragment {
     private static final String TAG = "categoryMembersFragment";
+    private static final String CATEGORY_TITLE_KEY = "categoryTitleKey";
 
     @Bind(R.id.category_members_recycler_view)
     RecyclerView recyclerView;
@@ -42,9 +46,33 @@ public class CategoryMembersFragment extends RxBaseFragment {
     private CategoryMembersAdapter adapter;
     private ArrayList<Categorymembers> categorymembersArrayList;
     private String continueString = "";
+    private String categoryTitle;
 
 
     public CategoryMembersFragment() {}
+
+    public static CategoryMembersFragment getInstance(String categoryTitle) {
+        CategoryMembersFragment fragment = new CategoryMembersFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(CATEGORY_TITLE_KEY, categoryTitle);
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle bundle = getArguments();
+
+        if (bundle != null) {
+            String title = bundle.getString(CATEGORY_TITLE_KEY);
+            if (title != null) {
+                categoryTitle = title;
+            }
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,7 +105,23 @@ public class CategoryMembersFragment extends RxBaseFragment {
         Subscription getCategoryMembersSubscription =
                 MrakopediaApiWorker
                         .getInstance()
-                        .getCategoryMembers("Категория:Без_мистики", continueString)
+                        .getCategoryMembers("Категория:" + categoryTitle, continueString)
+                        .map(new Func1<CategoryMembersResult, CategoryMembersResult>() {
+                            @Override
+                            public CategoryMembersResult call(CategoryMembersResult categoryMembersResult) {
+                                ArrayList<Categorymembers> categoryMembers = new ArrayList<>(Arrays.asList(categoryMembersResult.getQuery().getCategorymembers()));
+
+                                for (Iterator<Categorymembers> iterator = categoryMembers.iterator(); iterator.hasNext();) {
+                                    Categorymembers categoryMember = iterator.next();
+
+                                    if (categoryMember.getType().equals("subcat")) {
+                                        iterator.remove();
+                                    }
+                                }
+                                categoryMembersResult.getQuery().setCategorymembers(categoryMembers.toArray(new Categorymembers[categoryMembers.size()]));
+                                return categoryMembersResult;
+                            }
+                        })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<CategoryMembersResult>() {
@@ -89,11 +133,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             @Override
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
+                                e.printStackTrace();
                             }
 
                             @Override
                             public void onNext(CategoryMembersResult categoryMembersResult) {
-                                if (categoryMembersResult.getmContinue().getCmcontinue() != null) {
+                                if (categoryMembersResult.getmContinue() != null) {
                                     continueString = categoryMembersResult.getmContinue().getCmcontinue();
                                 } else {
                                     continueString = null;
@@ -124,7 +169,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.titleTextView.setText(categorymembersArrayList.get(position).getTitle());
+            holder.titleTextView.setText(categorymembersArrayList.get(position).getTitle() + "__" + categorymembersArrayList.get(position).getType());
         }
 
         @Override
