@@ -20,14 +20,18 @@ import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
+import com.randomname.mrakopedia.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -84,6 +88,18 @@ public class AllCategoriesFragment extends RxBaseFragment {
                 MrakopediaApiWorker
                         .getInstance()
                         .getAllCategories(continueString)
+                        .map(new Func1<AllCategoriesResult, AllCategoriesResult>() {
+                            @Override
+                            public AllCategoriesResult call(AllCategoriesResult allCategoriesResult) {
+                                ArrayList<Allcategories> allCategories = new ArrayList<>(Arrays.asList(allCategoriesResult.getQuery().getAllcategories()));
+
+                                for (Iterator<Allcategories> iterator = allCategories.iterator(); iterator.hasNext();) {
+                                    Allcategories category = iterator.next();
+                                }
+                                allCategoriesResult.getQuery().setAllcategories(allCategories.toArray(new Allcategories[allCategories.size()]));
+                                return allCategoriesResult;
+                            }
+                        })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<AllCategoriesResult>() {
@@ -118,17 +134,17 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
     private class AllCategoriesAdapter extends RecyclerView.Adapter<AllCategoriesAdapter.ViewHolder> {
 
-        ArrayList<Allcategories> categorymembersArrayList;
+        ArrayList<Allcategories> categoriesArrayList;
         View.OnClickListener onClickListener;
 
-        public AllCategoriesAdapter(ArrayList<Allcategories> categorymembers, View.OnClickListener onClickListener) {
-            categorymembersArrayList = categorymembers;
+        public AllCategoriesAdapter(ArrayList<Allcategories> categoriesArrayList, View.OnClickListener onClickListener) {
+            this.categoriesArrayList = categoriesArrayList;
             this.onClickListener = onClickListener;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, null);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.all_categories_view_holder, parent, false);
 
             if (onClickListener != null) {
                 view.setOnClickListener(onClickListener);
@@ -139,21 +155,28 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.titleTextView.setText(categorymembersArrayList.get(position).getTitle());
+            Allcategories category = categoriesArrayList.get(position);
+            String[] pages = {"страница", "страницы", "страниц"};
+
+            holder.titleTextView.setText(category.getTitle());
+            holder.membersCountTextView.setText(category.getPages()
+                    + " " + StringUtils.declarationOfNum(Integer.parseInt(category.getPages()), pages)
+                    + " " + getString(R.string.in_this_category));
         }
 
         @Override
         public int getItemCount() {
-            return categorymembersArrayList.size();
+            return categoriesArrayList == null ? 0 : categoriesArrayList.size();
         }
 
         protected class ViewHolder extends RecyclerView.ViewHolder {
 
-            public TextView titleTextView;
+            public TextView titleTextView, membersCountTextView;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 titleTextView = (TextView) itemView.findViewById(R.id.title_text_view);
+                membersCountTextView = (TextView) itemView.findViewById(R.id.members_count_text_view);
             }
         }
     }

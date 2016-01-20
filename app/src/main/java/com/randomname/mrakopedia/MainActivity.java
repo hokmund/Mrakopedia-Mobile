@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.randomname.mrakopedia.api.MrakopediaAPI;
@@ -11,6 +12,8 @@ import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
@@ -23,14 +26,24 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
 
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+        initToolbar();
 
         if (getSupportFragmentManager().getFragments() == null) {
             setAllCategoriesFragment();
         }
+    }
+
+    private void initToolbar() {
+        setSupportActionBar(toolbar);
     }
 
     private void setAllCategoriesFragment() {

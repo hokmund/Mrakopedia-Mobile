@@ -163,13 +163,13 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, null);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.titleTextView.setText(categorymembersArrayList.get(position).getTitle() + "__" + categorymembersArrayList.get(position).getType());
+            holder.titleTextView.setText(categorymembersArrayList.get(position).getTitle());
         }
 
         @Override
