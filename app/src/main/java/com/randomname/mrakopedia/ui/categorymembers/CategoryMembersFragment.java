@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.categorymembers;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 
 import java.util.ArrayList;
@@ -80,7 +82,15 @@ public class CategoryMembersFragment extends RxBaseFragment {
         ButterKnife.bind(this, view);
 
         categorymembersArrayList = new ArrayList<>();
-        adapter = new CategoryMembersAdapter(categorymembersArrayList);
+        adapter = new CategoryMembersAdapter(categorymembersArrayList, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = recyclerView.getChildAdapterPosition(v);
+                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, categorymembersArrayList.get(position).getTitle());
+                startActivity(intent);
+            }
+        });
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
@@ -156,14 +166,19 @@ public class CategoryMembersFragment extends RxBaseFragment {
     private class CategoryMembersAdapter extends RecyclerView.Adapter<CategoryMembersAdapter.ViewHolder> {
 
         ArrayList<Categorymembers> categorymembersArrayList;
+        View.OnClickListener onClickListener;
 
-        public CategoryMembersAdapter(ArrayList<Categorymembers> categorymembers) {
+        public CategoryMembersAdapter(ArrayList<Categorymembers> categorymembers, View.OnClickListener onClickListener) {
             categorymembersArrayList = categorymembers;
+            this.onClickListener = onClickListener;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, parent, false);
+
+            view.setOnClickListener(onClickListener);
+
             return new ViewHolder(view);
         }
 
