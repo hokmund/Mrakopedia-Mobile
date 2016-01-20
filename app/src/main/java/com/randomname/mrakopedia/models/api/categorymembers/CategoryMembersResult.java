@@ -48,7 +48,7 @@ public class CategoryMembersResult {
     @Override
     public String toString()
     {
-        return "ClassPojo [query = " + query + ", batchcomplete = " + batchcomplete.toString() + ", continue = " + mContinue.toString() +"]";
+        return "class CategoryMembersResult [\nquery = " + query.toString() + ",\n batchcomplete = " + batchcomplete.toString() + ",\n continue = " + mContinue.toString() +"]";
     }
 }
 

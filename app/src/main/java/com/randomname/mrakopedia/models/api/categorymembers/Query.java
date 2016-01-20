@@ -20,6 +20,6 @@ public class Query
     @Override
     public String toString()
     {
-        return "ClassPojo [categorymembers = "+categorymembers+"]";
+        return "class Query [\ncategorymembers = "+categorymembers.toString()+"]";
     }
 }

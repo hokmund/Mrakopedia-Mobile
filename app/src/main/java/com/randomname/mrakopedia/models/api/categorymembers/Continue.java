@@ -20,6 +20,6 @@ public class Continue
     @Override
     public String toString()
     {
-        return "ClassPojo [cmcontinue = "+cmcontinue + "]";
+        return "class Continue [\ncmcontinue = "+cmcontinue + "]";
     }
 }

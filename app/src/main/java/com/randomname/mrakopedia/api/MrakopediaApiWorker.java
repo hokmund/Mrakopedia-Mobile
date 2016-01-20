@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.api;
 
+import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 
 import retrofit2.GsonConverterFactory;
@@ -36,7 +37,11 @@ public class MrakopediaApiWorker {
         return mrakopediaAPI;
     }
 
-    public Observable<CategoryMembersResult> getCategoryMembers(String category) {
-        return getMrakopediaAPI().getCategoryMembers(category);
+    public Observable<CategoryMembersResult> getCategoryMembers(String category, String continueString) {
+        return getMrakopediaAPI().getCategoryMembers(category, continueString);
+    }
+
+    public Observable<AllCategoriesResult> getAllCategories(String continueString) {
+        return getMrakopediaAPI().getAllCategories(continueString);
     }
 }

@@ -1,8 +1,6 @@
-package com.randomname.mrakopedia.ui.categorymembers;
+package com.randomname.mrakopedia.ui.allcategories;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,14 +12,14 @@ import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
+import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
+import com.randomname.mrakopedia.models.api.allcategories.Allcategories;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,28 +29,26 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by Vlad on 19.01.2016.
+ * Created by vgrigoryev on 20.01.2016.
  */
-public class CategoryMembersFragment extends RxBaseFragment {
-    private static final String TAG = "categoryMembersFragment";
+public class AllCategoriesFragment extends RxBaseFragment {
+    private static final String TAG = "AllCategoriesFragment";
 
-    @Bind(R.id.category_members_recycler_view)
+    @Bind(R.id.all_categories_recycler_view)
     RecyclerView recyclerView;
 
-    private CategoryMembersAdapter adapter;
-    private ArrayList<Categorymembers> categorymembersArrayList;
+    private AllCategoriesAdapter adapter;
+    private ArrayList<Allcategories> resultArrayList;
+
     private String continueString = "";
-
-
-    public CategoryMembersFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.category_members_fragment, null);
+        View view = inflater.inflate(R.layout.all_categories_fragment, null);
         ButterKnife.bind(this, view);
 
-        categorymembersArrayList = new ArrayList<>();
-        adapter = new CategoryMembersAdapter(categorymembersArrayList);
+        resultArrayList = new ArrayList<>();
+        adapter = new AllCategoriesAdapter(resultArrayList);
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
@@ -74,13 +70,13 @@ public class CategoryMembersFragment extends RxBaseFragment {
             return;
         }
 
-        Subscription getCategoryMembersSubscription =
+        Subscription getAllCategoriesSubscription =
                 MrakopediaApiWorker
                         .getInstance()
-                        .getCategoryMembers("Категория:Без_мистики", continueString)
+                        .getAllCategories(continueString)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CategoryMembersResult>() {
+                        .subscribe(new Subscriber<AllCategoriesResult>() {
                             @Override
                             public void onCompleted() {
 
@@ -92,27 +88,29 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             }
 
                             @Override
-                            public void onNext(CategoryMembersResult categoryMembersResult) {
-                                if (categoryMembersResult.getmContinue().getCmcontinue() != null) {
-                                    continueString = categoryMembersResult.getmContinue().getCmcontinue();
+                            public void onNext(AllCategoriesResult allCategoriesResult) {
+                                if (allCategoriesResult.getAccContinue() != null) {
+                                    continueString = allCategoriesResult.getAccContinue().getAccontinue();
                                 } else {
                                     continueString = null;
                                 }
 
-                                for (Categorymembers categorymember : categoryMembersResult.getQuery().getCategorymembers()) {
-                                    categorymembersArrayList.add(categorymember);
-                                    adapter.notifyItemInserted(categorymembersArrayList.size());
+                                for (Allcategories category : allCategoriesResult.getQuery().getAllcategories()) {
+                                    resultArrayList.add(category);
+                                    adapter.notifyItemInserted(resultArrayList.indexOf(category));
                                 }
                             }
                         });
-        bindToLifecycle(getCategoryMembersSubscription);
+
+
+        bindToLifecycle(getAllCategoriesSubscription);
     }
 
-    private class CategoryMembersAdapter extends RecyclerView.Adapter<CategoryMembersAdapter.ViewHolder> {
+    private class AllCategoriesAdapter extends RecyclerView.Adapter<AllCategoriesAdapter.ViewHolder> {
 
-        ArrayList<Categorymembers> categorymembersArrayList;
+        ArrayList<Allcategories> categorymembersArrayList;
 
-        public CategoryMembersAdapter(ArrayList<Categorymembers> categorymembers) {
+        public AllCategoriesAdapter(ArrayList<Allcategories> categorymembers) {
             categorymembersArrayList = categorymembers;
         }
 

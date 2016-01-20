@@ -56,6 +56,6 @@ public class Categorymembers
     @Override
     public String toString()
     {
-        return "ClassPojo [title = "+title+", ns = "+ns+", type = "+type+", pageid = "+pageid+"]";
+        return "class Categorymembers [\ntitle = "+title+",\n ns = "+ns+",\n type = "+type+",\n pageid = "+pageid+"]";
     }
 }
