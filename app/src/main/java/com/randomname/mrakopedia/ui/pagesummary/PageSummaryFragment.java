@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -14,11 +15,14 @@ import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.Sections;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
+import com.randomname.mrakopedia.ui.views.TagHandler;
+import com.randomname.mrakopedia.ui.views.UILImageGetter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,7 +41,7 @@ public class PageSummaryFragment extends RxBaseFragment {
     private static final String PAGE_TITLE_KEY = "pageTitleKey";
 
     @Bind(R.id.page_text_text_view)
-    TextView pageTextView;
+    HtmlTextView pageTextView;
 
     private String pageTitle;
 
@@ -113,13 +117,35 @@ public class PageSummaryFragment extends RxBaseFragment {
                             editSections.remove();
                         }
 
+                        Elements liTags = doc.select("li");
+
+                        if (!liTags.isEmpty()) {
+                            for (Element liTag: liTags) {
+                                liTag.tagName("p");
+                            }
+                        }
+
                         if (pageSummaryResult.getParse().getSections().length > 0) {
                             for (Sections section : pageSummaryResult.getParse().getSections()) {
                                 if (section.getLine().equals("См. также")) {
                                     Elements lookMore = doc.select("[id^=" + section.getAnchor() + "]");
+                                    if (!lookMore.isEmpty()) {
+                                        Element lookMoreParent = lookMore.first().parent();
 
-                                    //TODO delete content below this point
+                                        if (lookMoreParent != null) {
+                                            while (lookMoreParent.nextElementSibling() != null) {
+                                                lookMoreParent.nextElementSibling().remove();
+                                            }
+                                            lookMoreParent.remove();
+                                        }
+                                    }
                                 }
+                            }
+                        }
+
+                        for (Element element : doc.select("*")) {
+                            if (!element.hasText() && element.isBlock()) {
+                                element.remove();
                             }
                         }
 
@@ -146,7 +172,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                     public void onNext(PageSummaryResult pageSummaryResult) {
                         String text = pageSummaryResult.getParse().getText().getText();
 
-                        pageTextView.setText(Html.fromHtml(text));
+                        pageTextView.setHtmlFromString(text, new HtmlTextView.RemoteImageGetter("https://mrakopedia.ru"));
                     }
                 });
         bindToLifecycle(subscription);

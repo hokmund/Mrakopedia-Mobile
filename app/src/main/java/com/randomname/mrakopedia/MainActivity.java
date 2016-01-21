@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.randomname.mrakopedia.api.MrakopediaAPI;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
