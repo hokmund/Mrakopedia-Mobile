@@ -3,9 +3,11 @@ package com.randomname.mrakopedia.ui.pagesummary;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.AlignmentSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.util.Log;
@@ -98,10 +100,22 @@ public class PageSummaryFragment extends RxBaseFragment {
                             scriptsTags.remove();
                         }
 
+                        Elements spoilerLinks = doc.select("a.spoilerLink");
+                        if (!spoilerLinks.isEmpty()) {
+                            spoilerLinks.remove();
+                        }
+
                         Elements aTags = doc.select("a");
 
                         if (!aTags.isEmpty()) {
                             for (Element aTag : aTags) {
+                                if (!aTag.children().isEmpty()) {
+                                    for (Element aTagChildren : aTag.children()) {
+                                        if (aTagChildren.tagName().equals("img")) {
+                                        }
+                                    }
+                                }
+
                                 if (aTag.attr("abs:href").length() == 0) {
                                     aTag.unwrap();
                                 }
@@ -157,15 +171,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                         return pageSummaryResult;
                     }
                 })
-                .map(new Func1<PageSummaryResult, PageSummaryResult>() {
-                    @Override
-                    public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
-                        String text = pageSummaryResult.getParse().getText().getText();
-                        Spannable spanned = (Spannable) Html.fromHtml(text, new UILImageGetter(pageTextView, getActivity(), "https://mrakopedia.ru"), new HtmlTagHandler());
-                        spanned = addClickToImageSpans(spanned);
-                        return pageSummaryResult;
-                    }
-                })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PageSummaryResult>() {
@@ -182,7 +187,12 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                     @Override
                     public void onNext(PageSummaryResult pageSummaryResult) {
-                        pageTextView.setText(pageSummaryResult.getParse().getSpannableText());
+                        String text = pageSummaryResult.getParse().getText().getText();
+                        Spannable spanned = (Spannable) Html.fromHtml(text, new UILImageGetter(pageTextView, getActivity(), "https://mrakopedia.ru"), new HtmlTagHandler());
+                        spanned = addClickToImageSpans(spanned);
+
+
+                        pageTextView.setText(spanned);
                         pageTextView.setMovementMethod(LinkMovementMethod.getInstance());
                     }
                 });
@@ -203,16 +213,12 @@ public class PageSummaryFragment extends RxBaseFragment {
             ClickableSpan click_span = new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
-                    Log.e(TAG, "image_src");
+                    Log.e(TAG, image_src);
                 }
             };
-
             ClickableSpan[] click_spans = s.getSpans(start, end, ClickableSpan.class);
 
             if (click_spans.length != 0) {
-
-                // remove all click spans
-
                 for (ClickableSpan c_span : click_spans) {
                     s.removeSpan(c_span);
                 }
@@ -221,6 +227,7 @@ public class PageSummaryFragment extends RxBaseFragment {
             }
 
             s.setSpan(click_span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            s.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         return s;
