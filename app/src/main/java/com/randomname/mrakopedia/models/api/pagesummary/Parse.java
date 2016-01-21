@@ -1,5 +1,7 @@
 package com.randomname.mrakopedia.models.api.pagesummary;
 
+import android.text.Spannable;
+
 /**
  * Created by Vlad on 20.01.2016.
  */
@@ -9,6 +11,8 @@ public class Parse {
     private String displaytitle;
 
     private Text text;
+
+    private Spannable spannableText;
 
     private Templates[] templates;
 
@@ -70,6 +74,13 @@ public class Parse {
         this.templates = templates;
     }
 
+    public void setSpannableText(Spannable spannableText) {
+        this.spannableText = spannableText;
+    }
+
+    public Spannable getSpannableText() {
+        return spannableText;
+    }
 
     public Links[] getLinks ()
     {

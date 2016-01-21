@@ -1,9 +1,13 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,14 +19,13 @@ import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.Sections;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
-import com.randomname.mrakopedia.ui.views.TagHandler;
+import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.UILImageGetter;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,7 +44,7 @@ public class PageSummaryFragment extends RxBaseFragment {
     private static final String PAGE_TITLE_KEY = "pageTitleKey";
 
     @Bind(R.id.page_text_text_view)
-    HtmlTextView pageTextView;
+    TextView pageTextView;
 
     private String pageTitle;
 
@@ -154,6 +157,15 @@ public class PageSummaryFragment extends RxBaseFragment {
                         return pageSummaryResult;
                     }
                 })
+                .map(new Func1<PageSummaryResult, PageSummaryResult>() {
+                    @Override
+                    public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
+                        String text = pageSummaryResult.getParse().getText().getText();
+                        Spannable spanned = (Spannable) Html.fromHtml(text, new UILImageGetter(pageTextView, getActivity(), "https://mrakopedia.ru"), new HtmlTagHandler());
+                        spanned = addClickToImageSpans(spanned);
+                        return pageSummaryResult;
+                    }
+                })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<PageSummaryResult>() {
@@ -170,13 +182,47 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                     @Override
                     public void onNext(PageSummaryResult pageSummaryResult) {
-                        String text = pageSummaryResult.getParse().getText().getText();
-
-                        pageTextView.setHtmlFromString(text, new HtmlTextView.RemoteImageGetter("https://mrakopedia.ru"));
+                        pageTextView.setText(pageSummaryResult.getParse().getSpannableText());
+                        pageTextView.setMovementMethod(LinkMovementMethod.getInstance());
                     }
                 });
         bindToLifecycle(subscription);
 
         return view;
+    }
+
+    public Spannable addClickToImageSpans(Spannable s) {
+        ImageSpan[] image_spans = s.getSpans(0, s.length(), ImageSpan.class);
+
+        for (ImageSpan span : image_spans) {
+
+            final String image_src = span.getSource();
+            final int start = s.getSpanStart(span);
+            final int end = s.getSpanEnd(span);
+
+            ClickableSpan click_span = new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    Log.e(TAG, "image_src");
+                }
+            };
+
+            ClickableSpan[] click_spans = s.getSpans(start, end, ClickableSpan.class);
+
+            if (click_spans.length != 0) {
+
+                // remove all click spans
+
+                for (ClickableSpan c_span : click_spans) {
+                    s.removeSpan(c_span);
+                }
+
+
+            }
+
+            s.setSpan(click_span, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        return s;
     }
 }
