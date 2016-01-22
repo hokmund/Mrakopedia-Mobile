@@ -129,6 +129,11 @@ public class PageSummaryFragment extends RxBaseFragment {
                             spoilerLinks.remove();
                         }
 
+                        Elements delTag = doc.select("del");
+                        if (!delTag.isEmpty()) {
+                            delTag.tagName("strike");
+                        }
+
                         Elements aTags = doc.select("a");
 
                         if (!aTags.isEmpty()) {
@@ -195,6 +200,8 @@ public class PageSummaryFragment extends RxBaseFragment {
                     @Override
                     public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
                         splitTextAndImages(pageSummaryResult);
+                        pageSummaryResult.getParse().getTextSections()
+                                .add(0, new TextSection(TextSection.TEXT_TYPE, "<h2>" + pageSummaryResult.getParse().getTitle() + "</h2>"));
                         return pageSummaryResult;
                     }
                 })
