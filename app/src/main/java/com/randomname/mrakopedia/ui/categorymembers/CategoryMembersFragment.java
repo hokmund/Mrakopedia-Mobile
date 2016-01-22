@@ -1,6 +1,7 @@
 package com.randomname.mrakopedia.ui.categorymembers;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
+import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
@@ -126,7 +128,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                                     if (categoryMember.getType().equals("subcat")) {
                                         iterator.remove();
+                                        continue;
                                     }
+
+                                    categoryMember.setIsViewed(DBWorker.isPageSummarySaved(categoryMember.getTitle()));
                                 }
                                 categoryMembersResult.getQuery().setCategorymembers(categoryMembers.toArray(new Categorymembers[categoryMembers.size()]));
                                 return categoryMembersResult;
@@ -185,6 +190,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.titleTextView.setText(categorymembersArrayList.get(position).getTitle());
+
+            if (categorymembersArrayList.get(position).getIsViewed()) {
+                holder.titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else {
+                holder.titleTextView.setTextColor(Color.BLACK);
+            }
         }
 
         @Override

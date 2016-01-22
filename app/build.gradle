@@ -20,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor' // butterknife
+    }
 }
 
 dependencies {
@@ -37,4 +41,5 @@ dependencies {
     compile 'tk.zielony:carbon:0.11.0'
     compile 'org.jsoup:jsoup:1.7.2'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'io.realm:realm-android:0.87.2'
 }

@@ -13,6 +13,8 @@ public class Categorymembers
 
     private String pageid;
 
+    private boolean isViewed;
+
     public String getTitle ()
     {
         return title;
@@ -51,6 +53,14 @@ public class Categorymembers
     public void setPageid (String pageid)
     {
         this.pageid = pageid;
+    }
+
+    public boolean getIsViewed () {
+        return isViewed;
+    }
+
+    public void setIsViewed(boolean isViewed) {
+        this.isViewed = isViewed;
     }
 
     @Override
