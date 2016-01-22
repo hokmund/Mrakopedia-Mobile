@@ -2,6 +2,8 @@ package com.randomname.mrakopedia.models.api.pagesummary;
 
 import android.text.Spannable;
 
+import java.util.ArrayList;
+
 /**
  * Created by Vlad on 20.01.2016.
  */
@@ -12,7 +14,7 @@ public class Parse {
 
     private Text text;
 
-    private Spannable spannableText;
+    private ArrayList<TextSection> textSections;
 
     private Templates[] templates;
 
@@ -74,12 +76,16 @@ public class Parse {
         this.templates = templates;
     }
 
-    public void setSpannableText(Spannable spannableText) {
-        this.spannableText = spannableText;
+    public ArrayList<TextSection> getTextSections() {
+        if (textSections == null) {
+            textSections = new ArrayList<>();
+        }
+
+        return textSections;
     }
 
-    public Spannable getSpannableText() {
-        return spannableText;
+    public void setTextSections(ArrayList<TextSection> textSections) {
+        this.textSections = textSections;
     }
 
     public Links[] getLinks ()
