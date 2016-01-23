@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
@@ -49,6 +51,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.IMAGE_TYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_image_view, parent, false);
                 return new ImageViewHolder(view);
+            case TextSection.TEMPLATE_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_template, parent, false);
+                return new TemplateViewHolder(view);
             default:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
                 return new TextViewHolder(view);
@@ -67,7 +72,70 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 Picasso.with(context)
                         .load(sections.get(position).getText())
                         .into(((ImageViewHolder)holder).imageView);
+                break;
+            case TextSection.TEMPLATE_TYPE:
+                bindTemplateHolder(holder, sections.get(position).getText());
+                break;
+            default:
+        }
+    }
 
+    private void bindTemplateHolder(RecyclerView.ViewHolder holder, String text) {
+        TemplateViewHolder templateViewHolder = (TemplateViewHolder) holder;
+        switch (text) {
+            case "NSFW":
+                templateViewHolder.imageView.setImageResource(R.drawable.meatboy);
+                templateViewHolder.textView.setText(context.getString(R.string.nsfw_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.nsfw_color));
+                break;
+            case "Anomaly":
+                templateViewHolder.imageView.setImageResource(R.drawable.warning);
+                templateViewHolder.textView.setText(context.getString(R.string.anomaly_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.nsfw_color));
+                break;
+            case "Parody":
+                templateViewHolder.imageView.setImageResource(R.drawable.vagan);
+                templateViewHolder.textView.setText(context.getString(R.string.parody_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.parody_color));
+                break;
+            case "Save":
+                templateViewHolder.imageView.setImageResource(R.drawable.floppydisk);
+                templateViewHolder.textView.setText(context.getString(R.string.save_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.save_color));
+                break;
+            case "Vg":
+                templateViewHolder.imageView.setImageResource(R.drawable.creeper_vg);
+                templateViewHolder.textView.setText(context.getString(R.string.vg_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.save_color));
+                break;
+            case "WTF":
+                templateViewHolder.imageView.setImageResource(R.drawable.triangle);
+                templateViewHolder.textView.setText(context.getString(R.string.wtf_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.nsfw_color));
+                break;
+            case "Избранное":
+                templateViewHolder.imageView.setImageResource(R.drawable.kubok);
+                templateViewHolder.textView.setText(context.getString(R.string.favorited_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.favorited_color));
+                break;
+            case "КГАМ":
+                templateViewHolder.imageView.setImageResource(R.drawable.pero);
+                templateViewHolder.textView.setText(context.getString(R.string.kgam_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.save_color));
+                break;
+            case "Классика":
+                templateViewHolder.imageView.setImageResource(R.drawable.kubok);
+                templateViewHolder.textView.setText(context.getString(R.string.classic_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.favorited_color));
+            case "НПЧДХ":
+                templateViewHolder.imageView.setImageResource(R.drawable.vagan);
+                templateViewHolder.textView.setText(context.getString(R.string.so_bad_so_good_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.parody_color));
+                break;
+            case "Юмор":
+                templateViewHolder.imageView.setImageResource(R.drawable.vagan);
+                templateViewHolder.textView.setText(context.getString(R.string.humor_description));
+                templateViewHolder.wrapper.setBackgroundColor(context.getResources().getColor(R.color.parody_color));
                 break;
             default:
         }
@@ -79,7 +147,6 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private class TextViewHolder extends RecyclerView.ViewHolder {
-
         protected TextView textView;
 
         public TextViewHolder(View itemView) {
@@ -94,6 +161,19 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public ImageViewHolder(View view) {
             super(view);
             imageView = (ImageView)view.findViewById(R.id.image_view);
+        }
+    }
+
+    private class TemplateViewHolder extends RecyclerView.ViewHolder {
+        protected TextView textView;
+        protected ImageView imageView;
+        protected RelativeLayout wrapper;
+
+        public TemplateViewHolder(View view) {
+            super(view);
+            imageView = (ImageView)view.findViewById(R.id.image_view);
+            textView = (TextView)view.findViewById(R.id.text_view);
+            wrapper = (RelativeLayout)view.findViewById(R.id.wrapper);
         }
     }
 }

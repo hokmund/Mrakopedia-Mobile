@@ -14,6 +14,7 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.Sections;
+import com.randomname.mrakopedia.models.api.pagesummary.Templates;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
@@ -200,8 +201,8 @@ public class PageSummaryFragment extends RxBaseFragment {
                     @Override
                     public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
                         splitTextAndImages(pageSummaryResult);
-                        pageSummaryResult.getParse().getTextSections()
-                                .add(0, new TextSection(TextSection.TEXT_TYPE, "<h2>" + pageSummaryResult.getParse().getTitle() + "</h2>"));
+                        addHeader(pageSummaryResult);
+                        addTemplates(pageSummaryResult);
                         return pageSummaryResult;
                     }
                 })
@@ -298,6 +299,63 @@ public class PageSummaryFragment extends RxBaseFragment {
             pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.TEXT_TYPE, stringToSplit));
         } else {
             pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.TEXT_TYPE, pageSummaryResult.getParse().getText().getText()));
+        }
+    }
+
+    private void addHeader(PageSummaryResult pageSummaryResult) {
+        pageSummaryResult
+                .getParse()
+                .getTextSections()
+                .add(0, new TextSection(
+                        TextSection.TEXT_TYPE,
+                        "<h2>" + pageSummaryResult.getParse().getTitle() + "</h2>"));
+    }
+
+    private void addTemplates(PageSummaryResult pageSummaryResult) {
+        TextSection textSection = null;
+
+        for (Templates template : pageSummaryResult.getParse().getTemplates()) {
+            switch (template.getTitle()) {
+                case "Шаблон:NSFW":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "NSFW");
+                    break;
+                case "Шаблон:Anomaly":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "Anomaly");
+                    break;
+                case "Шаблон:Parody":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "Parody");
+                    break;
+                case "Шаблон:Save":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "Save");
+                    break;
+                case "Шаблон:Vg":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "Vg");
+                    break;
+                case "Шаблон:WTF":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "WTF");
+                    break;
+                case "Шаблон:Избранное":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "Избранное");
+                    break;
+                case "Шаблон:КГАМ":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "КГАМ");
+                    break;
+                case "Шаблон:Классика":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "Классика");
+                    break;
+                case "Шаблон:НПЧДХ":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "НПЧДХ");
+                    break;
+                case "Шаблон:Юмор":
+                    textSection = new TextSection(TextSection.TEMPLATE_TYPE, "Юмор");
+                    break;
+                default:
+                    textSection = null;
+            }
+
+            if (textSection != null) {
+                pageSummaryResult.getParse().getTextSections().add(0, textSection);
+            }
         }
     }
 }

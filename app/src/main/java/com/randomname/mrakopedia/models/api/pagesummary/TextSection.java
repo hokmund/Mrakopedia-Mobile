@@ -8,6 +8,7 @@ public class TextSection {
     public static final int UNDEFINED_TYPE = 0;
     public static final int TEXT_TYPE = 1;
     public static final int IMAGE_TYPE = 2;
+    public static final int TEMPLATE_TYPE = 3;
 
     private int type;
     private String text;
