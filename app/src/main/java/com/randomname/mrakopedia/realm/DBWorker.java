@@ -26,7 +26,6 @@ public class DBWorker {
 
     public static void savePageSummary(PageSummaryResult pageSummaryResult) {
         Realm realm = Realm.getDefaultInstance();
-
         realm.beginTransaction();
 
         PageSummaryRealm pageSummaryToSave = new PageSummaryRealm();
@@ -39,9 +38,10 @@ public class DBWorker {
             textSectionRealm = new TextSectionRealm();
             textSectionRealm.setText(textSection.getText());
             textSectionRealm.setType(textSection.getType());
+            textSectionRealm.setId(pageSummaryResult.getParse().getTitle() + pageSummaryToSave.getTextSections().size());
+
             pageSummaryToSave.getTextSections().add(textSectionRealm);
         }
-
         realm.copyToRealmOrUpdate(pageSummaryToSave);
         realm.commitTransaction();
         realm.close();
@@ -53,5 +53,11 @@ public class DBWorker {
                 .equalTo("pageTitle", title)
                 .findFirst()
                 .asObservable();
+    }
+
+    public static void log() {
+        RealmResults<TextSectionRealm> result = Realm.getDefaultInstance().where(TextSectionRealm.class).findAll();
+
+        Log.e("bla", result.size() + "");
     }
 }

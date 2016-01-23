@@ -96,10 +96,11 @@ public class PageSummaryFragment extends RxBaseFragment {
                 startActivity(intent);
             }
         });
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
-        if (false) {
+        if (DBWorker.isPageSummarySaved(pageTitle)) {
             getArticleByRealm();
         } else {
             getArticleByNetwork();

@@ -9,10 +9,19 @@ import io.realm.annotations.PrimaryKey;
 public class TextSectionRealm extends RealmObject {
 
     private int type;
-    @PrimaryKey
     private String text;
+    @PrimaryKey
+    private String id;
 
     public TextSectionRealm () {
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public void setType(int type) {
