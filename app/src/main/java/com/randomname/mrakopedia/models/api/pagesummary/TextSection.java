@@ -9,6 +9,7 @@ public class TextSection {
     public static final int TEXT_TYPE = 1;
     public static final int IMAGE_TYPE = 2;
     public static final int TEMPLATE_TYPE = 3;
+    public static final int LINK_TYPE = 4;
 
     private int type;
     private String text;

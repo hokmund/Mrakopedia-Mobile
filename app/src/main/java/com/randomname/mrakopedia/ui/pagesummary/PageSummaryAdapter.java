@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,10 +31,12 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private ArrayList<TextSection> sections;
     private Context context;
+    private View.OnClickListener linkClickListener;
 
-    public PageSummaryAdapter(ArrayList<TextSection> sections, Context context) {
+    public PageSummaryAdapter(ArrayList<TextSection> sections, Context context, View.OnClickListener linkClickListener) {
         this.sections = sections;
         this.context = context;
+        this.linkClickListener = linkClickListener;
     }
 
     @Override
@@ -54,6 +57,10 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.TEMPLATE_TYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_template, parent, false);
                 return new TemplateViewHolder(view);
+            case TextSection.LINK_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
+                view.setOnClickListener(linkClickListener);
+                return new TextViewHolder(view);
             default:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
                 return new TextViewHolder(view);
@@ -67,14 +74,18 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 Spannable span = (Spannable) Html.fromHtml(sections.get(position).getText(), null, new HtmlTagHandler());
                 span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                 ((TextViewHolder) holder).textView.setText(span);
+                ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 break;
             case TextSection.IMAGE_TYPE:
                 Picasso.with(context)
                         .load(sections.get(position).getText())
-                        .into(((ImageViewHolder)holder).imageView);
+                        .into(((ImageViewHolder) holder).imageView);
                 break;
             case TextSection.TEMPLATE_TYPE:
                 bindTemplateHolder(holder, sections.get(position).getText());
+                break;
+            case TextSection.LINK_TYPE:
+                ((TextViewHolder) holder).textView.setText(Html.fromHtml("<a href='dummy'>" + sections.get(position).getText() + "</a>"));
                 break;
             default:
         }

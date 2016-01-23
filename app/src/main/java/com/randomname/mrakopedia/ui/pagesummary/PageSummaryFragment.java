@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
+import com.randomname.mrakopedia.models.api.pagesummary.Links;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.Sections;
 import com.randomname.mrakopedia.models.api.pagesummary.Templates;
@@ -85,11 +87,19 @@ public class PageSummaryFragment extends RxBaseFragment {
         View view = inflater.inflate(R.layout.page_summary_fragment, null);
         ButterKnife.bind(this, view);
 
-        adapter = new PageSummaryAdapter(textSections, getActivity());
+        adapter = new PageSummaryAdapter(textSections, getActivity(), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = recyclerView.getChildAdapterPosition(v);
+                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, textSections.get(position).getText());
+                startActivity(intent);
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
-        if (DBWorker.isPageSummarySaved(pageTitle)) {
+        if (false) {
             getArticleByRealm();
         } else {
             getArticleByNetwork();
@@ -203,6 +213,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                         splitTextAndImages(pageSummaryResult);
                         addHeader(pageSummaryResult);
                         addTemplates(pageSummaryResult);
+                        addLinks(pageSummaryResult);
                         return pageSummaryResult;
                     }
                 })
@@ -356,6 +367,29 @@ public class PageSummaryFragment extends RxBaseFragment {
             if (textSection != null) {
                 pageSummaryResult.getParse().getTextSections().add(0, textSection);
             }
+        }
+    }
+
+    private void addLinks(PageSummaryResult pageSummaryResult) {
+
+        if (pageSummaryResult.getParse().getLinks().length > 0) {
+            pageSummaryResult.getParse()
+                    .getTextSections()
+                    .add(new TextSection(
+                            TextSection.TEXT_TYPE,
+                            "<h2>Смотри также</h2>"));
+        }
+
+        for (Links link : pageSummaryResult.getParse().getLinks()) {
+            if (link.getTitle().contains("Шаблон") || link.getTitle().contains("Категория")) {
+                continue;
+            }
+
+            pageSummaryResult.getParse()
+                    .getTextSections()
+                    .add(new TextSection(
+                            TextSection.LINK_TYPE,
+                            link.getTitle()));
         }
     }
 }
