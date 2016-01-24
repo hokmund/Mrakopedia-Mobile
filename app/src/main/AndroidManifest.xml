@@ -5,12 +5,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".MrakopediaApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:largeHeap="true"
-        android:name=".MrakopediaApplication"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -21,8 +21,10 @@
         </activity>
         <activity
             android:name=".ui.categorymembers.CategoryMembersActivity"
-            android:label="@string/title_activity_category_members"></activity>
-        <activity android:name=".ui.pagesummary.PageSummaryActivity"></activity>
+            android:label="@string/title_activity_category_members"
+            android:launchMode="singleTask" />
+        <activity android:name=".ui.pagesummary.PageSummaryActivity" />
+        <activity android:name=".ui.fullscreenfoto.FullScreentFotoActivity"></activity>
     </application>
 
 </manifest>

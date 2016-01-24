@@ -9,7 +9,7 @@
 
     <string name="error_loading_article">Не удалось загрузить статью</string>
     <string name="no_internet_text">отсутствует подключение к интернету.</string>
-    
+
     <string name="nsfw_description">Градус шок-контента в этой истории зашкаливает! Вы предупреждены.</string>
     <string name="anomaly_description">Отдельные материалы этой статьи могут оказать аномальное воздействие, за последствия которого мы ответственности не несём!</string>
     <string name="parody_description">Это пародия на другую историю.</string>

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

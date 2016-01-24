@@ -22,6 +22,7 @@ import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
+import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 
 import org.jsoup.Jsoup;
@@ -95,12 +96,20 @@ public class PageSummaryFragment extends RxBaseFragment {
                 intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, textSections.get(position).getText());
                 startActivity(intent);
             }
+        }, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = recyclerView.getChildAdapterPosition(v);
+                Intent intent = new Intent(getActivity(), FullScreentFotoActivity.class);
+                intent.putExtra(FullScreentFotoActivity.IMAGE_LINK_KEY, textSections.get(position).getText());
+                startActivity(intent);
+            }
         });
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
-        if (DBWorker.isPageSummarySaved(pageTitle)) {
+        if (DBWorker.isPageSummarySaved("")) {
             getArticleByRealm();
         } else {
             getArticleByNetwork();
@@ -134,6 +143,12 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                         if (!scriptTags.isEmpty()) {
                             scriptTags.remove();
+                        }
+
+                        Elements embedVideos = doc.select(".embedvideo");
+
+                        if (!embedVideos.isEmpty()) {
+                            embedVideos.remove();
                         }
 
                         Elements spoilerLinks = doc.select("a.spoilerLink");
@@ -176,6 +191,10 @@ public class PageSummaryFragment extends RxBaseFragment {
                             }
                         }
 
+                        if (!doc.select("ul").isEmpty()) {
+                            doc.select("ul").unwrap();
+                        }
+
                         if (pageSummaryResult.getParse().getSections().length > 0) {
                             for (Sections section : pageSummaryResult.getParse().getSections()) {
                                 if (section.getLine().equals("См. также")) {
@@ -199,7 +218,26 @@ public class PageSummaryFragment extends RxBaseFragment {
                         if (!imgTags.isEmpty()) {
                             int index = 0;
                             for (Element imgTag : imgTags) {
-                                imgTag.attr("iter_key", String.valueOf(index++));
+                                imgTag.attr("iter_key", String.valueOf(index++) + imgTag.attr("src"));
+
+                                String imgSrc = imgTag.attr("src");
+
+                                if (imgSrc.contains("thumb/")) {
+                                    imgSrc = imgSrc.replace("thumb/", "");
+
+                                    if (imgSrc.contains(".jpg")) {
+                                        imgSrc = imgSrc.substring(0, imgSrc.indexOf(".jpg") + 4);
+                                    }
+
+                                    if (imgSrc.contains(".png")) {
+                                        imgSrc = imgSrc.substring(0, imgSrc.indexOf(".png") + 4);
+                                    }
+
+                                    if (imgSrc.contains(".jpeg")) {
+                                        imgSrc = imgSrc.substring(0, imgSrc.indexOf(".jpeg") + 5);
+                                    }
+                                    imgTag.attr("src", imgSrc);
+                                }
                             }
                         }
 
@@ -243,7 +281,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                         e.printStackTrace();
                         errorTextView.setVisibility(View.VISIBLE);
 
-                        if (!NetworkUtils.isInternetAvailable()) {
+                        if (!NetworkUtils.isInternetAvailable(getActivity())) {
                             errorTextView.setText(errorTextView.getText() + ", " + getString(R.string.no_internet_text));
                         }
                     }
@@ -304,7 +342,12 @@ public class PageSummaryFragment extends RxBaseFragment {
         if (!imgTags.isEmpty()) {
             for (Element imgTag : imgTags) {
                 String[] splited = stringToSplit.split(imgTag.outerHtml());
-                stringToSplit = splited[1];
+                if (splited.length > 1) {
+                    stringToSplit = splited[1];
+                } else {
+                    stringToSplit = "";
+                }
+
                 pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.TEXT_TYPE, splited[0]));
                 pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.IMAGE_TYPE, imgTag.absUrl("src")));
             }

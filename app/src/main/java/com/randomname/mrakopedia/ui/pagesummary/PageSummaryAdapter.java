@@ -32,11 +32,13 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private ArrayList<TextSection> sections;
     private Context context;
     private View.OnClickListener linkClickListener;
+    private View.OnClickListener imageClickListener;
 
-    public PageSummaryAdapter(ArrayList<TextSection> sections, Context context, View.OnClickListener linkClickListener) {
+    public PageSummaryAdapter(ArrayList<TextSection> sections, Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener) {
         this.sections = sections;
         this.context = context;
         this.linkClickListener = linkClickListener;
+        this.imageClickListener = imageClickListener;
     }
 
     @Override
@@ -53,6 +55,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 return new TextViewHolder(view);
             case TextSection.IMAGE_TYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_image_view, parent, false);
+                view.setOnClickListener(imageClickListener);
                 return new ImageViewHolder(view);
             case TextSection.TEMPLATE_TYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_template, parent, false);
@@ -79,7 +82,6 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.IMAGE_TYPE:
                 Picasso.with(context)
                         .load(sections.get(position).getText())
-                        .noFade()
                         .into(((ImageViewHolder) holder).imageView);
                 break;
             case TextSection.TEMPLATE_TYPE:
