@@ -194,7 +194,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
             if (categorymembersArrayList.get(position).getIsViewed()) {
                 holder.titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
             } else {
-                holder.titleTextView.setTextColor(Color.BLACK);
+                holder.titleTextView.setTextColor(Color.parseColor("#D9000000"));
             }
         }
 

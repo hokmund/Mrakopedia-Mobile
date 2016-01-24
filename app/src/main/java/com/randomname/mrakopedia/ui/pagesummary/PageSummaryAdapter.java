@@ -79,6 +79,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.IMAGE_TYPE:
                 Picasso.with(context)
                         .load(sections.get(position).getText())
+                        .noFade()
                         .into(((ImageViewHolder) holder).imageView);
                 break;
             case TextSection.TEMPLATE_TYPE:

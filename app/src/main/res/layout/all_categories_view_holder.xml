@@ -7,24 +7,35 @@
     android:orientation="vertical"
     android:clickable="true"
     app:carbon_rippleColor="#333333"
-    android:paddingLeft="@dimen/all_categories_row_padding"
-    android:paddingRight="@dimen/all_categories_row_padding"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     >
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         />
 
-    <TextView
+    <carbon.widget.TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/title_text_view"
+        app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+        android:textSize="14sp"
+        android:textColor="#D9000000"
+        android:text="Title"
         />
 
-    <TextView
+    <carbon.widget.TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/members_count_text_view"
+        app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+        android:textSize="14sp"
+        android:textColor="#D9000000"
+        android:text="246 articles"
+        android:layout_marginTop="6dp"
         />
 
 </carbon.widget.LinearLayout>
