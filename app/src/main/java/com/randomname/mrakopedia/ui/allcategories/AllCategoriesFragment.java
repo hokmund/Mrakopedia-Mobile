@@ -21,6 +21,7 @@ import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.utils.StringUtils;
+import com.randomname.mrakopedia.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,8 +123,19 @@ public class AllCategoriesFragment extends RxBaseFragment {
                                 }
 
                                 for (Allcategories category : allCategoriesResult.getQuery().getAllcategories()) {
-                                    resultArrayList.add(category);
-                                    adapter.notifyItemInserted(resultArrayList.indexOf(category));
+                                    boolean toSkip = false;
+
+                                    for (String banString : Utils.categoriesBanList) {
+                                        if (category.getTitle().contains(banString)) {
+                                            toSkip = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!toSkip) {
+                                        resultArrayList.add(category);
+                                        adapter.notifyItemInserted(resultArrayList.indexOf(category));
+                                    }
                                 }
                             }
                         });
