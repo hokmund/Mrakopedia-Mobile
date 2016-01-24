@@ -5,6 +5,7 @@ package com.randomname.mrakopedia.models.api.categorymembers;
  */
 public class Categorymembers
 {
+
     private String title;
 
     private String ns;

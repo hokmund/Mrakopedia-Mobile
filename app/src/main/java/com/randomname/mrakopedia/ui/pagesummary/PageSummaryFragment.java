@@ -191,10 +191,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                             }
                         }
 
-                        if (!doc.select("ul").isEmpty()) {
-                            doc.select("ul").unwrap();
-                        }
-
                         if (pageSummaryResult.getParse().getSections().length > 0) {
                             for (Sections section : pageSummaryResult.getParse().getSections()) {
                                 if (section.getLine().equals("См. также")) {

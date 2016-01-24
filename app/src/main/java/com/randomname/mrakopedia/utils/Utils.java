@@ -5,6 +5,7 @@ package com.randomname.mrakopedia.utils;
  */
 public class Utils {
     public static String[] categoriesBanList = {
+            "ICQ",
             "Архивы обсуждений",
             "Википедия",
             "Документация шаблонов",

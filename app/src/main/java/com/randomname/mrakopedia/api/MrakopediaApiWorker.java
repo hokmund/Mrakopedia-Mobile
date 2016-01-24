@@ -1,9 +1,12 @@
 package com.randomname.mrakopedia.api;
 
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
+import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
@@ -26,10 +29,21 @@ public class MrakopediaApiWorker {
 
     private MrakopediaAPI getMrakopediaAPI() {
         if (mrakopediaAPI == null) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            // set your desired log level
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            // add your other interceptors …
+
+            // add logging as last interceptor
+            httpClient.interceptors().add(logging);  // <-- this is the important line!
+
             Retrofit retrofit = new Retrofit.Builder()
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .baseUrl("https://mrakopedia.ru/w/")
+                    .client(httpClient.build())
                     .build();
 
             mrakopediaAPI = retrofit.create(MrakopediaAPI.class);
@@ -48,5 +62,9 @@ public class MrakopediaApiWorker {
 
     public Observable<PageSummaryResult> getPageSummary(String pageTitle) {
         return getMrakopediaAPI().getPageContent(pageTitle);
+    }
+
+    public Observable<CategoryDescription> getCategoryDescription(String categoryTitle) {
+        return getMrakopediaAPI().getCategoryDescription("Категория:" + categoryTitle);
     }
 }

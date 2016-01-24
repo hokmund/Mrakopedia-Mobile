@@ -9,7 +9,10 @@
     android:id="@+id/wrapper"
     android:background="@color/parody_color"
     android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+    android:paddingBottom="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    >
 
     <ImageView
         android:layout_width="40dp"
