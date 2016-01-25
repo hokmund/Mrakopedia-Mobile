@@ -50,6 +50,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import carbon.widget.ProgressBar;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -67,6 +68,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
     RecyclerView recyclerView;
     @Bind(R.id.error_text_view)
     TextView errorTextView;
+    @Bind(R.id.loading_progress_bar)
+    ProgressBar loadingProgressBar;
 
     private CategoryMembersAdapter adapter;
     private ArrayList<Categorymembers> categorymembersArrayList;
@@ -200,67 +203,70 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         .map(new Func1<CategoryDescription, CategoryDescription>() {
                             @Override
                             public CategoryDescription call(CategoryDescription categoryDescription) {
-                                Document doc = Jsoup.parse(categoryDescription.getParse().getText().getText());
+                                if (categoryDescription.getParse() != null && categoryDescription.getParse().getText() != null && categoryDescription.getParse().getText().getText() != null) {
+                                    Document doc = Jsoup.parse(categoryDescription.getParse().getText().getText());
 
-                                Elements aTags = doc.select("a");
+                                    Elements aTags = doc.select("a");
 
-                                if (!aTags.isEmpty()) {
-                                    for (Element aTag : aTags) {
-                                        if (aTag.attr("abs:href").length() == 0) {
-                                            aTag.unwrap();
+                                    if (!aTags.isEmpty()) {
+                                        for (Element aTag : aTags) {
+                                            if (aTag.attr("abs:href").length() == 0) {
+                                                aTag.unwrap();
+                                            }
                                         }
                                     }
-                                }
 
-                                Elements editSections = doc.select("span.mw-editsection");
+                                    Elements editSections = doc.select("span.mw-editsection");
 
-                                if (!editSections.isEmpty()) {
-                                    editSections.remove();
-                                }
-
-                                Elements liTags = doc.select("li");
-
-                                if (!liTags.isEmpty()) {
-                                    for (Element liTag: liTags) {
-                                        liTag.tagName("p");
+                                    if (!editSections.isEmpty()) {
+                                        editSections.remove();
                                     }
-                                }
 
-                                Elements imgTags = doc.select("img");
+                                    Elements liTags = doc.select("li");
 
-                                if (!imgTags.isEmpty()) {
-                                    int index = 0;
-                                    for (Element imgTag : imgTags) {
-                                        imgTag.attr("iter_key", String.valueOf(index++) + imgTag.attr("src"));
-
-                                        String imgSrc = imgTag.attr("src");
-
-                                        if (imgSrc.contains("thumb/")) {
-                                            imgSrc = imgSrc.replace("thumb/", "");
-
-                                            if (imgSrc.contains(".jpg")) {
-                                                imgSrc = imgSrc.substring(0, imgSrc.indexOf(".jpg") + 4);
-                                            }
-
-                                            if (imgSrc.contains(".png")) {
-                                                imgSrc = imgSrc.substring(0, imgSrc.indexOf(".png") + 4);
-                                            }
-
-                                            if (imgSrc.contains(".jpeg")) {
-                                                imgSrc = imgSrc.substring(0, imgSrc.indexOf(".jpeg") + 5);
-                                            }
-                                            imgTag.attr("src", imgSrc);
+                                    if (!liTags.isEmpty()) {
+                                        for (Element liTag: liTags) {
+                                            liTag.tagName("p");
                                         }
                                     }
+
+                                    Elements imgTags = doc.select("img");
+
+                                    if (!imgTags.isEmpty()) {
+                                        int index = 0;
+                                        for (Element imgTag : imgTags) {
+                                            imgTag.attr("iter_key", String.valueOf(index++) + imgTag.attr("src"));
+
+                                            String imgSrc = imgTag.attr("src");
+
+                                            if (imgSrc.contains("thumb/")) {
+                                                imgSrc = imgSrc.replace("thumb/", "");
+
+                                                if (imgSrc.contains(".jpg")) {
+                                                    imgSrc = imgSrc.substring(0, imgSrc.indexOf(".jpg") + 4);
+                                                }
+
+                                                if (imgSrc.contains(".png")) {
+                                                    imgSrc = imgSrc.substring(0, imgSrc.indexOf(".png") + 4);
+                                                }
+
+                                                if (imgSrc.contains(".jpeg")) {
+                                                    imgSrc = imgSrc.substring(0, imgSrc.indexOf(".jpeg") + 5);
+                                                }
+                                                imgTag.attr("src", imgSrc);
+                                            }
+                                        }
+                                    }
+
+                                    String newText = doc.html();
+
+                                    if (newText.contains("Рейтинговая таблица всех историй")) {
+                                        newText = newText.substring(0, newText.indexOf("Рейтинговая таблица всех историй"));
+                                    }
+
+                                    categoryDescription.getParse().getText().setText(newText);
                                 }
 
-                                String newText = doc.html();
-
-                                if (newText.contains("Рейтинговая таблица всех историй")) {
-                                    newText = newText.substring(0, newText.indexOf("Рейтинговая таблица всех историй"));
-                                }
-
-                                categoryDescription.getParse().getText().setText(newText);
                                 return categoryDescription;
                             }
                         })
@@ -289,6 +295,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                 if (!NetworkUtils.isInternetAvailable(getActivity())) {
                                     errorTextView.setText(errorTextView.getText() + " " + getString(R.string.no_internet_text));
                                 }
+
+                                loadingProgressBar.setVisibility(View.GONE);
                             }
 
                             @Override
@@ -301,6 +309,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                                 recyclerView.setAnimation(animation);
                                 recyclerView.animate();
+
+                                loadingProgressBar.setVisibility(View.GONE);
                             }
                         });
 
@@ -308,6 +318,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
     }
 
     private void splitTextAndImages(CategoryDescription categoryDescription) {
+        if (categoryDescription.getParse() == null || categoryDescription.getParse().getText() == null || categoryDescription.getParse().getText().getText() == null) {
+            return;
+        }
+
         Document doc = Jsoup.parse(categoryDescription.getParse().getText().getText());
         doc.setBaseUri("https://mrakopedia.ru");
 
@@ -338,6 +352,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private static final int LIST_TYPE = 0;
         public static final int TEXT_TYPE = 1;
         public static final int IMAGE_TYPE = 2;
+        private static final int SEPARATOR_TYPE = 5;
 
         Context context;
 
@@ -354,6 +369,11 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         public void setDescriptionSections(ArrayList<TextSection> sections) {
             descriptionSections = sections;
+
+            if (!descriptionSections.isEmpty()) {
+                descriptionSections.add(new TextSection(SEPARATOR_TYPE, ""));
+            }
+
             notifyDataSetChanged();
             recyclerView.scrollToPosition(0);
         }
@@ -381,6 +401,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 case IMAGE_TYPE:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_image_view, parent, false);
                     return new ImageViewHolder(view);
+                case SEPARATOR_TYPE:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_members_separator, parent, false);
+                    return new SeparatorViewHolder(view);
                 default:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, parent, false);
                     return new ListItemViewHolder(view);
@@ -391,17 +414,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (position < descriptionSections.size()) {
                 if (holder.getItemViewType() == TEXT_TYPE) {
-                    Spannable span = (Spannable) Html.fromHtml(descriptionSections.get(position).getText().replaceAll("&nbsp",""), null, new HtmlTagHandler());
-                    for (int i = 0; i < span.length(); i++) {
-                        boolean emptynes = (Character.isWhitespace(span.charAt(i)) || span.charAt(i) == ';' || span.charAt(i) == ' ' || span.charAt(i) == '\n');
-
-                        if (emptynes) {
-                            Log.e("bla", i + " empty");
-                        } else {
-                            Log.e("bla", i + " not epmpty:" + span.charAt(i) + ":");
-                        }
-                    }
-
+                    Spannable span = (Spannable) Html.fromHtml(descriptionSections.get(position).getText().replaceAll("&nbsp", ""), null, new HtmlTagHandler());
                     span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                     ((TextViewHolder) holder).textView.setText(span);
                     ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
@@ -458,6 +471,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
             public ImageViewHolder(View view) {
                 super(view);
                 imageView = (ImageView)view.findViewById(R.id.image_view);
+            }
+        }
+
+        private class SeparatorViewHolder extends RecyclerView.ViewHolder {
+            public SeparatorViewHolder(View itemView) {
+                super(itemView);
             }
         }
     }

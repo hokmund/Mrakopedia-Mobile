@@ -6,6 +6,8 @@
     <color name="colorControlNormal">#e5e5e5</color>
     <color name="colorControlActivated">#e2e2e2</color>
     <color name="colorControlHighlight">#e4e4e4</color>
+
+    <color name="ripple_color">#333333</color>
     
     <color name="nsfw_color">#ffdddd</color>
     <color name="parody_color">#ccffcc</color>
