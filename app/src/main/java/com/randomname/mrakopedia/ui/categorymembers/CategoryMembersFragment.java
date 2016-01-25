@@ -69,7 +69,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
     @Bind(R.id.category_members_recycler_view)
     RecyclerView recyclerView;
     @Bind(R.id.error_text_view)
-    TextView errorTextView;
+    carbon.widget.TextView errorTextView;
     @Bind(R.id.loading_progress_bar)
     ProgressBar loadingProgressBar;
 
@@ -178,12 +178,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
-
-                                errorTextView.setVisibility(View.VISIBLE);
-
-                                if (!NetworkUtils.isInternetAvailable(getActivity())) {
-                                    errorTextView.setText(errorTextView.getText() + " " + getString(R.string.no_internet_text));
-                                }
                             }
 
                             @Override
@@ -216,6 +210,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
     }
 
     private void getCategoryDescription() {
+        loadingProgressBar.setVisibility(View.VISIBLE);
         Subscription getCategoryDescriptionSubscription =
                 MrakopediaApiWorker
                         .getInstance()
@@ -313,7 +308,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                 errorTextView.setVisibility(View.VISIBLE);
 
                                 if (!NetworkUtils.isInternetAvailable(getActivity())) {
-                                    errorTextView.setText(errorTextView.getText() + " " + getString(R.string.no_internet_text));
+                                    errorTextView.setText(getString(R.string.error_loading_category) + " " + getString(R.string.no_internet_text));
                                 }
 
                                 loadingProgressBar.setVisibility(View.GONE);

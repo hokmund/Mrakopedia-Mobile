@@ -9,14 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
 import com.randomname.mrakopedia.models.api.allcategories.Allcategories;
-import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
-import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
@@ -71,16 +68,16 @@ public class AllCategoriesFragment extends RxBaseFragment {
         recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(manager) {
             @Override
             public void onLoadMore(int current_page) {
-                loadCategoryMembers();
+                loadCategoryMembersViaNetwork();
             }
         });
 
-        loadCategoryMembers();
+        loadCategoryMembersViaNetwork();
 
         return view;
     }
 
-    private void loadCategoryMembers() {
+    private void loadCategoryMembersViaNetwork() {
         if (continueString == null) {
             return;
         }
@@ -112,6 +109,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
                             @Override
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
+                                e.printStackTrace();
                             }
 
                             @Override

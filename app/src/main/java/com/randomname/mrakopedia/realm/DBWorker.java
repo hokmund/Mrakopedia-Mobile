@@ -1,8 +1,5 @@
 package com.randomname.mrakopedia.realm;
 
-import android.content.Context;
-import android.util.Log;
-
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
@@ -10,10 +7,7 @@ import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.RealmResults;
 import rx.Observable;
-import rx.functions.Func1;
 
 /**
  * Created by vgrigoryev on 22.01.2016.
@@ -42,6 +36,7 @@ public class DBWorker {
 
             pageSummaryToSave.getTextSections().add(textSectionRealm);
         }
+
         realm.copyToRealmOrUpdate(pageSummaryToSave);
         realm.commitTransaction();
         realm.close();
@@ -56,13 +51,6 @@ public class DBWorker {
                 .findFirst()
                 .asObservable();
 
-        realm.close();
         return result;
-    }
-
-    public static void log() {
-        RealmResults<TextSectionRealm> result = Realm.getDefaultInstance().where(TextSectionRealm.class).findAll();
-
-        Log.e("bla", result.size() + "");
     }
 }

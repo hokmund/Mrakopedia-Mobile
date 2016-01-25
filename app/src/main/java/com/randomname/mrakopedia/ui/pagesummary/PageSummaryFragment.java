@@ -53,13 +53,15 @@ public class PageSummaryFragment extends RxBaseFragment {
     private static final String TAG = "PageSummaryFragment";
     private static final String PAGE_TITLE_KEY = "pageTitleKey";
 
+    private static final String TEXT_SECTIONS_KEY = "textSectionsKey";
+
     private String pageTitle;
 
     @Bind(R.id.page_summary_recycler_view)
     RecyclerView recyclerView;
 
     @Bind(R.id.error_text_view)
-    TextView errorTextView;
+    carbon.widget.TextView errorTextView;
 
     @Bind(R.id.loading_progress_bar)
     ProgressBar loadingProgressBar;
@@ -86,7 +88,15 @@ public class PageSummaryFragment extends RxBaseFragment {
             pageTitle = getArguments().getString(PAGE_TITLE_KEY);
         }
 
-        textSections = new ArrayList<>();
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(TEXT_SECTIONS_KEY)) {
+                textSections = savedInstanceState.getParcelableArrayList(TEXT_SECTIONS_KEY);
+            } else {
+                textSections = new ArrayList<>();
+            }
+        } else {
+            textSections = new ArrayList<>();
+        }
     }
 
     @Override
@@ -125,16 +135,29 @@ public class PageSummaryFragment extends RxBaseFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
-        if (DBWorker.isPageSummarySaved("")) {
-            getArticleByRealm();
-        } else {
-            getArticleByNetwork();
+        if (textSections.isEmpty()) {
+            if (DBWorker.isPageSummarySaved("")) {
+                getArticleByRealm();
+            } else {
+                getArticleByNetwork();
+            }
         }
 
         return view;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (!textSections.isEmpty()) {
+            outState.putParcelableArrayList(TEXT_SECTIONS_KEY, textSections);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
     private void getArticleByNetwork() {
+        recyclerView.setVisibility(View.INVISIBLE);
+        loadingProgressBar.setVisibility(View.VISIBLE);
+
         Subscription subscription = MrakopediaApiWorker
                 .getInstance()
                 .getPageSummary(pageTitle)
