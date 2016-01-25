@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +51,12 @@ public class FullScreenPhotoFragmentHost extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        photosArrayList = getArguments().getStringArrayList(PHOTOS_ARRAY_KEY);
+        photosArrayList = new ArrayList<>();
+
+        if (getArguments().getStringArrayList(PHOTOS_ARRAY_KEY) != null) {
+            photosArrayList.addAll(getArguments().getStringArrayList(PHOTOS_ARRAY_KEY));
+        }
+
         position = getArguments().getInt(POSITION_KEY);
     }
 
@@ -61,8 +68,35 @@ public class FullScreenPhotoFragmentHost extends Fragment {
         adapter = new PhotosAdapter(getChildFragmentManager(), photosArrayList);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                setNewTitle(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        setNewTitle(position);
         return view;
+    }
+
+    private void setNewTitle(int position) {
+        if (photosArrayList.size() > 1) {
+            try {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle((position + 1) + " фото из " + photosArrayList.size());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private class PhotosAdapter extends FragmentPagerAdapter {

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import carbon.widget.ProgressBar;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -58,6 +59,9 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     @Bind(R.id.error_text_view)
     TextView errorTextView;
+
+    @Bind(R.id.loading_progress_bar)
+    ProgressBar loadingProgressBar;
 
     private ArrayList<TextSection> textSections;
     private PageSummaryAdapter adapter;
@@ -291,12 +295,16 @@ public class PageSummaryFragment extends RxBaseFragment {
                         if (!NetworkUtils.isInternetAvailable(getActivity())) {
                             errorTextView.setText(errorTextView.getText() + ", " + getString(R.string.no_internet_text));
                         }
+
+                        loadingProgressBar.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onNext(TextSection section) {
                         textSections.add(section);
                         adapter.notifyItemInserted(textSections.indexOf(section));
+
+                        loadingProgressBar.setVisibility(View.GONE);
                     }
                 });
         bindToLifecycle(subscription);
@@ -332,6 +340,8 @@ public class PageSummaryFragment extends RxBaseFragment {
                     public void onNext(TextSection section) {
                         textSections.add(section);
                         adapter.notifyItemInserted(textSections.indexOf(section));
+
+                        loadingProgressBar.setVisibility(View.GONE);
                     }
                 });
 
