@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
@@ -284,6 +285,15 @@ public class PageSummaryFragment extends RxBaseFragment {
                 .subscribe(new Subscriber<TextSection>() {
                     @Override
                     public void onCompleted() {
+                        recyclerView.setVisibility(View.VISIBLE);
+
+                        AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                        animation.setDuration(300);
+
+                        recyclerView.setAnimation(animation);
+                        recyclerView.animate();
+
+                        loadingProgressBar.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -303,8 +313,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                     public void onNext(TextSection section) {
                         textSections.add(section);
                         adapter.notifyItemInserted(textSections.indexOf(section));
-
-                        loadingProgressBar.setVisibility(View.GONE);
                     }
                 });
         bindToLifecycle(subscription);
@@ -327,6 +335,15 @@ public class PageSummaryFragment extends RxBaseFragment {
                 .subscribe(new Subscriber<TextSection>() {
                     @Override
                     public void onCompleted() {
+                        recyclerView.setVisibility(View.VISIBLE);
+
+                        AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                        animation.setDuration(300);
+
+                        recyclerView.setAnimation(animation);
+                        recyclerView.animate();
+
+                        loadingProgressBar.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -340,8 +357,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                     public void onNext(TextSection section) {
                         textSections.add(section);
                         adapter.notifyItemInserted(textSections.indexOf(section));
-
-                        loadingProgressBar.setVisibility(View.GONE);
                     }
                 });
 

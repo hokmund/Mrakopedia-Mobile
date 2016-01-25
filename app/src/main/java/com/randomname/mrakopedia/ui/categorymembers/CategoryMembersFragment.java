@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
+import com.randomname.mrakopedia.models.api.allcategories.Allcategories;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
@@ -35,6 +36,7 @@ import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
+import com.randomname.mrakopedia.utils.Utils;
 import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
@@ -130,6 +132,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
         });
 
         loadCategoryMembers();
+        getCategoryDescription();
 
         return view;
     }
@@ -138,11 +141,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
         if (continueString == null) {
             return;
         }
-
+        String continueStringSaved = continueString;
+        continueString = null;
         Subscription getCategoryMembersSubscription =
                 MrakopediaApiWorker
                         .getInstance()
-                        .getCategoryMembers("Категория:" + categoryTitle, continueString)
+                        .getCategoryMembers("Категория:" + categoryTitle, continueStringSaved)
                         .map(new Func1<CategoryMembersResult, CategoryMembersResult>() {
                             @Override
                             public CategoryMembersResult call(CategoryMembersResult categoryMembersResult) {
@@ -190,12 +194,28 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                     continueString = null;
                                 }
 
-                                categorymembersArrayList.addAll(Arrays.asList(categoryMembersResult.getQuery().getCategorymembers()));
-                                adapter.notifyDataSetChanged();
+
+                                for (Categorymembers category : categoryMembersResult.getQuery().getCategorymembers()) {
+                                    boolean toSkip = false;
+
+                                    for (String banString : Utils.pagesBanList) {
+                                        if (category.getTitle().contains(banString)) {
+                                            toSkip = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (!toSkip) {
+                                        categorymembersArrayList.add(category);
+                                        adapter.notifyItemInserted(categorymembersArrayList.indexOf(category));
+                                    }
+                                }
                             }
                         });
         bindToLifecycle(getCategoryMembersSubscription);
+    }
 
+    private void getCategoryDescription() {
         Subscription getCategoryDescriptionSubscription =
                 MrakopediaApiWorker
                         .getInstance()

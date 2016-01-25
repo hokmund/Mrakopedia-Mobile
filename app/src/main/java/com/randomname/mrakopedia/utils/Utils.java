@@ -29,5 +29,10 @@ public class Utils {
                 "Страницы с",
                 "Тян не нужны",
                 "Шаблоны"
-            };
+        };
+
+        public static String[] pagesBanList = {
+                "Файл:",
+                "Участник:"
+        };
 }
