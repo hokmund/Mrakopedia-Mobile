@@ -1,5 +1,7 @@
 package com.randomname.mrakopedia.utils;
 
+import android.util.Log;
+
 /**
  * Created by vgrigoryev on 20.01.2016.
  */
@@ -18,7 +20,7 @@ public class StringUtils {
         int i = source.length();
 
         // loop back to the first non-whitespace character
-        while(--i >= 0 && Character.isWhitespace(source.charAt(i))) {
+        while(--i >= 0 && (Character.isWhitespace(source.charAt(i)) || source.charAt(i) == ';' || source.charAt(i) == ' ' || source.charAt(i) == '\n')) {
         }
 
         return source.subSequence(0, i+1);

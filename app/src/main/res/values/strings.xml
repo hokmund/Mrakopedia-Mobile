@@ -8,6 +8,7 @@
     <string name="in_this_category">в этой категории</string>
 
     <string name="error_loading_article">Не удалось загрузить статью</string>
+    <string name="error_loading_category">Не удалось загрузить категорию</string>
     <string name="no_internet_text">отсутствует подключение к интернету.</string>
 
     <string name="nsfw_description">Градус шок-контента в этой истории зашкаливает! Вы предупреждены.</string>

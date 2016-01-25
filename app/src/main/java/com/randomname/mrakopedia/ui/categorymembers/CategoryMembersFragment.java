@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
+import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
 import com.squareup.picasso.Picasso;
 
@@ -63,6 +65,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     @Bind(R.id.category_members_recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.error_text_view)
+    TextView errorTextView;
 
     private CategoryMembersAdapter adapter;
     private ArrayList<Categorymembers> categorymembersArrayList;
@@ -167,6 +171,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
+
+                                errorTextView.setVisibility(View.VISIBLE);
+
+                                if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                    errorTextView.setText(errorTextView.getText() + " " + getString(R.string.no_internet_text));
+                                }
                             }
 
                             @Override
@@ -177,10 +187,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                     continueString = null;
                                 }
 
-                                for (Categorymembers categorymember : categoryMembersResult.getQuery().getCategorymembers()) {
-                                    categorymembersArrayList.add(categorymember);
-                                    adapter.notifyItemInserted(categorymembersArrayList.size());
-                                }
+                                categorymembersArrayList.addAll(Arrays.asList(categoryMembersResult.getQuery().getCategorymembers()));
+                                adapter.notifyDataSetChanged();
                             }
                         });
         bindToLifecycle(getCategoryMembersSubscription);
@@ -276,11 +284,23 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
+                                errorTextView.setVisibility(View.VISIBLE);
+
+                                if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                    errorTextView.setText(errorTextView.getText() + " " + getString(R.string.no_internet_text));
+                                }
                             }
 
                             @Override
                             public void onNext(CategoryDescription categoryDescription) {
                                 adapter.setDescriptionSections(categoryDescription.getTextSections());
+                                recyclerView.setVisibility(View.VISIBLE);
+
+                                AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                                animation.setDuration(300);
+
+                                recyclerView.setAnimation(animation);
+                                recyclerView.animate();
                             }
                         });
 
@@ -334,6 +354,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         public void setDescriptionSections(ArrayList<TextSection> sections) {
             descriptionSections = sections;
+            notifyDataSetChanged();
             recyclerView.scrollToPosition(0);
         }
 
@@ -370,7 +391,17 @@ public class CategoryMembersFragment extends RxBaseFragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (position < descriptionSections.size()) {
                 if (holder.getItemViewType() == TEXT_TYPE) {
-                    Spannable span = (Spannable) Html.fromHtml(descriptionSections.get(position).getText(), null, new HtmlTagHandler());
+                    Spannable span = (Spannable) Html.fromHtml(descriptionSections.get(position).getText().replaceAll("&nbsp",""), null, new HtmlTagHandler());
+                    for (int i = 0; i < span.length(); i++) {
+                        boolean emptynes = (Character.isWhitespace(span.charAt(i)) || span.charAt(i) == ';' || span.charAt(i) == ' ' || span.charAt(i) == '\n');
+
+                        if (emptynes) {
+                            Log.e("bla", i + " empty");
+                        } else {
+                            Log.e("bla", i + " not epmpty:" + span.charAt(i) + ":");
+                        }
+                    }
+
                     span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                     ((TextViewHolder) holder).textView.setText(span);
                     ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
