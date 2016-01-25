@@ -48,11 +48,16 @@ public class DBWorker {
     }
 
     public static Observable<PageSummaryRealm> getPageSummary(String title) {
-        return Realm.getDefaultInstance()
+        Realm realm = Realm.getDefaultInstance();
+
+        Observable<PageSummaryRealm> result = realm
                 .where(PageSummaryRealm.class)
                 .equalTo("pageTitle", title)
                 .findFirst()
                 .asObservable();
+
+        realm.close();
+        return result;
     }
 
     public static void log() {

@@ -11,6 +11,8 @@
     <string name="error_loading_category">Не удалось загрузить категорию</string>
     <string name="no_internet_text">отсутствует подключение к интернету.</string>
 
+    <string name="press_back_again_to_exit">Нажмите еще раз для выхода</string>
+
     <string name="nsfw_description">Градус шок-контента в этой истории зашкаливает! Вы предупреждены.</string>
     <string name="anomaly_description">Отдельные материалы этой статьи могут оказать аномальное воздействие, за последствия которого мы ответственности не несём!</string>
     <string name="parody_description">Это пародия на другую историю.</string>

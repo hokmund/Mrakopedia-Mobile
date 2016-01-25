@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
@@ -15,6 +16,9 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
+
+    private static final int TIME_INTERVAL = 1000; // # milliseconds, desired time passed between two back presses.
+    private long mBackPressed;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -30,6 +34,19 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportFragmentManager().getFragments() == null) {
             setAllCategoriesFragment();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed();
+            return;
+        } else {
+            Toast.makeText(this, R.string.press_back_again_to_exit, Toast.LENGTH_SHORT).show();
+        }
+
+        mBackPressed = System.currentTimeMillis();
     }
 
     private void initToolbar() {
