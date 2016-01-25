@@ -30,6 +30,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -100,8 +101,18 @@ public class PageSummaryFragment extends RxBaseFragment {
             @Override
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
+
+                ArrayList<String> imageArray = new ArrayList<>();
+
+                for (TextSection section : textSections) {
+                    if (section.getType() == TextSection.IMAGE_TYPE) {
+                        imageArray.add(section.getText());
+                    }
+                }
+
                 Intent intent = new Intent(getActivity(), FullScreentFotoActivity.class);
-                intent.putExtra(FullScreentFotoActivity.IMAGE_LINK_KEY, textSections.get(position).getText());
+                intent.putExtra(FullScreentFotoActivity.IMAGE_ARRAY_KEY, imageArray);
+                intent.putExtra(FullScreentFotoActivity.SELECTED_IMAGE_KEY, imageArray.indexOf(textSections.get(position).getText()));
                 startActivity(intent);
             }
         });

@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.randomname.mrakopedia.ui.views.TouchImageView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/full_screen_photo"
-        android:background="#000000"
-        />
+        android:id="@+id/main_frame"
+        >
+
+    </FrameLayout>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
