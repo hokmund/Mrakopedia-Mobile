@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Observable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -143,7 +144,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_page_summary, menu);
+        inflater.inflate(R.menu.menu_category_members, menu);
 
         ((CategoryMembersActivity)getActivity()).setSearchMenuItem(menu.findItem(R.id.action_search));
 
@@ -159,6 +160,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void setFilter(String filter) {
+        adapter.setFilter(filter);
     }
 
     private void loadCategoryMembers() {
@@ -184,7 +189,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                         continue;
                                     }
 
-                                    categoryMember.setIsViewed(DBWorker.getPageIsRead(categoryMember.getTitle()));
+                                    categoryMember.setIsViewed(false);
                                 }
                                 categoryMembersResult.getQuery().setCategorymembers(categoryMembers.toArray(new Categorymembers[categoryMembers.size()]));
                                 return categoryMembersResult;
@@ -208,8 +213,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             public void onNext(CategoryMembersResult categoryMembersResult) {
                                 if (categoryMembersResult.getmContinue() != null) {
                                     continueString = categoryMembersResult.getmContinue().getCmcontinue();
+                                    loadCategoryMembers();
                                 } else {
                                     continueString = null;
+                                    markPagesAsRead();
                                 }
 
 
@@ -225,11 +232,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                                     if (!toSkip) {
                                         categorymembersArrayList.add(category);
+                                        adapter.notifyItemInserted(categorymembersArrayList.indexOf(category) + adapter.getDescriptionCount());
                                     }
                                 }
-                                adapter.notifyDataSetChanged();
-                                recyclerView.scrollToPosition(0);
-                                loadCategoryMembers();
                             }
                         });
         bindToLifecycle(getCategoryMembersSubscription);
@@ -266,7 +271,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                     Elements liTags = doc.select("li");
 
                                     if (!liTags.isEmpty()) {
-                                        for (Element liTag: liTags) {
+                                        for (Element liTag : liTags) {
                                             liTag.tagName("p");
                                         }
                                     }
@@ -358,6 +363,50 @@ public class CategoryMembersFragment extends RxBaseFragment {
         bindToLifecycle(getCategoryDescriptionSubscription);
     }
 
+    private void markPagesAsRead() {
+        Subscription subscription =
+                rx.Observable.from(DBWorker.getReadPages())
+                        .map(new Func1<String, Integer>() {
+                            @Override
+                            public Integer call(String s) {
+                                Integer result = -1;
+
+                                for (int i = 0; i < categorymembersArrayList.size(); i++) {
+                                    if (categorymembersArrayList.get(i).getTitle().equals(s)) {
+                                        result = i;
+                                        break;
+                                    }
+                                }
+
+                                return result;
+                            }
+                        })
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<Integer>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, e.getMessage());
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onNext(Integer integer) {
+                                if (integer >= 0) {
+                                    categorymembersArrayList.get(integer).setIsViewed(true);
+                                    adapter.notifyItemChanged(integer + adapter.getDescriptionCount());
+                                }
+                            }
+                        });
+
+        bindToLifecycle(subscription);
+    }
+
     private void splitTextAndImages(CategoryDescription categoryDescription) {
         if (categoryDescription.getParse() == null || categoryDescription.getParse().getText() == null || categoryDescription.getParse().getText().getText() == null) {
             return;
@@ -395,17 +444,38 @@ public class CategoryMembersFragment extends RxBaseFragment {
         public static final int IMAGE_TYPE = 2;
         private static final int SEPARATOR_TYPE = 5;
 
-        Context context;
+        private Context context;
+        private String filter = "";
 
-        ArrayList<Categorymembers> categorymembersArrayList;
-        View.OnClickListener onClickListener;
-        ArrayList<TextSection> descriptionSections;
+        private ArrayList<Categorymembers> categorymembersArrayList;
+        private ArrayList<Categorymembers> filteredArray;
+
+        private View.OnClickListener onClickListener;
+        private ArrayList<TextSection> descriptionSections;
+
+        public void setFilter(String filter) {
+            this.filter = filter;
+
+            filteredArray.clear();
+
+            for (Categorymembers categorymember : categorymembersArrayList) {
+                if (categorymember.getTitle().contains(filter)) {
+                    filteredArray.add(categorymember);
+                }
+            }
+            try {
+                notifyDataSetChanged();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         public CategoryMembersAdapter(Context context, ArrayList<Categorymembers> categorymembers, View.OnClickListener onClickListener) {
             this.context = context;
             categorymembersArrayList = categorymembers;
             this.onClickListener = onClickListener;
             descriptionSections = new ArrayList<>();
+            filteredArray = new ArrayList<>();
         }
 
         public void setDescriptionSections(ArrayList<TextSection> sections) {
@@ -469,9 +539,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
             position -= descriptionSections.size();
 
-            ((ListItemViewHolder)holder).titleTextView.setText(categorymembersArrayList.get(position).getTitle());
+            ((ListItemViewHolder)holder).titleTextView.setText(filteredArray.get(position).getTitle());
 
-            if (categorymembersArrayList.get(position).getIsViewed()) {
+            if (filteredArray.get(position).getIsViewed()) {
                 ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
             } else {
                 ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
@@ -480,7 +550,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         @Override
         public int getItemCount() {
-            return categorymembersArrayList.size() + descriptionSections.size();
+            setFilter(filter);
+            return filteredArray.size() + descriptionSections.size();
         }
 
         public int getDescriptionCount() {

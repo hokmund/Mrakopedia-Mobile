@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.categorymembers;
 
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -7,8 +8,12 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
 
@@ -24,6 +29,8 @@ public class CategoryMembersActivity extends AppCompatActivity {
     Toolbar toolbar;
     @Bind(R.id.search_view)
     MaterialSearchView searchView;
+
+    private CategoryMembersFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,13 +49,13 @@ public class CategoryMembersActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
+                fragment.setFilter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
+                fragment.setFilter(newText);
                 return false;
             }
         });
@@ -92,10 +99,11 @@ public class CategoryMembersActivity extends AppCompatActivity {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(CATEGORY_FRAGMENT_TAG);
 
         if (frag != null) {
+            fragment = (CategoryMembersFragment) frag;
             return;
         }
 
-        CategoryMembersFragment fragment = CategoryMembersFragment.getInstance(categoryTitle);
+        fragment = CategoryMembersFragment.getInstance(categoryTitle);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame, fragment, CATEGORY_FRAGMENT_TAG);
         fragmentTransaction.commit();

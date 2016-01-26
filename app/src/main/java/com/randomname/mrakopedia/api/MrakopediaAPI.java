@@ -14,7 +14,7 @@ import rx.Observable;
  */
 public interface MrakopediaAPI {
 
-    @GET("api.php?action=query&cmprop=ids|title|type&continue=&format=json&list=categorymembers&cmlimit=100")
+    @GET("api.php?action=query&cmprop=ids|title|type&continue=&format=json&list=categorymembers&cmlimit=500")
     Observable<CategoryMembersResult> getCategoryMembers(
             @Query("cmtitle") String categoryTitle,
             @Query("cmcontinue") String continueString

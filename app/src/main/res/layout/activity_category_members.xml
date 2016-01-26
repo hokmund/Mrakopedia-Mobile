@@ -6,23 +6,22 @@
     android:orientation="vertical"
     >
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/toolbar_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
+            android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
-            android:minHeight="?attr/actionBarSize"
             style="@style/Widget.MyApp.ActionBar"
             />
         <com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </FrameLayout>
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

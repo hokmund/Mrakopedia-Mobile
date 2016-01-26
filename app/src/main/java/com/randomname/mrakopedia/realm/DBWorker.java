@@ -5,8 +5,11 @@ import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 
+import java.util.ArrayList;
+
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import rx.Observable;
 
 /**
@@ -96,6 +99,19 @@ public class DBWorker {
         realm.close();
 
         return status;
+    }
+
+    public static ArrayList<String> getReadPages() {
+        Realm realm = Realm.getDefaultInstance();
+        ArrayList<String> result = new ArrayList<>();
+        RealmResults<PageSummaryRealm> pageSummaryRealm = realm.where(PageSummaryRealm.class).equalTo("isRead", true).findAll();
+
+        for (PageSummaryRealm pageSummary : pageSummaryRealm) {
+            result.add(pageSummary.getPageTitle());
+        }
+
+        realm.close();
+        return result;
     }
 
     public static Observable<PageSummaryRealm> getPageSummary(String title) {
