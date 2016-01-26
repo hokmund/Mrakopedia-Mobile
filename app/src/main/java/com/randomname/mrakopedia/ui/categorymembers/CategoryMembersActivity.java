@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -21,6 +22,8 @@ public class CategoryMembersActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.search_view)
+    MaterialSearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +38,33 @@ public class CategoryMembersActivity extends AppCompatActivity {
         }
 
         initToolbar(categoryTitle);
+
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                return false;
+            }
+        });
+    }
+
+    public void setSearchMenuItem(MenuItem item) {
+        searchView.setMenuItem(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (searchView.isSearchOpen()) {
+            searchView.closeSearch();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override

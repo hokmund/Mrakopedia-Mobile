@@ -13,4 +13,6 @@
     <color name="parody_color">#ccffcc</color>
     <color name="save_color">#e9e9e9</color>
     <color name="favorited_color">#dfdfff</color>
+
+    <color name="search_layover_bg">#50000000</color>
 </resources>

@@ -14,6 +14,8 @@ import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -106,6 +108,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 categoryTitle = title;
             }
         }
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -135,6 +139,15 @@ public class CategoryMembersFragment extends RxBaseFragment {
         getCategoryDescription();
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_page_summary, menu);
+
+        ((CategoryMembersActivity)getActivity()).setSearchMenuItem(menu.findItem(R.id.action_search));
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
