@@ -124,12 +124,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
-        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(manager) {
-            @Override
-            public void onLoadMore(int current_page) {
-                loadCategoryMembers();
-            }
-        });
 
         loadCategoryMembers();
         getCategoryDescription();
@@ -204,6 +198,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                         adapter.notifyItemInserted(categorymembersArrayList.indexOf(category));
                                     }
                                 }
+
+                                loadCategoryMembers();
                             }
                         });
         bindToLifecycle(getCategoryMembersSubscription);

@@ -22,8 +22,7 @@
         </activity>
         <activity
             android:name=".ui.categorymembers.CategoryMembersActivity"
-            android:label="@string/title_activity_category_members"
-            android:launchMode="singleTask" />
+            android:label="@string/title_activity_category_members" />
         <activity android:name=".ui.pagesummary.PageSummaryActivity" />
         <activity android:name=".ui.fullscreenfoto.FullScreentFotoActivity"></activity>
     </application>

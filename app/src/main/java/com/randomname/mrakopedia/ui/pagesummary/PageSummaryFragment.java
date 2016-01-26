@@ -11,9 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
+import com.randomname.mrakopedia.models.api.pagesummary.Categories;
+import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.Links;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.Sections;
@@ -23,8 +26,10 @@ import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
+import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.utils.NetworkUtils;
+import com.randomname.mrakopedia.utils.Utils;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -128,6 +133,13 @@ public class PageSummaryFragment extends RxBaseFragment {
                 Intent intent = new Intent(getActivity(), FullScreentFotoActivity.class);
                 intent.putExtra(FullScreentFotoActivity.IMAGE_ARRAY_KEY, imageArray);
                 intent.putExtra(FullScreentFotoActivity.SELECTED_IMAGE_KEY, imageArray.indexOf(textSections.get(position).getText()));
+                startActivity(intent);
+            }
+        }, new OnCategoryClickListener() {
+            @Override
+            public void OnCategoryClick(String categoryTitle) {
+                Intent intent = new Intent(getActivity(), CategoryMembersActivity.class);
+                intent.putExtra(CategoryMembersActivity.CATEGORY_NAME_EXTRA, categoryTitle);
                 startActivity(intent);
             }
         });
@@ -288,6 +300,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                         addHeader(pageSummaryResult);
                         addTemplates(pageSummaryResult);
                         addLinks(pageSummaryResult);
+                        addCategories(pageSummaryResult);
                         return pageSummaryResult;
                     }
                 })
@@ -471,17 +484,20 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     private void addLinks(PageSummaryResult pageSummaryResult) {
 
-        if (pageSummaryResult.getParse().getLinks().length > 0) {
-            pageSummaryResult.getParse()
-                    .getTextSections()
-                    .add(new TextSection(
-                            TextSection.TEXT_TYPE,
-                            "<h2>Смотри также</h2>"));
-        }
+        boolean headerAdded = false;
 
         for (Links link : pageSummaryResult.getParse().getLinks()) {
             if (link.getTitle().contains("Шаблон") || link.getTitle().contains("Категория")) {
                 continue;
+            }
+
+            if (!headerAdded) {
+                pageSummaryResult.getParse()
+                        .getTextSections()
+                        .add(new TextSection(
+                                TextSection.TEXT_TYPE,
+                                "<h2>Смотри также</h2>"));
+                headerAdded = true;
             }
 
             pageSummaryResult.getParse()
@@ -489,6 +505,31 @@ public class PageSummaryFragment extends RxBaseFragment {
                     .add(new TextSection(
                             TextSection.LINK_TYPE,
                             link.getTitle()));
+        }
+    }
+
+    private void addCategories(PageSummaryResult pageSummaryResult) {
+        CategoriesTextSection categoryWrapper = new CategoriesTextSection();
+
+        for (Categories category : pageSummaryResult.getParse().getCategories()) {
+            boolean toSkip = false;
+            category.setTitle(category.getTitle().replaceAll("_", " "));
+
+            for (String banString : Utils.categoriesBanList) {
+                if (category.getTitle().contains(banString)) {
+                    toSkip = true;
+                    break;
+                }
+            }
+
+            if (!toSkip) {
+                categoryWrapper.addCategory(category.getTitle());
+            }
+        }
+
+        if (!categoryWrapper.getCategoriesArrayList().isEmpty()) {
+            pageSummaryResult.getParse()
+                    .getTextSections().add(categoryWrapper);
         }
     }
 }

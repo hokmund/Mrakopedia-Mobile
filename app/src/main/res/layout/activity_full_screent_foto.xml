@@ -19,8 +19,7 @@
         style="@style/Widget.MyApp.ActionBar"
         android:elevation="4dp"
         android:transitionName="actionBar"
-        android:background="#000000"
-        android:alpha="0.5"
+        android:background="#80000000"
         />
 
 </RelativeLayout>

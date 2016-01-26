@@ -20,7 +20,7 @@ public class Parse {
 
     private Links[] links;
 
-    private String[] properties;
+    private Properties[] properties;
 
     private String title;
 
@@ -98,12 +98,12 @@ public class Parse {
         this.links = links;
     }
 
-    public String[] getProperties ()
+    public Properties[] getProperties ()
     {
         return properties;
     }
 
-    public void setProperties (String[] properties)
+    public void setProperties (Properties[] properties)
     {
         this.properties = properties;
     }

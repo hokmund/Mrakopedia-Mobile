@@ -1,25 +1,23 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
 import android.content.Context;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.utils.StringUtils;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -33,12 +31,14 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private Context context;
     private View.OnClickListener linkClickListener;
     private View.OnClickListener imageClickListener;
+    private OnCategoryClickListener categoryClickListener;
 
-    public PageSummaryAdapter(ArrayList<TextSection> sections, Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener) {
+    public PageSummaryAdapter(ArrayList<TextSection> sections, Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener, OnCategoryClickListener categoryClickListener) {
         this.sections = sections;
         this.context = context;
         this.linkClickListener = linkClickListener;
         this.imageClickListener = imageClickListener;
+        this.categoryClickListener = categoryClickListener;
     }
 
     @Override
@@ -64,6 +64,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
                 view.setOnClickListener(linkClickListener);
                 return new TextViewHolder(view);
+            case TextSection.CATEGORY_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_categories_view_holder, parent, false);
+                return new CategoriesViewHolder(view);
             default:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
                 return new TextViewHolder(view);
@@ -89,6 +92,14 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
             case TextSection.LINK_TYPE:
                 ((TextViewHolder) holder).textView.setText(Html.fromHtml("<a href='dummy'>" + sections.get(position).getText() + "</a>"));
+                break;
+            case TextSection.CATEGORY_TYPE:
+                CategoriesViewHolder categoryViewHolder = (CategoriesViewHolder)holder;
+                CategoriesTextSection categories = (CategoriesTextSection)sections.get(position);
+
+                categoryViewHolder.categoryTitle.setText(categories.getText());
+                categoryViewHolder.adapter.setData(categories.getCategoriesArrayList());
+
                 break;
             default:
         }
@@ -188,6 +199,72 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             imageView = (ImageView)view.findViewById(R.id.image_view);
             textView = (TextView)view.findViewById(R.id.text_view);
             wrapper = (RelativeLayout)view.findViewById(R.id.wrapper);
+        }
+    }
+
+    private class CategoriesViewHolder extends RecyclerView.ViewHolder {
+        protected TextView categoryTitle;
+        protected RecyclerView categoriesRecyclerView;
+        protected CategoryHolderAdapter adapter;
+
+        public CategoriesViewHolder(View view) {
+            super(view);
+            categoryTitle = (TextView)view.findViewById(R.id.categories_title);
+            categoriesRecyclerView = (RecyclerView)view.findViewById(R.id.categories_recycler_view);
+            categoriesRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+            adapter = new CategoryHolderAdapter(categoryClickListener);
+            categoriesRecyclerView.setAdapter(adapter);
+        }
+    }
+
+    private class CategoryHolderAdapter extends RecyclerView.Adapter<CategoryHolderAdapter.LinkViewHolder> {
+
+        private ArrayList<String> categoriesTitles;
+        private OnCategoryClickListener onCategoryClickListener;
+
+        public CategoryHolderAdapter(OnCategoryClickListener onCategoryClickListener) {
+            categoriesTitles = new ArrayList<>();
+            this.onCategoryClickListener = onCategoryClickListener;
+        }
+
+        public ArrayList<String> getData() {
+            return categoriesTitles;
+        }
+
+        public void setData(ArrayList<String> categoriesTitles) {
+            this.categoriesTitles = categoriesTitles;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public LinkViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_category_text_view, parent, false);
+            return new LinkViewHolder(view);
+        }
+
+        @Override
+        public int getItemCount() {
+            return categoriesTitles == null ? 0 : categoriesTitles.size();
+        }
+
+        @Override
+        public void onBindViewHolder(LinkViewHolder holder, final int position) {
+            holder.textView.setText(categoriesTitles.get(position));
+            holder.textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onCategoryClickListener.OnCategoryClick(categoriesTitles.get(position));
+                }
+            });
+        }
+
+        protected class LinkViewHolder extends RecyclerView.ViewHolder {
+            protected carbon.widget.TextView textView;
+
+            public LinkViewHolder(View itemView) {
+                super(itemView);
+                textView = (carbon.widget.TextView)itemView.findViewById(R.id.text_view);
+            }
         }
     }
 }

@@ -65,12 +65,6 @@ public class AllCategoriesFragment extends RxBaseFragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
-        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(manager) {
-            @Override
-            public void onLoadMore(int current_page) {
-                loadCategoryMembersViaNetwork();
-            }
-        });
 
         loadCategoryMembersViaNetwork();
 
@@ -135,6 +129,8 @@ public class AllCategoriesFragment extends RxBaseFragment {
                                         adapter.notifyItemInserted(resultArrayList.indexOf(category));
                                     }
                                 }
+
+                                loadCategoryMembersViaNetwork();
                             }
                         });
 

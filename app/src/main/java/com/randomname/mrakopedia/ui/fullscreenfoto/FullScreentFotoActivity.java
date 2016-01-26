@@ -1,15 +1,21 @@
 package com.randomname.mrakopedia.ui.fullscreenfoto;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.views.TouchImageView;
 import com.randomname.mrakopedia.utils.Utils;
@@ -27,6 +33,10 @@ public class FullScreentFotoActivity extends AppCompatActivity {
     public static String SELECTED_IMAGE_KEY = "selected_image_key";
 
     private static final String FULL_SCREEN_FRAGMENT_HOST = "full_screen_fragment_host";
+
+    private static final String TOOLBAR_IS_SHOWED_KEY = "toolbar_is_showed_key";
+
+    private boolean toolbarIsShowed;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -56,7 +66,36 @@ public class FullScreentFotoActivity extends AppCompatActivity {
             fragmentTransaction.commit();
         }
 
+        if (savedInstanceState != null) {
+            toolbarIsShowed = savedInstanceState.getBoolean(TOOLBAR_IS_SHOWED_KEY);
+        } else {
+            toolbarIsShowed = true;
+        }
+
         initToolbar();
+
+        if (!toolbarIsShowed) {
+            final ViewTreeObserver observer= toolbar.getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(toolbar, "translationY", -toolbar.getHeight());
+                    animation.setDuration(0).start();
+
+                    if (Build.VERSION.SDK_INT < 16) {
+                        toolbar.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    } else {
+                        toolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(TOOLBAR_IS_SHOWED_KEY, toolbarIsShowed);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -78,5 +117,27 @@ public class FullScreentFotoActivity extends AppCompatActivity {
         if (Utils.checkForLollipop()) {
             getWindow().setStatusBarColor(Color.BLACK);
         }
+    }
+
+    public void showHideToolbar() {
+        if (toolbarIsShowed) {
+            hideToolbar();
+            toolbarIsShowed = false;
+        } else {
+            showToolbar();
+            toolbarIsShowed = true;
+        }
+    }
+
+    private void hideToolbar() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(toolbar, "translationY", -toolbar.getHeight());
+        animator.setInterpolator(new AccelerateInterpolator(2));
+        animator.start();
+    }
+
+    private void showToolbar() {
+            ObjectAnimator animator = ObjectAnimator.ofFloat(toolbar, "translationY", 0);
+            animator.setInterpolator(new AccelerateInterpolator(2));
+            animator.start();
     }
 }

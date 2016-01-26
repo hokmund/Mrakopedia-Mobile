@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by vgrigoryev on 25.01.2016.
@@ -48,5 +49,10 @@ public class FullScreenPhotoFragment extends Fragment {
 
         Picasso.with(getActivity()).load(url).into(imageView);
         return view;
+    }
+
+    @OnClick(R.id.full_screen_photo)
+    public void onPhotoClick() {
+        ((FullScreentFotoActivity)getActivity()).showHideToolbar();
     }
 }
