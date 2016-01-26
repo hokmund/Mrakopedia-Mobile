@@ -14,6 +14,8 @@ public class PageSummaryRealm extends RealmObject {
     @PrimaryKey
     private String pageTitle;
     private RealmList<TextSectionRealm> textSections;
+    private boolean isFavorite;
+    private boolean isRead;
 
     public PageSummaryRealm() {
     }
@@ -32,5 +34,21 @@ public class PageSummaryRealm extends RealmObject {
 
     public void setTextSections(RealmList<TextSectionRealm> textSections) {
         this.textSections = textSections;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 }

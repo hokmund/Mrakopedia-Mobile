@@ -42,6 +42,60 @@ public class DBWorker {
         realm.close();
     }
 
+    public static void setPageFavoriteStatus(String pageTitle, boolean status) {
+        Realm realm = Realm.getDefaultInstance();
+        PageSummaryRealm pageSummaryRealm = realm.where(PageSummaryRealm.class).equalTo("pageTitle", pageTitle).findFirst();
+
+        realm.beginTransaction();
+        pageSummaryRealm.setIsFavorite(status);
+        realm.commitTransaction();
+
+        realm.close();
+    }
+
+    public static boolean getPageIsFavorite(String pageTitle) {
+        Realm realm = Realm.getDefaultInstance();
+        PageSummaryRealm pageSummaryRealm = realm.where(PageSummaryRealm.class).equalTo("pageTitle", pageTitle).findFirst();
+        boolean status;
+
+        if (pageSummaryRealm == null) {
+            status = false;
+        } else {
+            status = pageSummaryRealm.isFavorite();
+        }
+
+        realm.close();
+
+        return status;
+    }
+
+    public static void setPageReadStatus(String pageTitle, boolean status) {
+        Realm realm = Realm.getDefaultInstance();
+        PageSummaryRealm pageSummaryRealm = realm.where(PageSummaryRealm.class).equalTo("pageTitle", pageTitle).findFirst();
+
+        realm.beginTransaction();
+        pageSummaryRealm.setIsRead(status);
+        realm.commitTransaction();
+
+        realm.close();
+    }
+
+    public static boolean getPageIsRead(String pageTitle) {
+        Realm realm = Realm.getDefaultInstance();
+        PageSummaryRealm pageSummaryRealm = realm.where(PageSummaryRealm.class).equalTo("pageTitle", pageTitle).findFirst();
+        boolean status;
+
+        if (pageSummaryRealm == null) {
+            status = false;
+        } else {
+            status = pageSummaryRealm.isRead();
+        }
+
+        realm.close();
+
+        return status;
+    }
+
     public static Observable<PageSummaryRealm> getPageSummary(String title) {
         Realm realm = Realm.getDefaultInstance();
 

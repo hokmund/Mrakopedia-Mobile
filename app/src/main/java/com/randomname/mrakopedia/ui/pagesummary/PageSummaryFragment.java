@@ -7,6 +7,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -61,6 +64,7 @@ public class PageSummaryFragment extends RxBaseFragment {
     private static final String TEXT_SECTIONS_KEY = "textSectionsKey";
 
     private String pageTitle;
+    private boolean pageIsFavorite = false;
 
     @Bind(R.id.page_summary_recycler_view)
     RecyclerView recyclerView;
@@ -102,6 +106,9 @@ public class PageSummaryFragment extends RxBaseFragment {
         } else {
             textSections = new ArrayList<>();
         }
+
+        pageIsFavorite = DBWorker.getPageIsFavorite(pageTitle);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -156,6 +163,41 @@ public class PageSummaryFragment extends RxBaseFragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_page_summary, menu);
+
+        MenuItem favoriteItem = menu.findItem(R.id.action_favorite_page);
+        setMenuFavoriteStatus(favoriteItem);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_favorite_page:
+                pageIsFavorite = !pageIsFavorite;
+                DBWorker.setPageFavoriteStatus(pageTitle, pageIsFavorite);
+                setMenuFavoriteStatus(item);
+                return true;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setMenuFavoriteStatus(MenuItem favoriteItem) {
+        if (pageIsFavorite) {
+            favoriteItem.setIcon(R.drawable.ic_star_black_48dp);
+            favoriteItem.setTitle("Удалить из избранного");
+        } else {
+            favoriteItem.setIcon(R.drawable.ic_star_outline_black_48dp);
+            favoriteItem.setTitle("Добавить в избранное");
+        }
     }
 
     @Override
