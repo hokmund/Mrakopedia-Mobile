@@ -24,6 +24,8 @@ public class DBWorker {
 
         PageSummaryRealm pageSummaryToSave = new PageSummaryRealm();
         pageSummaryToSave.setPageTitle(pageSummaryResult.getParse().getTitle());
+        pageSummaryToSave.setIsFavorite(getPageIsFavorite(pageSummaryResult.getParse().getTitle()));
+        pageSummaryToSave.setIsRead(getPageIsRead(pageSummaryResult.getParse().getTitle()));
         pageSummaryToSave.setTextSections(new RealmList<TextSectionRealm>());
 
         TextSectionRealm textSectionRealm;

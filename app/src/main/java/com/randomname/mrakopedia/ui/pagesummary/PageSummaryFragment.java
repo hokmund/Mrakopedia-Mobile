@@ -65,6 +65,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     private String pageTitle;
     private boolean pageIsFavorite = false;
+    private boolean pageIsRead = false;
 
     @Bind(R.id.page_summary_recycler_view)
     RecyclerView recyclerView;
@@ -108,6 +109,7 @@ public class PageSummaryFragment extends RxBaseFragment {
         }
 
         pageIsFavorite = DBWorker.getPageIsFavorite(pageTitle);
+        pageIsRead = DBWorker.getPageIsRead(pageTitle);
         setHasOptionsMenu(true);
     }
 
@@ -167,10 +169,12 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_page_summary, menu);
+        if (!textSections.isEmpty()) {
+            inflater.inflate(R.menu.menu_page_summary, menu);
 
-        MenuItem favoriteItem = menu.findItem(R.id.action_favorite_page);
-        setMenuFavoriteStatus(favoriteItem);
+            setMenuFavoriteStatus(menu.findItem(R.id.action_favorite_page));
+            setMenuReadStatus(menu.findItem(R.id.action_read_page));
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -182,6 +186,11 @@ public class PageSummaryFragment extends RxBaseFragment {
                 pageIsFavorite = !pageIsFavorite;
                 DBWorker.setPageFavoriteStatus(pageTitle, pageIsFavorite);
                 setMenuFavoriteStatus(item);
+                return true;
+            case R.id.action_read_page:
+                pageIsRead = !pageIsRead;
+                DBWorker.setPageReadStatus(pageTitle, pageIsRead);
+                setMenuReadStatus(item);
                 return true;
             default:
                 break;
@@ -197,6 +206,16 @@ public class PageSummaryFragment extends RxBaseFragment {
         } else {
             favoriteItem.setIcon(R.drawable.ic_star_outline_black_48dp);
             favoriteItem.setTitle("Добавить в избранное");
+        }
+    }
+
+    private void setMenuReadStatus(MenuItem item) {
+        if (!pageIsRead) {
+            item.setIcon(R.drawable.ic_bookmark_black_48dp);
+            item.setTitle("Отметить как прочитанное");
+        } else {
+            item.setIcon(R.drawable.ic_bookmark_check_black_48dp);
+            item.setTitle("Отметить как не прочитанное");
         }
     }
 
@@ -372,6 +391,10 @@ public class PageSummaryFragment extends RxBaseFragment {
                         recyclerView.animate();
 
                         loadingProgressBar.setVisibility(View.GONE);
+
+                        pageIsRead = true;
+                        DBWorker.setPageReadStatus(pageTitle, pageIsRead);
+                        getActivity().invalidateOptionsMenu();
                     }
 
                     @Override
@@ -385,6 +408,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                         }
 
                         loadingProgressBar.setVisibility(View.GONE);
+                        getActivity().invalidateOptionsMenu();
                     }
 
                     @Override

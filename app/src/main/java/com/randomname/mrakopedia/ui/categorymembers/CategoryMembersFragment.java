@@ -29,6 +29,7 @@ import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.models.api.categorymembers.Continue;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
@@ -154,7 +155,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                         continue;
                                     }
 
-                                    categoryMember.setIsViewed(DBWorker.isPageSummarySaved(categoryMember.getTitle()));
+                                    categoryMember.setIsViewed(DBWorker.getPageIsRead(categoryMember.getTitle()));
                                 }
                                 categoryMembersResult.getQuery().setCategorymembers(categoryMembers.toArray(new Categorymembers[categoryMembers.size()]));
                                 return categoryMembersResult;
@@ -198,7 +199,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                         adapter.notifyItemInserted(categorymembersArrayList.indexOf(category));
                                     }
                                 }
-
+                                recyclerView.scrollToPosition(0);
                                 loadCategoryMembers();
                             }
                         });
