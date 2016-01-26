@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.categorymembers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -67,6 +68,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
     private static final String TAG = "categoryMembersFragment";
     private static final String CATEGORY_TITLE_KEY = "categoryTitleKey";
 
+    private static final int PAGE_SUMMARY_ACTIVITY_CODE = 11;
+
     @Bind(R.id.category_members_recycler_view)
     RecyclerView recyclerView;
     @Bind(R.id.error_text_view)
@@ -78,7 +81,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
     private ArrayList<Categorymembers> categorymembersArrayList;
     private String continueString = "";
     private String categoryTitle;
-
+    private int selectedPosition = 0;
 
     public CategoryMembersFragment() {}
 
@@ -116,9 +119,11 @@ public class CategoryMembersFragment extends RxBaseFragment {
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
                 position -= adapter.getDescriptionCount();
+                selectedPosition = position;
                 Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
                 intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, categorymembersArrayList.get(position).getTitle());
-                startActivity(intent);
+
+                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
 
@@ -130,6 +135,17 @@ public class CategoryMembersFragment extends RxBaseFragment {
         getCategoryDescription();
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
+            categorymembersArrayList.get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(categorymembersArrayList.get(selectedPosition).getTitle()));
+            adapter.notifyDataSetChanged();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void loadCategoryMembers() {
@@ -196,9 +212,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                                     if (!toSkip) {
                                         categorymembersArrayList.add(category);
-                                        adapter.notifyItemInserted(categorymembersArrayList.indexOf(category));
                                     }
                                 }
+                                adapter.notifyDataSetChanged();
                                 recyclerView.scrollToPosition(0);
                                 loadCategoryMembers();
                             }

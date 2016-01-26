@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -395,6 +396,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                         pageIsRead = true;
                         DBWorker.setPageReadStatus(pageTitle, pageIsRead);
                         getActivity().invalidateOptionsMenu();
+                        getActivity().setResult(Activity.RESULT_OK);
                     }
 
                     @Override
