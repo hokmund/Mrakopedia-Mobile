@@ -78,9 +78,11 @@ public class DBWorker {
         Realm realm = Realm.getDefaultInstance();
         PageSummaryRealm pageSummaryRealm = realm.where(PageSummaryRealm.class).equalTo("pageTitle", pageTitle).findFirst();
 
-        realm.beginTransaction();
-        pageSummaryRealm.setIsRead(status);
-        realm.commitTransaction();
+        if (pageSummaryRealm != null) {
+            realm.beginTransaction();
+            pageSummaryRealm.setIsRead(status);
+            realm.commitTransaction();
+        }
 
         realm.close();
     }

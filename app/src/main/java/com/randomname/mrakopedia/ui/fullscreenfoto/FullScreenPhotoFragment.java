@@ -53,6 +53,10 @@ public class FullScreenPhotoFragment extends Fragment {
 
     @OnClick(R.id.full_screen_photo)
     public void onPhotoClick() {
-        ((FullScreentFotoActivity)getActivity()).showHideToolbar();
+        try {
+            ((FullScreentFotoActivity)getActivity()).showHideToolbar();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

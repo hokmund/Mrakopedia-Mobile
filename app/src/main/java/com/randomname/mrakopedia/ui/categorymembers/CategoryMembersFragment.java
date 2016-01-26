@@ -124,9 +124,14 @@ public class CategoryMembersFragment extends RxBaseFragment {
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
                 position -= adapter.getDescriptionCount();
+
+                if (position < 0) {
+                    return;
+                }
+
                 selectedPosition = position;
                 Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, categorymembersArrayList.get(position).getTitle());
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getTitle());
 
                 startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
@@ -155,7 +160,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
-            categorymembersArrayList.get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(categorymembersArrayList.get(selectedPosition).getTitle()));
+            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
             adapter.notifyDataSetChanged();
         }
 
@@ -453,13 +458,17 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private View.OnClickListener onClickListener;
         private ArrayList<TextSection> descriptionSections;
 
+        public ArrayList<Categorymembers> getDisplayedData() {
+            return filteredArray;
+        }
+
         public void setFilter(String filter) {
             this.filter = filter;
 
             filteredArray.clear();
 
             for (Categorymembers categorymember : categorymembersArrayList) {
-                if (categorymember.getTitle().contains(filter)) {
+                if (categorymember.getTitle().toLowerCase().contains(filter.toLowerCase())) {
                     filteredArray.add(categorymember);
                 }
             }
