@@ -1,35 +1,26 @@
 package com.randomname.mrakopedia.ui.recentchanges;
 
-import android.content.Context;
-import android.graphics.Bitmap;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
-import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
-import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
 import com.randomname.mrakopedia.models.api.recentchanges.Recentchanges;
+import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
-import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
-import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
 import java.util.ArrayList;
@@ -50,10 +41,12 @@ import rx.schedulers.Schedulers;
 public class RecentChangesFragment extends RxBaseFragment {
 
     private static final String TAG = "Recent changes Fragment";
+    private static final int PAGE_SUMMARY_ACTIVITY_CODE = 11;
 
     private String continueString = "";
     private ArrayList<Recentchanges> recentChangesArrayList;
     private RecentChangesAdapter adapter;
+    private int selectedPosition = 0;
 
     @Bind(R.id.recent_changes_recycler_view)
     RecyclerView recyclerView;
@@ -75,7 +68,11 @@ public class RecentChangesFragment extends RxBaseFragment {
         adapter = new RecentChangesAdapter(recentChangesArrayList, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedPosition = recyclerView.getChildAdapterPosition(v);
+                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(selectedPosition).getTitle());
 
+                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
@@ -90,6 +87,17 @@ public class RecentChangesFragment extends RxBaseFragment {
 
         getRecentChanges();
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
+            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
+            adapter.notifyDataSetChanged();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void getRecentChanges() {
@@ -150,11 +158,59 @@ public class RecentChangesFragment extends RxBaseFragment {
                             public void onNext(Recentchanges recentchanges) {
                                 recentChangesArrayList.add(recentchanges);
                                 adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(recentchanges));
+                                checkIfPageWasRead(recentchanges);
 
                             }
                         });
 
         bindToLifecycle(subscription);
+    }
+
+    private void checkIfPageWasRead(final Recentchanges recentChange) {
+        Subscription subscription =
+                Observable.
+                        just(recentChange)
+                        .flatMap(new Func1<Recentchanges, Observable<Boolean>>() {
+                            @Override
+                            public Observable<Boolean> call(Recentchanges recentchanges) {
+                                return Observable.just(DBWorker.getPageIsRead(recentchanges.getTitle()));
+                            }
+                        })
+                        .filter(new Func1<Boolean, Boolean>() {
+                            @Override
+                            public Boolean call(Boolean aBoolean) {
+                                return aBoolean;
+                            }
+                        })
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<Boolean>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, e.getMessage());
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onNext(Boolean aBoolean) {
+                                if (aBoolean) {
+                                    adapter.getDisplayedData()
+                                            .get(adapter.getDisplayedData()
+                                            .indexOf(recentChange))
+                                            .setIsViewed(aBoolean);
+
+                                    adapter.notifyItemChanged(adapter.getDisplayedData().indexOf(recentChange));
+                                }
+                            }
+                        });
+
+        bindToLifecycle(subscription);
+
     }
 
     private class RecentChangesAdapter extends RecyclerView.Adapter<RecentChangesAdapter.ListItemViewHolder> {
@@ -181,6 +237,12 @@ public class RecentChangesFragment extends RxBaseFragment {
         @Override
         public void onBindViewHolder(ListItemViewHolder holder, int position) {
             holder.titleTextView.setText(recentChangesArrayList.get(position).getTitle());
+
+            if (recentChangesArrayList.get(position).isViewed()) {
+                holder.titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+            } else {
+                holder.titleTextView.setTextColor(Color.parseColor("#D9000000"));
+            }
         }
 
         @Override

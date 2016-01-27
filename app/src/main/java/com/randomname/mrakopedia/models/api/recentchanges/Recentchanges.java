@@ -20,6 +20,8 @@ public class Recentchanges {
 
     private String pageid;
 
+    private boolean isViewed;
+
     public String getTimestamp ()
     {
         return timestamp;
@@ -98,6 +100,14 @@ public class Recentchanges {
     public void setPageid (String pageid)
     {
         this.pageid = pageid;
+    }
+
+    public boolean isViewed() {
+        return isViewed;
+    }
+
+    public void setIsViewed(boolean isViewed) {
+        this.isViewed = isViewed;
     }
 
     @Override
