@@ -1,6 +1,9 @@
 package com.randomname.mrakopedia.api;
 
+import android.util.Log;
+
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
+import com.randomname.mrakopedia.models.api.allpages.AllPagesResult;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
@@ -66,5 +69,10 @@ public class MrakopediaApiWorker {
 
     public Observable<CategoryDescription> getCategoryDescription(String categoryTitle) {
         return getMrakopediaAPI().getCategoryDescription("Категория:" + categoryTitle);
+    }
+
+    public Observable<AllPagesResult> getAllPages(String continueString) {
+        Log.e("bla", continueString);
+        return getMrakopediaAPI().getAllPages(continueString);
     }
 }

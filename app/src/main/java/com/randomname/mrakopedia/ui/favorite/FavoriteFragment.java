@@ -46,6 +46,9 @@ public class FavoriteFragment extends RxBaseFragment {
 
     private int selectedPosition = 0;
 
+    public FavoriteFragment() {
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
