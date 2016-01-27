@@ -30,7 +30,7 @@ public class Parse {
 
     private Categories[] categories;
 
-    private String[] iwlinks;
+    private Iwlinks[] iwlinks;
 
     private String revid;
 
@@ -148,12 +148,12 @@ public class Parse {
         this.categories = categories;
     }
 
-    public String[] getIwlinks ()
+    public Iwlinks[] getIwlinks ()
     {
         return iwlinks;
     }
 
-    public void setIwlinks (String[] iwlinks)
+    public void setIwlinks (Iwlinks[] iwlinks)
     {
         this.iwlinks = iwlinks;
     }

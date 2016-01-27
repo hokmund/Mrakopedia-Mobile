@@ -5,8 +5,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Toast;
 
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 
@@ -17,11 +23,15 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
 
+    private final int DRAWER_ALL_CATEGORIES = 0;
+
     private static final int TIME_INTERVAL = 1000; // # milliseconds, desired time passed between two back presses.
     private long mBackPressed;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
+    private Drawer materialDrawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         initToolbar();
+        initDrawer();
 
         if (getSupportFragmentManager().getFragments() == null) {
             setAllCategoriesFragment();
@@ -51,6 +62,41 @@ public class MainActivity extends AppCompatActivity {
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
+    }
+
+    private void initDrawer() {
+        materialDrawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .addDrawerItems(
+                    createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES)
+                )
+                .build();
+
+        materialDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+            @Override
+            public boolean onItemClick(View view, int i, IDrawerItem iDrawerItem) {
+                if (iDrawerItem == null) {
+                    return false;
+                }
+
+                switch (iDrawerItem.getIdentifier()) {
+                    case DRAWER_ALL_CATEGORIES:
+                        setAllCategoriesFragment();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+    }
+
+    private PrimaryDrawerItem createDrawerItem(int name, int index) {
+        PrimaryDrawerItem item = new PrimaryDrawerItem()
+                .withName(name)
+                .withIdentifier(index);
+
+        return item;
     }
 
     private void setAllCategoriesFragment() {

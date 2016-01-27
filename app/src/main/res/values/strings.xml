@@ -7,6 +7,8 @@
 
     <string name="search_hint">Search</string>
 
+    <string name="all_categories_drawer">Категории</string>
+
     <string name="in_this_category">в этой категории</string>
 
     <string name="error_loading_article">Не удалось загрузить статью</string>
