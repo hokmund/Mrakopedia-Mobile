@@ -66,6 +66,7 @@ public class FullScreenPhotoFragmentHost extends Fragment {
         adapter = new PhotosAdapter(getChildFragmentManager(), photosArrayList);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
+        viewPager.setOffscreenPageLimit(adapter.getCount() / 2);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

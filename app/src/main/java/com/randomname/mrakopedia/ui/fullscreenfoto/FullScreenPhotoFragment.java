@@ -83,28 +83,6 @@ public class FullScreenPhotoFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         inflater.inflate(R.menu.menu_full_screen_photo, menu);
-
-        MenuItem item = menu.findItem(R.id.menu_item_share_photo);
-
-        // Get its ShareActionProvider
-        ShareActionProvider mShareActionProvider = (ShareActionProvider)MenuItemCompat.getActionProvider(item);
-
-        Uri bmpUri = getLocalBitmapUri(imageView);
-        Intent shareIntent = null;
-
-        if (bmpUri != null) {
-            // Construct a ShareIntent with link to image
-            shareIntent = new Intent();
-            shareIntent.setAction(Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
-            shareIntent.setType("image/*");
-        }
-
-        // Connect the dots: give the ShareActionProvider its Share Intent
-        if (shareIntent != null) {
-            mShareActionProvider.setShareIntent(shareIntent);
-        }
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -146,31 +124,6 @@ public class FullScreenPhotoFragment extends Fragment {
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
         downloadId = mgr.enqueue(request);
-    }
-
-    private Uri getLocalBitmapUri(ImageView imageView) {
-        // Extract Bitmap from ImageView drawable
-        Drawable drawable = imageView.getDrawable();
-        Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable){
-            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        } else {
-            return null;
-        }
-        // Store image to default external storage directory
-        Uri bmpUri = null;
-        try {
-            File file =  new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), "mrakopedia_share_image.png");
-            file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
-            bmpUri = Uri.fromFile(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return bmpUri;
     }
 
     @OnClick(R.id.full_screen_photo)

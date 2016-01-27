@@ -14,6 +14,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
+import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -22,9 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
+    private final static String RECENT_CHANGES_FRAGMENT_TAG = "recentChagesFragmentTag";
 
     private final int DRAWER_ALL_CATEGORIES = 0;
     private final int DRAWER_FAVORITE = 1;
+    private final int DRAWER_RECENT_CHANGES = 2;
 
     private static final int TIME_INTERVAL = 1000; // # milliseconds, desired time passed between two back presses.
     private long mBackPressed;
@@ -75,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
                 .withToolbar(toolbar)
                 .addDrawerItems(
                     createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES),
-                    createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE)
+                    createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE),
+                    createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES)
                 )
                 .build();
 
@@ -92,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case DRAWER_FAVORITE:
                         setFavoriteFragment();
+                        break;
+                    case DRAWER_RECENT_CHANGES:
+                        setRecentChangesFragment();
                         break;
                     default:
                         break;
@@ -118,6 +125,11 @@ public class MainActivity extends AppCompatActivity {
     private void setFavoriteFragment() {
         setTitle(R.string.favorite_drawer);
         setFragment(new FavoriteFragment(), FAVORITE_FRAGMENT_TAG);
+    }
+
+    private void setRecentChangesFragment() {
+        setTitle(R.string.recent_changes_drawer);
+        setFragment(new RecentChangesFragment(), RECENT_CHANGES_FRAGMENT_TAG);
     }
 
     private void setFragment(Fragment fragment, String tag) {

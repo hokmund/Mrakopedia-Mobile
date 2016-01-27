@@ -9,6 +9,7 @@
 
     <string name="all_categories_drawer">Категории</string>
     <string name="favorite_drawer">Избранное</string>
+    <string name="recent_changes_drawer">Новые статьи</string>
 
     <string name="in_this_category">в этой категории</string>
 
