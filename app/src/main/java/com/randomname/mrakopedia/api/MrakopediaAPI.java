@@ -1,7 +1,6 @@
 package com.randomname.mrakopedia.api;
 
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
-import com.randomname.mrakopedia.models.api.allpages.AllPagesResult;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
@@ -34,11 +33,6 @@ public interface MrakopediaAPI {
     @GET("api.php?action=parse&prop=text&format=json")
     Observable<CategoryDescription> getCategoryDescription(
             @Query("page") String pageTitle
-    );
-
-    @GET("api.php?action=query&list=allpages&aplimit=500&format=json&continue=")
-    Observable<AllPagesResult> getAllPages(
-            @Query("apcontinue") String continueString
     );
 
 }
