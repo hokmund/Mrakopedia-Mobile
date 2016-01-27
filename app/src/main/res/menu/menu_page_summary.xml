@@ -6,13 +6,13 @@
 
     <item
         android:id="@+id/action_favorite_page"
-        android:icon="@drawable/ic_star_white_48dp"
+        android:icon="@drawable/ic_star_white_24dp"
         app:showAsAction="ifRoom"
         android:title="страница в избранном"/>
 
     <item
         android:id="@+id/action_read_page"
-        android:icon="@drawable/ic_bookmark_check_black_48dp"
+        android:icon="@drawable/ic_bookmark_check_white_24dp"
         app:showAsAction="ifRoom"
         android:title="страница просмотрена"/>
 

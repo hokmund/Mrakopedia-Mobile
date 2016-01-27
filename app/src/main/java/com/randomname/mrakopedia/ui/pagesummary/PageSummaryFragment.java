@@ -202,20 +202,20 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     private void setMenuFavoriteStatus(MenuItem favoriteItem) {
         if (pageIsFavorite) {
-            favoriteItem.setIcon(R.drawable.ic_star_black_48dp);
+            favoriteItem.setIcon(R.drawable.ic_star_white_24dp);
             favoriteItem.setTitle("Удалить из избранного");
         } else {
-            favoriteItem.setIcon(R.drawable.ic_star_outline_black_48dp);
+            favoriteItem.setIcon(R.drawable.ic_star_outline_white_24dp);
             favoriteItem.setTitle("Добавить в избранное");
         }
     }
 
     private void setMenuReadStatus(MenuItem item) {
         if (!pageIsRead) {
-            item.setIcon(R.drawable.ic_bookmark_black_48dp);
+            item.setIcon(R.drawable.ic_bookmark_white_24dp);
             item.setTitle("Отметить как прочитанное");
         } else {
-            item.setIcon(R.drawable.ic_bookmark_check_black_48dp);
+            item.setIcon(R.drawable.ic_bookmark_check_white_24dp);
             item.setTitle("Отметить как не прочитанное");
         }
     }
