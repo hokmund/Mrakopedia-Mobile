@@ -369,7 +369,13 @@ public class PageSummaryFragment extends RxBaseFragment {
                 .doOnNext(new Action1<PageSummaryResult>() {
                     @Override
                     public void call(PageSummaryResult pageSummaryResult) {
-                        DBWorker.savePageSummary(pageSummaryResult);
+                        if (DBWorker.isPageSummarySaved(pageTitle)) {
+                            pageIsRead = DBWorker.getPageIsRead(pageTitle);
+                        } else {
+                            pageIsRead = true;
+                        }
+
+                        DBWorker.savePageSummary(pageSummaryResult, pageIsRead);
                     }
                 })
                 .flatMap(new Func1<PageSummaryResult, Observable<TextSection>>() {
@@ -393,8 +399,6 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                         loadingProgressBar.setVisibility(View.GONE);
 
-                        pageIsRead = true;
-                        DBWorker.setPageReadStatus(pageTitle, pageIsRead);
                         getActivity().invalidateOptionsMenu();
                         getActivity().setResult(Activity.RESULT_OK);
                     }

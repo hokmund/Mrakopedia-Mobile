@@ -14,6 +14,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
+import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 
 import butterknife.Bind;
@@ -22,8 +23,10 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
+    private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
 
     private final int DRAWER_ALL_CATEGORIES = 0;
+    private final int DRAWER_FAVORITE = 1;
 
     private static final int TIME_INTERVAL = 1000; // # milliseconds, desired time passed between two back presses.
     private long mBackPressed;
@@ -49,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (materialDrawer.isDrawerOpen()) {
+            materialDrawer.closeDrawer();
+            return;
+        }
 
         if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
             super.onBackPressed();
@@ -69,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .addDrawerItems(
-                    createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES)
+                    createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES),
+                    createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE)
                 )
                 .build();
 
@@ -83,10 +91,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (iDrawerItem.getIdentifier()) {
                     case DRAWER_ALL_CATEGORIES:
                         setAllCategoriesFragment();
-                        return true;
+                        break;
+                    case DRAWER_FAVORITE:
+                        setFavoriteFragment();
+                        break;
                     default:
-                        return false;
+                        break;
                 }
+
+                return false;
             }
         });
     }
@@ -100,7 +113,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setAllCategoriesFragment() {
+        setTitle(R.string.all_categories_drawer);
         setFragment(new AllCategoriesFragment(), ALL_CATEGORIES_FRAGMENT_TAG);
+    }
+
+    private void setFavoriteFragment() {
+        setTitle(R.string.favorite_drawer);
+        setFragment(new FavoriteFragment(), FAVORITE_FRAGMENT_TAG);
     }
 
     private void setFragment(Fragment fragment, String tag) {

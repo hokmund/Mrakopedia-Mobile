@@ -81,6 +81,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                 ((TextViewHolder) holder).textView.setText(span);
                 ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
+                ((TextViewHolder) holder).textView.setTextIsSelectable(true);
                 break;
             case TextSection.IMAGE_TYPE:
                 Picasso.with(context)

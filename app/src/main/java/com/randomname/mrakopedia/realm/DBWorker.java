@@ -21,14 +21,14 @@ public class DBWorker {
         return !Realm.getDefaultInstance().where(PageSummaryRealm.class).equalTo("pageTitle", title).findAll().isEmpty();
     }
 
-    public static void savePageSummary(PageSummaryResult pageSummaryResult) {
+    public static void savePageSummary(PageSummaryResult pageSummaryResult, boolean isRead) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
         PageSummaryRealm pageSummaryToSave = new PageSummaryRealm();
         pageSummaryToSave.setPageTitle(pageSummaryResult.getParse().getTitle());
         pageSummaryToSave.setIsFavorite(getPageIsFavorite(pageSummaryResult.getParse().getTitle()));
-        pageSummaryToSave.setIsRead(getPageIsRead(pageSummaryResult.getParse().getTitle()));
+        pageSummaryToSave.setIsRead(isRead);
         pageSummaryToSave.setTextSections(new RealmList<TextSectionRealm>());
 
         TextSectionRealm textSectionRealm;
@@ -126,5 +126,15 @@ public class DBWorker {
                 .asObservable();
 
         return result;
+    }
+
+    public static Observable<PageSummaryRealm> getFavoritePages() {
+
+        RealmResults<PageSummaryRealm> pageSummaryRealms = Realm.getDefaultInstance()
+                .where(PageSummaryRealm.class)
+                .equalTo("isFavorite", true)
+                .findAll();
+
+        return Observable.from(pageSummaryRealms);
     }
 }
