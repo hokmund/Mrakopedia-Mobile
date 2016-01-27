@@ -4,8 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import java.net.InetAddress;
-
 /**
  * Created by vgrigoryev on 22.01.2016.
  */

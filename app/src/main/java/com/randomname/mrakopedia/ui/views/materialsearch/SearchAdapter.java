@@ -1,7 +1,6 @@
 package com.randomname.mrakopedia.ui.views.materialsearch;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;

@@ -1,14 +1,13 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

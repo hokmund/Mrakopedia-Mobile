@@ -2,30 +2,23 @@ package com.randomname.mrakopedia.ui.fullscreenfoto;
 
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.TranslateAnimation;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
-import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.ui.views.TouchImageView;
 import com.randomname.mrakopedia.utils.Utils;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import carbon.widget.ImageView;
 
 public class FullScreentFotoActivity extends AppCompatActivity {
 

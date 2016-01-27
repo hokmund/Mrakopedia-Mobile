@@ -1,7 +1,5 @@
 package com.randomname.mrakopedia.utils;
 
-import android.util.Log;
-
 /**
  * Created by vgrigoryev on 20.01.2016.
  */

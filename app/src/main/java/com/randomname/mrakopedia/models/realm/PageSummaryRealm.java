@@ -1,7 +1,5 @@
 package com.randomname.mrakopedia.models.realm;
 
-import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;

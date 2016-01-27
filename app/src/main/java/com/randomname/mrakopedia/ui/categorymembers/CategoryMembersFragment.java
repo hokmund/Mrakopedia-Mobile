@@ -3,10 +3,10 @@ package com.randomname.mrakopedia.ui.categorymembers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -21,27 +21,23 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
-import com.randomname.mrakopedia.models.api.allcategories.Allcategories;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
-import com.randomname.mrakopedia.models.api.categorymembers.Continue;
-import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
-import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
-import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
-import com.squareup.picasso.Picasso;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -50,10 +46,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Observable;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -458,6 +451,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private View.OnClickListener onClickListener;
         private ArrayList<TextSection> descriptionSections;
 
+        private DisplayImageOptions options;
+
         public ArrayList<Categorymembers> getDisplayedData() {
             return filteredArray;
         }
@@ -485,6 +480,13 @@ public class CategoryMembersFragment extends RxBaseFragment {
             this.onClickListener = onClickListener;
             descriptionSections = new ArrayList<>();
             filteredArray = new ArrayList<>();
+
+            options = new DisplayImageOptions.Builder()
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .bitmapConfig(Bitmap.Config.RGB_565)
+                    .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                    .build();
         }
 
         public void setDescriptionSections(ArrayList<TextSection> sections) {
@@ -539,9 +541,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                     ((TextViewHolder) holder).textView.setText(span);
                     ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 } else if (holder.getItemViewType() == IMAGE_TYPE) {
-                    Picasso.with(context)
-                            .load(descriptionSections.get(position).getText())
-                            .into(((ImageViewHolder) holder).imageView);
+                    ImageLoader.getInstance().displayImage(descriptionSections.get(position).getText(), ((ImageViewHolder)holder).imageView, options);
                 }
                 return;
             }

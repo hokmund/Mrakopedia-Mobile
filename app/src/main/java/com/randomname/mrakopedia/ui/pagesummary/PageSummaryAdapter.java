@@ -1,6 +1,7 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -13,12 +14,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.utils.StringUtils;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -32,6 +35,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private View.OnClickListener linkClickListener;
     private View.OnClickListener imageClickListener;
     private OnCategoryClickListener categoryClickListener;
+    private DisplayImageOptions options;
 
     public PageSummaryAdapter(ArrayList<TextSection> sections, Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener, OnCategoryClickListener categoryClickListener) {
         this.sections = sections;
@@ -39,6 +43,13 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.linkClickListener = linkClickListener;
         this.imageClickListener = imageClickListener;
         this.categoryClickListener = categoryClickListener;
+
+        options = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+                .build();
     }
 
     @Override
@@ -84,9 +95,8 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((TextViewHolder) holder).textView.setTextIsSelectable(true);
                 break;
             case TextSection.IMAGE_TYPE:
-                Picasso.with(context)
-                        .load(sections.get(position).getText())
-                        .into(((ImageViewHolder) holder).imageView);
+                ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
+                ImageLoader.getInstance().displayImage(sections.get(position).getText(), ((ImageViewHolder)holder).imageView, options);
                 break;
             case TextSection.TEMPLATE_TYPE:
                 bindTemplateHolder(holder, sections.get(position).getText());

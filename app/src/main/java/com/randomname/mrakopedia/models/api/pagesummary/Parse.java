@@ -1,7 +1,5 @@
 package com.randomname.mrakopedia.models.api.pagesummary;
 
-import android.text.Spannable;
-
 import java.util.ArrayList;
 
 /**

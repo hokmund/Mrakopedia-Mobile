@@ -4,11 +4,13 @@ import android.text.Editable;
 import android.text.Html.TagHandler;
 import android.text.Layout.Alignment;
 import android.text.style.BulletSpan;
+import android.text.style.LeadingMarginSpan.Standard;
 import android.text.style.StrikethroughSpan;
 import android.text.style.TypefaceSpan;
-import android.text.style.LeadingMarginSpan.Standard;
-import java.util.Stack;
+
 import org.xml.sax.XMLReader;
+
+import java.util.Stack;
 
 public class HtmlTagHandler implements TagHandler {
     Stack<String> lists = new Stack();
