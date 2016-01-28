@@ -92,8 +92,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 Spannable span = (Spannable) Html.fromHtml(sections.get(position).getText(), null, new HtmlTagHandler());
                 span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                 ((TextViewHolder) holder).textView.setText(span);
-                ((TextViewHolder) holder).textView.setTextIsSelectable(true);
-                ((TextViewHolder) holder).textView.setMovementMethod(new CustomMovementMethod());
+                ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 ((TextViewHolder) holder).textView.setLinksClickable(true);
                 break;
             case TextSection.IMAGE_TYPE:
