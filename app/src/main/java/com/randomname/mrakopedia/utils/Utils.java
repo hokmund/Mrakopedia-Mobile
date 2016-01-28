@@ -34,6 +34,7 @@ public class Utils {
         public static String[] pagesBanList = {
                 "Файл:",
                 "Участник:",
+                "Участница:",
                 "Категор",
                 "Обсуждение",
                 "Архив:",

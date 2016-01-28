@@ -31,9 +31,11 @@ import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescript
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.models.api.recentchanges.Recentchanges;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
@@ -51,9 +53,11 @@ import java.util.Iterator;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carbon.widget.ProgressBar;
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -133,6 +137,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
+        recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(manager) {
+            @Override
+            public void onLoadMore(int current_page) {
+                loadCategoryMembers();
+            }
+        });
 
         loadCategoryMembers();
         getCategoryDescription();
@@ -174,28 +184,43 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 MrakopediaApiWorker
                         .getInstance()
                         .getCategoryMembers("Категория:" + categoryTitle, continueStringSaved)
-                        .map(new Func1<CategoryMembersResult, CategoryMembersResult>() {
+                        .doOnNext(new Action1<CategoryMembersResult>() {
                             @Override
-                            public CategoryMembersResult call(CategoryMembersResult categoryMembersResult) {
-                                ArrayList<Categorymembers> categoryMembers = new ArrayList<>(Arrays.asList(categoryMembersResult.getQuery().getCategorymembers()));
-
-                                for (Iterator<Categorymembers> iterator = categoryMembers.iterator(); iterator.hasNext();) {
-                                    Categorymembers categoryMember = iterator.next();
-
-                                    if (categoryMember.getType().equals("subcat")) {
-                                        iterator.remove();
-                                        continue;
-                                    }
-
-                                    categoryMember.setIsViewed(false);
+                            public void call(CategoryMembersResult categoryMembersResult) {
+                                if (categoryMembersResult.getmContinue() != null) {
+                                    continueString = categoryMembersResult.getmContinue().getCmcontinue();
+                                } else {
+                                    continueString = null;
                                 }
-                                categoryMembersResult.getQuery().setCategorymembers(categoryMembers.toArray(new Categorymembers[categoryMembers.size()]));
-                                return categoryMembersResult;
+                            }
+                        })
+                        .flatMap(new Func1<CategoryMembersResult, Observable<Categorymembers>>() {
+                            @Override
+                            public Observable<Categorymembers> call(CategoryMembersResult categoryMembersResult) {
+                                return Observable.from(categoryMembersResult.getQuery().getCategorymembers());
+                            }
+                        })
+                        .filter(new Func1<Categorymembers, Boolean>() {
+                            @Override
+                            public Boolean call(Categorymembers categorymembers) {
+                                return !categorymembers.getType().equals("subcat");
+                            }
+                        })
+                        .filter(new Func1<Categorymembers, Boolean>() {
+                            @Override
+                            public Boolean call(Categorymembers category) {
+                                for (String banString : Utils.pagesBanList) {
+                                    if (category.getTitle().contains(banString)) {
+                                        return false;
+                                    }
+                                }
+
+                                return true;
                             }
                         })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CategoryMembersResult>() {
+                        .subscribe(new Subscriber<Categorymembers>() {
                             @Override
                             public void onCompleted() {
 
@@ -203,38 +228,18 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.e(TAG, e.toString());
+                                Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
                             }
 
                             @Override
-                            public void onNext(CategoryMembersResult categoryMembersResult) {
-                                if (categoryMembersResult.getmContinue() != null) {
-                                    continueString = categoryMembersResult.getmContinue().getCmcontinue();
-                                    loadCategoryMembers();
-                                } else {
-                                    continueString = null;
-                                    markPagesAsRead();
-                                }
-
-
-                                for (Categorymembers category : categoryMembersResult.getQuery().getCategorymembers()) {
-                                    boolean toSkip = false;
-
-                                    for (String banString : Utils.pagesBanList) {
-                                        if (category.getTitle().contains(banString)) {
-                                            toSkip = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (!toSkip) {
-                                        categorymembersArrayList.add(category);
-                                        adapter.notifyItemInserted(categorymembersArrayList.indexOf(category) + adapter.getDescriptionCount());
-                                    }
-                                }
+                            public void onNext(Categorymembers categorymembers) {
+                                categorymembersArrayList.add(categorymembers);
+                                adapter.notifyItemInserted(categorymembersArrayList.indexOf(categorymembers) + adapter.getDescriptionCount());
+                                checkIfPageWasRead(categorymembers);
                             }
                         });
+
         bindToLifecycle(getCategoryMembersSubscription);
     }
 
@@ -361,27 +366,25 @@ public class CategoryMembersFragment extends RxBaseFragment {
         bindToLifecycle(getCategoryDescriptionSubscription);
     }
 
-    private void markPagesAsRead() {
+    private void checkIfPageWasRead(final Categorymembers categorymember) {
         Subscription subscription =
-                rx.Observable.from(DBWorker.getReadPages())
-                        .map(new Func1<String, Integer>() {
+                Observable.
+                        just(categorymember)
+                        .flatMap(new Func1<Categorymembers, Observable<Boolean>>() {
                             @Override
-                            public Integer call(String s) {
-                                Integer result = -1;
-
-                                for (int i = 0; i < categorymembersArrayList.size(); i++) {
-                                    if (categorymembersArrayList.get(i).getTitle().equals(s)) {
-                                        result = i;
-                                        break;
-                                    }
-                                }
-
-                                return result;
+                            public Observable<Boolean> call(Categorymembers categorymember) {
+                                return Observable.just(DBWorker.getPageIsRead(categorymember.getTitle()));
+                            }
+                        })
+                        .filter(new Func1<Boolean, Boolean>() {
+                            @Override
+                            public Boolean call(Boolean aBoolean) {
+                                return aBoolean;
                             }
                         })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<Integer>() {
+                        .subscribe(new Subscriber<Boolean>() {
                             @Override
                             public void onCompleted() {
 
@@ -394,15 +397,20 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             }
 
                             @Override
-                            public void onNext(Integer integer) {
-                                if (integer >= 0) {
-                                    categorymembersArrayList.get(integer).setIsViewed(true);
-                                    adapter.notifyItemChanged(integer + adapter.getDescriptionCount());
+                            public void onNext(Boolean aBoolean) {
+                                if (aBoolean) {
+                                    adapter.getDisplayedData()
+                                            .get(adapter.getDisplayedData()
+                                                    .indexOf(categorymember))
+                                            .setIsViewed(aBoolean);
+
+                                    adapter.notifyItemChanged(adapter.getDisplayedData().indexOf(categorymember));
                                 }
                             }
                         });
 
         bindToLifecycle(subscription);
+
     }
 
     private void splitTextAndImages(CategoryDescription categoryDescription) {
