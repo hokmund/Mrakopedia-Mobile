@@ -22,6 +22,7 @@ import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.ui.views.CustomMovementMethod;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
+import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 import com.randomname.mrakopedia.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                 ((TextViewHolder) holder).textView.setText(span);
                 ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
-                ((TextViewHolder) holder).textView.setLinksClickable(true);
+                ((TextViewHolder) holder).textView.setKey(" pos: " + position + span.toString());
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
@@ -184,11 +185,11 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     private class TextViewHolder extends RecyclerView.ViewHolder {
-        protected TextView textView;
+        protected SelectableTextView textView;
 
         public TextViewHolder(View itemView) {
             super(itemView);
-            textView = (TextView)itemView.findViewById(R.id.text_view);
+            textView = (SelectableTextView)itemView.findViewById(R.id.text_view);
         }
     }
 

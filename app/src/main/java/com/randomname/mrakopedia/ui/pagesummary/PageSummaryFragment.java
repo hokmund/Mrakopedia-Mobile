@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,8 @@ import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.ui.views.PreCachingLayoutManager;
+import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
+import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
@@ -69,7 +72,7 @@ public class PageSummaryFragment extends RxBaseFragment {
     private boolean pageIsRead = false;
 
     @Bind(R.id.page_summary_recycler_view)
-    RecyclerView recyclerView;
+    SelectableRecyclerView recyclerView;
 
     @Bind(R.id.error_text_view)
     carbon.widget.TextView errorTextView;
@@ -154,7 +157,10 @@ public class PageSummaryFragment extends RxBaseFragment {
             }
         });
 
-        recyclerView.setLayoutManager(new PreCachingLayoutManager(getActivity()));
+        LinearLayoutManager manager = new SelectableLayoutManager(getActivity());
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+
+        recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
         if (textSections.isEmpty()) {

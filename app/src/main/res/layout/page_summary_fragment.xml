@@ -36,7 +36,7 @@
         android:visibility="invisible"
         />
 
-    <android.support.v7.widget.RecyclerView
+    <com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView
         android:id="@+id/page_summary_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
