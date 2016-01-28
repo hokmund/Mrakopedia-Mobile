@@ -23,7 +23,10 @@ import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.utils.Utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -214,6 +217,9 @@ public class RecentChangesFragment extends RxBaseFragment {
     }
 
     private class RecentChangesAdapter extends RecyclerView.Adapter<RecentChangesAdapter.ListItemViewHolder> {
+        private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        private SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM ' в ' HH:mm");
+
         private ArrayList<Recentchanges> recentChangesArrayList;
 
         private View.OnClickListener onClickListener;
@@ -229,14 +235,27 @@ public class RecentChangesFragment extends RxBaseFragment {
 
         @Override
         public ListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recent_changes_view_holder, parent, false);
             view.setOnClickListener(onClickListener);
             return new ListItemViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ListItemViewHolder holder, int position) {
+            String stringDate = recentChangesArrayList.get(position).getTimestamp();
+            Date dateStr = null;
+
+            try {
+                dateStr = format.parse(stringDate);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
             holder.titleTextView.setText(recentChangesArrayList.get(position).getTitle());
+
+            if (dateStr != null) {
+                holder.changeDateTextView.setText(getString(R.string.recent_changes_added) + " " + outputFormat.format(dateStr));
+            }
 
             if (recentChangesArrayList.get(position).isViewed()) {
                 holder.titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
@@ -253,10 +272,12 @@ public class RecentChangesFragment extends RxBaseFragment {
         protected class ListItemViewHolder extends RecyclerView.ViewHolder {
 
             public TextView titleTextView;
+            public TextView changeDateTextView;
 
             public ListItemViewHolder(View itemView) {
                 super(itemView);
                 titleTextView = (TextView) itemView.findViewById(R.id.title_text_view);
+                changeDateTextView = (TextView) itemView.findViewById(R.id.change_date_text_view);
             }
         }
     }

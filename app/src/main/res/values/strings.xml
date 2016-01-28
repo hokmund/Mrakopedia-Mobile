@@ -11,6 +11,8 @@
     <string name="favorite_drawer">Избранное</string>
     <string name="recent_changes_drawer">Новые статьи</string>
 
+    <string name="recent_changes_added">Добавлено</string>
+
     <string name="in_this_category">в этой категории</string>
 
     <string name="error_loading_article">Не удалось загрузить статью</string>

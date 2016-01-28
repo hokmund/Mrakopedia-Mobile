@@ -20,6 +20,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.ui.views.CustomMovementMethod;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.utils.StringUtils;
 
@@ -91,8 +92,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 Spannable span = (Spannable) Html.fromHtml(sections.get(position).getText(), null, new HtmlTagHandler());
                 span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                 ((TextViewHolder) holder).textView.setText(span);
-                ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 ((TextViewHolder) holder).textView.setTextIsSelectable(true);
+                ((TextViewHolder) holder).textView.setMovementMethod(new CustomMovementMethod());
+                ((TextViewHolder) holder).textView.setLinksClickable(true);
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
