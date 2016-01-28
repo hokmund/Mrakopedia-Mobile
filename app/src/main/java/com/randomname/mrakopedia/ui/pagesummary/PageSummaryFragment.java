@@ -3,6 +3,7 @@ package com.randomname.mrakopedia.ui.pagesummary;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
@@ -43,6 +45,7 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carbon.widget.ProgressBar;
+import io.realm.internal.Util;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -386,18 +389,41 @@ public class PageSummaryFragment extends RxBaseFragment {
                 .subscribe(new Subscriber<TextSection>() {
                     @Override
                     public void onCompleted() {
-                        recyclerView.setVisibility(View.VISIBLE);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                recyclerView.setVisibility(View.VISIBLE);
 
-                        AlphaAnimation animation = new AlphaAnimation(0f, 1f);
-                        animation.setDuration(300);
+                                AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                                animation.setDuration(600);
 
-                        recyclerView.setAnimation(animation);
-                        recyclerView.animate();
+                                recyclerView.setAnimation(animation);
+                                recyclerView.animate();
+                            }
+                        }, 1000);
 
-                        loadingProgressBar.setVisibility(View.GONE);
+                        AlphaAnimation animation = new AlphaAnimation(1f, 0.0f);
+                        animation.setDuration(1000);
+                        animation.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
 
-                        getActivity().invalidateOptionsMenu();
-                        getActivity().setResult(Activity.RESULT_OK);
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                loadingProgressBar.setVisibilityImmediate(View.GONE);
+                                getActivity().invalidateOptionsMenu();
+                                getActivity().setResult(Activity.RESULT_OK);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
+                        loadingProgressBar.setAnimation(animation);
+                        loadingProgressBar.animate();
                     }
 
                     @Override
@@ -554,9 +580,19 @@ public class PageSummaryFragment extends RxBaseFragment {
     private void addLinks(PageSummaryResult pageSummaryResult) {
 
         boolean headerAdded = false;
+        boolean toSkip = false;
 
         for (Links link : pageSummaryResult.getParse().getLinks()) {
-            if (link.getTitle().contains("Шаблон") || link.getTitle().contains("Категория")) {
+            toSkip = false;
+
+            for (String banString : Utils.pagesBanList) {
+                if (link.getTitle().toLowerCase().contains(banString.toLowerCase())) {
+                    toSkip = true;
+                    break;
+                }
+            }
+
+            if (toSkip) {
                 continue;
             }
 

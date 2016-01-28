@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -106,8 +108,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 categoryTitle = title;
             }
         }
-
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -223,7 +223,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         .subscribe(new Subscriber<Categorymembers>() {
                             @Override
                             public void onCompleted() {
-
+                                adapter.notifyDataSetChanged();
                             }
 
                             @Override
@@ -235,7 +235,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             @Override
                             public void onNext(Categorymembers categorymembers) {
                                 categorymembersArrayList.add(categorymembers);
-                                adapter.notifyItemInserted(categorymembersArrayList.indexOf(categorymembers) + adapter.getDescriptionCount());
                                 checkIfPageWasRead(categorymembers);
                             }
                         });
@@ -351,15 +350,39 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             @Override
                             public void onNext(CategoryDescription categoryDescription) {
                                 adapter.setDescriptionSections(categoryDescription.getTextSections());
-                                recyclerView.setVisibility(View.VISIBLE);
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        recyclerView.setVisibility(View.VISIBLE);
 
-                                AlphaAnimation animation = new AlphaAnimation(0f, 1f);
-                                animation.setDuration(300);
+                                        AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                                        animation.setDuration(600);
 
-                                recyclerView.setAnimation(animation);
-                                recyclerView.animate();
+                                        recyclerView.setAnimation(animation);
+                                        recyclerView.animate();
+                                    }
+                                }, 1000);
 
-                                loadingProgressBar.setVisibility(View.GONE);
+                                AlphaAnimation animation = new AlphaAnimation(1f, 0.0f);
+                                animation.setDuration(1000);
+                                animation.setAnimationListener(new Animation.AnimationListener() {
+                                    @Override
+                                    public void onAnimationStart(Animation animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationEnd(Animation animation) {
+                                        loadingProgressBar.setVisibilityImmediate(View.GONE);
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animation animation) {
+
+                                    }
+                                });
+                                loadingProgressBar.setAnimation(animation);
+                                loadingProgressBar.animate();
                             }
                         });
 
@@ -454,32 +477,18 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private String filter = "";
 
         private ArrayList<Categorymembers> categorymembersArrayList;
-        private ArrayList<Categorymembers> filteredArray;
 
         private View.OnClickListener onClickListener;
         private ArrayList<TextSection> descriptionSections;
 
         private DisplayImageOptions options;
 
-        public ArrayList<Categorymembers> getDisplayedData() {
-            return filteredArray;
-        }
-
         public void setFilter(String filter) {
             this.filter = filter;
+        }
 
-            filteredArray.clear();
-
-            for (Categorymembers categorymember : categorymembersArrayList) {
-                if (categorymember.getTitle().toLowerCase().contains(filter.toLowerCase())) {
-                    filteredArray.add(categorymember);
-                }
-            }
-            try {
-                notifyDataSetChanged();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        public ArrayList<Categorymembers> getDisplayedData() {
+            return categorymembersArrayList;
         }
 
         public CategoryMembersAdapter(Context context, ArrayList<Categorymembers> categorymembers, View.OnClickListener onClickListener) {
@@ -487,7 +496,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
             categorymembersArrayList = categorymembers;
             this.onClickListener = onClickListener;
             descriptionSections = new ArrayList<>();
-            filteredArray = new ArrayList<>();
 
             options = new DisplayImageOptions.Builder()
                     .cacheInMemory(true)
@@ -556,9 +564,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
             position -= descriptionSections.size();
 
-            ((ListItemViewHolder)holder).titleTextView.setText(filteredArray.get(position).getTitle());
+            ((ListItemViewHolder)holder).titleTextView.setText(categorymembersArrayList.get(position).getTitle());
 
-            if (filteredArray.get(position).getIsViewed()) {
+            if (categorymembersArrayList.get(position).getIsViewed()) {
                 ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
             } else {
                 ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
@@ -567,8 +575,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         @Override
         public int getItemCount() {
-            setFilter(filter);
-            return filteredArray.size() + descriptionSections.size();
+            return categorymembersArrayList.size() + descriptionSections.size();
         }
 
         public int getDescriptionCount() {
