@@ -23,6 +23,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -338,13 +339,16 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
-                                errorTextView.setVisibility(View.VISIBLE);
-
-                                if (!NetworkUtils.isInternetAvailable(getActivity())) {
-                                    errorTextView.setText(getString(R.string.error_loading_category) + " " + getString(R.string.no_internet_text));
+                                if (categorymembersArrayList.isEmpty()) {
+                                    errorTextView.setVisibility(View.VISIBLE);
+                                    loadingProgressBar.setVisibility(View.GONE);
+                                    if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                        errorTextView.setText(getString(R.string.error_loading_category) + " " + getString(R.string.no_internet_text));
+                                    }
+                                    recyclerView.setVisibility(View.GONE);
+                                } else {
+                                    Toast.makeText(getActivity(), getString(R.string.error_loading_category) + " " + getString(R.string.no_internet_text), Toast.LENGTH_SHORT).show();
                                 }
-
-                                loadingProgressBar.setVisibility(View.GONE);
                             }
 
                             @Override

@@ -18,7 +18,9 @@
     <string name="in_this_category">в этой категории</string>
 
     <string name="error_loading_article">Не удалось загрузить статью</string>
+    <string name="error_loading_recent_articles">Не удалось загрузить последние статьи</string>
     <string name="error_loading_category">Не удалось загрузить категорию</string>
+    <string name="error_loading_categories">Не удалось загрузить список категорий</string>
     <string name="no_internet_text">отсутствует подключение к интернету.</string>
 
     <string name="no_favorite_error">Вы не добавили в избранное не одной статьи</string>

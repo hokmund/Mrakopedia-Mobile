@@ -2,13 +2,17 @@ package com.randomname.mrakopedia.ui.allcategories;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
@@ -16,6 +20,7 @@ import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
 import com.randomname.mrakopedia.models.api.allcategories.Allcategories;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
+import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
@@ -25,6 +30,7 @@ import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import carbon.widget.ProgressBar;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -39,6 +45,8 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
     @Bind(R.id.all_categories_recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.error_text_view)
+    carbon.widget.TextView errorTextView;
 
     private AllCategoriesAdapter adapter;
     private ArrayList<Allcategories> resultArrayList;
@@ -103,6 +111,16 @@ public class AllCategoriesFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
+                                if (resultArrayList.isEmpty()) {
+                                    errorTextView.setVisibility(View.VISIBLE);
+
+                                    if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                        errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
+                                    }
+                                    recyclerView.setVisibility(View.GONE);
+                                } else {
+                                    Toast.makeText(getActivity(), getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text), Toast.LENGTH_SHORT).show();
+                                }
                             }
 
                             @Override

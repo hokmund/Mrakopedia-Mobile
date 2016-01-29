@@ -18,7 +18,7 @@
         android:id="@+id/error_text_view"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:text="@string/error_loading_article"
+        android:text="@string/error_loading_recent_articles"
         android:layout_centerVertical="true"
         android:visibility="invisible"
         android:textColor="#D9000000"

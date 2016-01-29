@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
@@ -21,6 +22,7 @@ import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
+import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
 import java.text.ParseException;
@@ -53,6 +55,8 @@ public class RecentChangesFragment extends RxBaseFragment {
 
     @Bind(R.id.recent_changes_recycler_view)
     RecyclerView recyclerView;
+    @Bind(R.id.error_text_view)
+    carbon.widget.TextView errorTextView;
 
     public RecentChangesFragment () {
     }
@@ -155,6 +159,17 @@ public class RecentChangesFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
+
+                                if (recentChangesArrayList.isEmpty()) {
+                                    errorTextView.setVisibility(View.VISIBLE);
+
+                                    if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                        errorTextView.setText(getString(R.string.error_loading_recent_articles) + " " + getString(R.string.no_internet_text));
+                                    }
+                                    recyclerView.setVisibility(View.GONE);
+                                } else {
+                                    Toast.makeText(getActivity(), getString(R.string.error_loading_recent_articles) + " " + getString(R.string.no_internet_text), Toast.LENGTH_SHORT).show();
+                                }
                             }
 
                             @Override
