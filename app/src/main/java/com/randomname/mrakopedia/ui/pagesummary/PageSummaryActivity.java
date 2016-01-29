@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageButton;
 
 import com.randomname.mrakopedia.R;
@@ -44,19 +46,54 @@ public class PageSummaryActivity extends AppCompatActivity {
     }
 
     public void startSelection() {
-        copyToolbar.setVisibility(View.VISIBLE);
-        toolbar.setVisibility(View.GONE);
+        setAlphaAnimation(copyToolbar, false);
+        setAlphaAnimation(toolbar, true);
 
         isSelectedMode = true;
     }
 
     public void stopSelection() {
-        copyToolbar.setVisibility(View.GONE);
-        toolbar.setVisibility(View.VISIBLE);
+        setAlphaAnimation(copyToolbar, true);
+        setAlphaAnimation(toolbar, false);
 
 
         fragment.cancelSelection();
         isSelectedMode = false;
+    }
+
+    private void setAlphaAnimation(final View view, final boolean hide) {
+        float from = 0f;
+        float to = 0f;
+
+        if (hide) {
+            from = 1f;
+        } else {
+            to = 1f;
+        }
+
+        AlphaAnimation alphaAnimation = new AlphaAnimation(from, to);
+        alphaAnimation.setDuration(300);
+        alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(hide ? View.GONE : View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        view.clearAnimation();
+        view.setAnimation(alphaAnimation);
+        view.animate();
+
     }
 
     @Override
