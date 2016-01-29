@@ -11,6 +11,8 @@
     <string name="favorite_drawer">Избранное</string>
     <string name="recent_changes_drawer">Новые статьи</string>
 
+    <string name="text_was_copied_to_clipboard">Текст скопирован в буфер</string>
+
     <string name="recent_changes_added">Добавлено</string>
 
     <string name="in_this_category">в этой категории</string>

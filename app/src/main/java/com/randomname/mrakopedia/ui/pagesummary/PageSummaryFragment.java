@@ -35,6 +35,7 @@ import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.ui.views.PreCachingLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
+import com.randomname.mrakopedia.ui.views.selection.SelectionCallback;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
@@ -162,6 +163,17 @@ public class PageSummaryFragment extends RxBaseFragment {
 
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+        recyclerView.setSelectionCallback(new SelectionCallback() {
+            @Override
+            public void startSelection() {
+                ((PageSummaryActivity)getActivity()).startSelection();
+            }
+
+            @Override
+            public void stopSelection() {
+                ((PageSummaryActivity)getActivity()).stopSelection();
+            }
+        });
 
         if (textSections.isEmpty()) {
             if (DBWorker.isPageSummarySaved("")) {
@@ -172,6 +184,18 @@ public class PageSummaryFragment extends RxBaseFragment {
         }
 
         return view;
+    }
+
+    public void copySelectedText() {
+        if (recyclerView != null) {
+            recyclerView.copyTextToClipboard();
+        }
+    }
+
+    public void cancelSelection() {
+        if (recyclerView != null) {
+            recyclerView.resetSelection();
+        }
     }
 
     @Override

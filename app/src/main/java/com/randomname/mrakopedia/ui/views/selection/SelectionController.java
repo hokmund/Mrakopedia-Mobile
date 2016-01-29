@@ -171,7 +171,7 @@ public class SelectionController {
     private void addSelectableToSelectableInfos(Selectable selectable) {
         boolean found = false;
         for (SelectableInfo selectableInfo : selectableInfos) {
-            if (selectableInfo.getKey().equals(selectable.getKey())) {
+            if (selectableInfo.getKey() != null && selectable.getKey() != null && selectableInfo.getKey().equals(selectable.getKey())) {
                 selectableInfo.setSelectable(selectable);
                 found = true;
                 Log.d(">>>>>", "exist selectable = " + selectableInfo.getSelectable());
@@ -369,7 +369,7 @@ public class SelectionController {
         ClipboardManager clipboard = (ClipboardManager) selectableViewGroup.getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("Article", s);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(selectableViewGroup.getContext(), "Text was copied to clipboard", Toast.LENGTH_LONG).show();
+        Toast.makeText(selectableViewGroup.getContext(), R.string.text_was_copied_to_clipboard, Toast.LENGTH_LONG).show();
     }
 
     private CharSequence getSelection(boolean reset) {
