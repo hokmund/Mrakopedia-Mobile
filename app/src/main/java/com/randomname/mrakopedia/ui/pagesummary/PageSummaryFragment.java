@@ -128,7 +128,7 @@ public class PageSummaryFragment extends RxBaseFragment {
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
                 Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, textSections.get(position).getText());
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getText());
                 startActivity(intent);
             }
         }, new View.OnClickListener() {
@@ -138,7 +138,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                 ArrayList<String> imageArray = new ArrayList<>();
 
-                for (TextSection section : textSections) {
+                for (TextSection section : adapter.getDisplayedData()) {
                     if (section.getType() == TextSection.IMAGE_TYPE) {
                         imageArray.add(section.getText());
                     }
@@ -146,7 +146,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                 Intent intent = new Intent(getActivity(), FullScreentFotoActivity.class);
                 intent.putExtra(FullScreentFotoActivity.IMAGE_ARRAY_KEY, imageArray);
-                intent.putExtra(FullScreentFotoActivity.SELECTED_IMAGE_KEY, imageArray.indexOf(textSections.get(position).getText()));
+                intent.putExtra(FullScreentFotoActivity.SELECTED_IMAGE_KEY, imageArray.indexOf(adapter.getDisplayedData().get(position).getText()));
                 startActivity(intent);
             }
         }, new OnCategoryClickListener() {
@@ -166,16 +166,17 @@ public class PageSummaryFragment extends RxBaseFragment {
         recyclerView.setSelectionCallback(new SelectionCallback() {
             @Override
             public void startSelection() {
-                ((PageSummaryActivity)getActivity()).startSelection();
+                ((PageSummaryActivity) getActivity()).startSelection();
             }
 
             @Override
             public void stopSelection() {
-                ((PageSummaryActivity)getActivity()).stopSelection();
+                ((PageSummaryActivity) getActivity()).stopSelection();
             }
         });
+        recyclerView.addOnScrollListener(((PageSummaryActivity)getActivity()).toolbarHideListener);
 
-        if (textSections.isEmpty()) {
+        if (adapter.getDisplayedData().size() <= 1) {
             if (DBWorker.isPageSummarySaved("")) {
                 getArticleByRealm();
             } else {
@@ -252,7 +253,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        if (!textSections.isEmpty()) {
+        if (!adapter.getDisplayedData().isEmpty()) {
             outState.putParcelableArrayList(TEXT_SECTIONS_KEY, textSections);
         }
         super.onSaveInstanceState(outState);
@@ -472,8 +473,8 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                     @Override
                     public void onNext(TextSection section) {
-                        textSections.add(section);
-                        adapter.notifyItemInserted(textSections.indexOf(section));
+                        adapter.getDisplayedData().add(section);
+                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(section));
                     }
                 });
         bindToLifecycle(subscription);
@@ -516,8 +517,8 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                     @Override
                     public void onNext(TextSection section) {
-                        textSections.add(section);
-                        adapter.notifyItemInserted(textSections.indexOf(section));
+                        adapter.getDisplayedData().add(section);
+                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(section));
                     }
                 });
 

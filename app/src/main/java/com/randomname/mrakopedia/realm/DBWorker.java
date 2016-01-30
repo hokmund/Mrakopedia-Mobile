@@ -5,6 +5,8 @@ import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 import io.realm.Realm;
@@ -34,6 +36,10 @@ public class DBWorker {
         TextSectionRealm textSectionRealm;
 
         for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
+            if (textSection.getType() == TextSection.SPACER_TYPE) {
+                continue;
+            }
+
             textSectionRealm = new TextSectionRealm();
             textSectionRealm.setText(textSection.getText());
             textSectionRealm.setType(textSection.getType());

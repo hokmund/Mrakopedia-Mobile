@@ -1,15 +1,22 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 
 import com.randomname.mrakopedia.R;
 
@@ -25,10 +32,14 @@ public class PageSummaryActivity extends AppCompatActivity {
     private PageSummaryFragment fragment;
     private boolean isSelectedMode = false;
 
+    public RecyclerView.OnScrollListener toolbarHideListener;
+
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.copy_toolbar)
     Toolbar copyToolbar;
+    @Bind(R.id.toolbarWrapper)
+    RelativeLayout toolbarWrapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +54,69 @@ public class PageSummaryActivity extends AppCompatActivity {
         }
 
         initToolbar(pageTitle);
+
+        toolbarHideListener = new RecyclerView.OnScrollListener() {
+
+            // Keeps track of the overall vertical offset in the list
+            int verticalOffset;
+
+            // Determines the scroll UP/DOWN direction
+            boolean scrollingUp;
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (scrollingUp) {
+                        if (verticalOffset > toolbarWrapper.getHeight()) {
+                            toolbarAnimateHide();
+                        } else {
+                            toolbarAnimateShow(verticalOffset);
+                        }
+                    } else {
+                        if (toolbarWrapper.getTranslationY() < toolbarWrapper.getHeight() * -0.6 && verticalOffset > toolbarWrapper.getHeight()) {
+                            toolbarAnimateHide();
+                        } else {
+                            toolbarAnimateShow(verticalOffset);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public final void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                verticalOffset += dy;
+                scrollingUp = dy > 0;
+                int toolbarYOffset = (int) (dy - toolbarWrapper.getTranslationY());
+                toolbarWrapper.animate().cancel();
+                if (scrollingUp) {
+                    if (toolbarYOffset < toolbarWrapper.getHeight()) {
+                        toolbarWrapper.setTranslationY(-toolbarYOffset);
+                    } else {
+                        toolbarWrapper.setTranslationY(-toolbarWrapper.getHeight());
+                    }
+                } else {
+                    if (toolbarYOffset < 0) {
+                        toolbarWrapper.setTranslationY(0);
+                    } else {
+                        toolbarWrapper.setTranslationY(-toolbarYOffset);
+                    }
+                }
+            }
+        };
+    }
+
+    private void toolbarAnimateShow(final int verticalOffset) {
+        toolbarWrapper.animate()
+                .translationY(0)
+                .setInterpolator(new LinearInterpolator())
+                .setDuration(180);
+    }
+
+    private void toolbarAnimateHide() {
+        toolbarWrapper.animate()
+                .translationY(-toolbar.getHeight())
+                .setInterpolator(new LinearInterpolator())
+                .setDuration(180);
     }
 
     public void startSelection() {

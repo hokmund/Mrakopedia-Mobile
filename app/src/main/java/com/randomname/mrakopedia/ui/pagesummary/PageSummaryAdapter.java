@@ -52,6 +52,12 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
                 .build();
+
+        sections.add(new TextSection(TextSection.SPACER_TYPE, ""));
+    }
+
+    public ArrayList<TextSection> getDisplayedData() {
+        return sections;
     }
 
     @Override
@@ -80,6 +86,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.CATEGORY_TYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_categories_view_holder, parent, false);
                 return new CategoriesViewHolder(view);
+            case TextSection.SPACER_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.spacer_view_holder, parent, false);
+                return new SpacerViewHolder(view);
             default:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
                 return new TextViewHolder(view);
@@ -88,6 +97,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+
         switch (holder.getItemViewType()) {
             case TextSection.TEXT_TYPE:
                 Spannable span = (Spannable) Html.fromHtml(sections.get(position).getText(), null, new HtmlTagHandler());
@@ -182,6 +192,12 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @Override
     public int getItemCount() {
         return sections == null ? 0 : sections.size();
+    }
+
+    private class SpacerViewHolder extends RecyclerView.ViewHolder {
+        public SpacerViewHolder(View itemView) {
+            super(itemView);
+        }
     }
 
     private class TextViewHolder extends RecyclerView.ViewHolder {
