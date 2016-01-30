@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
@@ -75,7 +76,7 @@ public class RecentChangesFragment extends RxBaseFragment {
         adapter = new RecentChangesAdapter(recentChangesArrayList, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedPosition = recyclerView.getChildAdapterPosition(v);
+                selectedPosition = recyclerView.getChildAdapterPosition(v) - 1;
                 Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
                 intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(selectedPosition).getTitle());
 
@@ -91,6 +92,7 @@ public class RecentChangesFragment extends RxBaseFragment {
                 getRecentChanges();
             }
         });
+        recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
         getRecentChanges();
         return view;
@@ -152,7 +154,7 @@ public class RecentChangesFragment extends RxBaseFragment {
                         .subscribe(new Subscriber<Recentchanges>() {
                             @Override
                             public void onCompleted() {
-
+                                adapter.notifyDataSetChanged();
                             }
 
                             @Override
@@ -160,7 +162,7 @@ public class RecentChangesFragment extends RxBaseFragment {
                                 Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
 
-                                if (recentChangesArrayList.isEmpty()) {
+                                if (adapter.getDisplayedData().size() <= 1) {
                                     errorTextView.setVisibility(View.VISIBLE);
 
                                     if (!NetworkUtils.isInternetAvailable(getActivity())) {
@@ -174,8 +176,7 @@ public class RecentChangesFragment extends RxBaseFragment {
 
                             @Override
                             public void onNext(Recentchanges recentchanges) {
-                                recentChangesArrayList.add(recentchanges);
-                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(recentchanges));
+                                adapter.getDisplayedData().add(recentchanges);
                                 checkIfPageWasRead(recentchanges);
 
                             }
@@ -231,13 +232,16 @@ public class RecentChangesFragment extends RxBaseFragment {
 
     }
 
-    private class RecentChangesAdapter extends RecyclerView.Adapter<RecentChangesAdapter.ListItemViewHolder> {
+    private class RecentChangesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         private SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM ' в ' HH:mm");
 
         private ArrayList<Recentchanges> recentChangesArrayList;
 
         private View.OnClickListener onClickListener;
+
+        private final static int LIST_ITEM_TYPE = 0;
+        private final static int SPACER_ITEM_TYPE = 1;
 
         public RecentChangesAdapter(ArrayList<Recentchanges> recentChangesArrayList, View.OnClickListener onClickListener) {
             this.recentChangesArrayList = recentChangesArrayList;
@@ -249,15 +253,35 @@ public class RecentChangesFragment extends RxBaseFragment {
         }
 
         @Override
-        public ListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recent_changes_view_holder, parent, false);
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return SPACER_ITEM_TYPE;
+            } else {
+                return LIST_ITEM_TYPE;
+            }
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view;
+
+            if (viewType == SPACER_ITEM_TYPE) {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.spacer_view_holder, parent, false);
+                return new SpacerViewHolder(view);
+            }
+
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recent_changes_view_holder, parent, false);
             view.setOnClickListener(onClickListener);
             return new ListItemViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ListItemViewHolder holder, int position) {
-            String stringDate = recentChangesArrayList.get(position).getTimestamp();
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (position == 0) {
+                return;
+            }
+
+            String stringDate = recentChangesArrayList.get(position - 1).getTimestamp();
             Date dateStr = null;
 
             try {
@@ -266,22 +290,28 @@ public class RecentChangesFragment extends RxBaseFragment {
                 e.printStackTrace();
             }
 
-            holder.titleTextView.setText(recentChangesArrayList.get(position).getTitle());
+            ((ListItemViewHolder)holder).titleTextView.setText(recentChangesArrayList.get(position - 1).getTitle());
 
             if (dateStr != null) {
-                holder.changeDateTextView.setText(getString(R.string.recent_changes_added) + " " + outputFormat.format(dateStr));
+                ((ListItemViewHolder)holder).changeDateTextView.setText(getString(R.string.recent_changes_added) + " " + outputFormat.format(dateStr));
             }
 
-            if (recentChangesArrayList.get(position).isViewed()) {
-                holder.titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+            if (recentChangesArrayList.get(position - 1).isViewed()) {
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
             } else {
-                holder.titleTextView.setTextColor(Color.parseColor("#D9000000"));
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
             }
         }
 
         @Override
         public int getItemCount() {
-            return recentChangesArrayList == null ? 0 : recentChangesArrayList.size();
+            return recentChangesArrayList == null ? 0 : recentChangesArrayList.size() + 1;
+        }
+
+        private class SpacerViewHolder extends RecyclerView.ViewHolder {
+            public SpacerViewHolder(View itemView) {
+                super(itemView);
+            }
         }
 
         protected class ListItemViewHolder extends RecyclerView.ViewHolder {

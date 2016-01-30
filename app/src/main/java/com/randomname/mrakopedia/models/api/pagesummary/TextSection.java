@@ -15,6 +15,7 @@ public class TextSection implements Parcelable{
     public static final int LINK_TYPE = 4;
     public static final int CATEGORY_TYPE = 5;
     public static final int SPACER_TYPE = 6;
+    public static final int SEPARATOR_TYPE = 7;
 
     private int type;
     private String text;

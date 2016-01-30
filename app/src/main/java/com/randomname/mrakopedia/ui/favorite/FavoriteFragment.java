@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
@@ -65,16 +66,18 @@ public class FavoriteFragment extends RxBaseFragment {
         adapter = new FavoriteAdapter(favoritePages, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = recyclerView.getChildAdapterPosition(v);
+                int position = recyclerView.getChildAdapterPosition(v) - 1;
                 selectedPosition = position;
 
                 Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, favoritePages.get(position).getPageTitle());
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getPageTitle());
 
                 startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
+
 
         getFavoriteFromRealm();
 
@@ -85,8 +88,8 @@ public class FavoriteFragment extends RxBaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
-            if (!favoritePages.get(selectedPosition).isFavorite()) {
-                favoritePages.remove(selectedPosition);
+            if (!adapter.getDisplayedData().get(selectedPosition).isFavorite()) {
+                adapter.getDisplayedData().remove(selectedPosition);
                 checkForEmpty();
             }
             adapter.notifyDataSetChanged();
@@ -111,6 +114,7 @@ public class FavoriteFragment extends RxBaseFragment {
                             @Override
                             public void onCompleted() {
                                 checkForEmpty();
+                                adapter.notifyDataSetChanged();
                             }
 
                             @Override
@@ -121,44 +125,74 @@ public class FavoriteFragment extends RxBaseFragment {
 
                             @Override
                             public void onNext(PageSummaryRealm pageSummaryRealm) {
-                                favoritePages.add(pageSummaryRealm);
-                                adapter.notifyItemInserted(favoritePages.indexOf(pageSummaryRealm));
+                                adapter.getDisplayedData().add(pageSummaryRealm);
                             }
                         });
 
         bindToLifecycle(subscription);
     }
 
-    private class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHolder> {
+    private class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ArrayList<PageSummaryRealm> favoritePages;
         private View.OnClickListener onClickListener;
+
+        private final static int LIST_ITEM_TYPE = 0;
+        private final static int SPACER_ITEM_TYPE = 1;
 
         public FavoriteAdapter(ArrayList<PageSummaryRealm> favoritePages, View.OnClickListener onClickListener) {
             this.favoritePages = favoritePages;
             this.onClickListener = onClickListener;
         }
 
+        public ArrayList<PageSummaryRealm> getDisplayedData() {
+            return favoritePages;
+        }
+
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, parent, false);
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return SPACER_ITEM_TYPE;
+            } else {
+                return LIST_ITEM_TYPE;
+            }
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view;
+
+            if (viewType == SPACER_ITEM_TYPE) {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.spacer_view_holder, parent, false);
+                return new SpacerViewHolder(view);
+            }
+
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, parent, false);
             view.setOnClickListener(onClickListener);
             return new ViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            holder.titleTextView.setText(favoritePages.get(position).getPageTitle());
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (position != 0) {
+                ((ViewHolder)holder).titleTextView.setText(favoritePages.get(position - 1).getPageTitle());
 
-            if (favoritePages.get(position).isRead()) {
-                holder.titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
-            } else {
-                holder.titleTextView.setTextColor(Color.parseColor("#D9000000"));
+                if (favoritePages.get(position - 1).isRead()) {
+                    ((ViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+                } else {
+                    ((ViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
+                }
             }
         }
 
         @Override
         public int getItemCount() {
-            return favoritePages == null ? 0 : favoritePages.size();
+            return favoritePages == null ? 0 : favoritePages.size() + 1;
+        }
+
+        private class SpacerViewHolder extends RecyclerView.ViewHolder {
+            public SpacerViewHolder(View itemView) {
+                super(itemView);
+            }
         }
 
         protected class ViewHolder extends RecyclerView.ViewHolder {

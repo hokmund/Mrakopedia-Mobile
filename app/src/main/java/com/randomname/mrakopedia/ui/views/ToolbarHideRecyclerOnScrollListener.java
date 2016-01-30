@@ -2,6 +2,7 @@ package com.randomname.mrakopedia.ui.views;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -60,7 +61,11 @@ public class ToolbarHideRecyclerOnScrollListener extends RecyclerView.OnScrollLi
         }
     }
 
-    private void toolbarAnimateShow(final int verticalOffset) {
+    public void setVerticalOffset(int offset) {
+        verticalOffset = offset;
+    }
+
+    public void toolbarAnimateShow(final int verticalOffset) {
         viewToScroll.animate()
                 .translationY(0)
                 .setInterpolator(new LinearInterpolator())

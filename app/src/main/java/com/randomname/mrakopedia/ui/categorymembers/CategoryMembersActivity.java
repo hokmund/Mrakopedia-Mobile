@@ -6,8 +6,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
 
 import butterknife.Bind;
@@ -18,10 +20,14 @@ public class CategoryMembersActivity extends AppCompatActivity {
     public static final String CATEGORY_NAME_EXTRA = "categoryNameExtra";
     private static final String CATEGORY_FRAGMENT_TAG = "categoryFragmentTag";
 
+    public ToolbarHideRecyclerOnScrollListener toolbarHideRecyclerOnScrollListener;
+
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.search_view)
     MaterialSearchView searchView;
+    @Bind(R.id.toolbar_container)
+    RelativeLayout toolbarContainer;
 
     private CategoryMembersFragment fragment;
 
@@ -52,6 +58,8 @@ public class CategoryMembersActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
     }
 
     public void setSearchMenuItem(MenuItem item) {

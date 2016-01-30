@@ -14,6 +14,7 @@ import android.view.animation.Animation;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
@@ -62,9 +63,9 @@ public class AllCategoriesFragment extends RxBaseFragment {
         adapter = new AllCategoriesAdapter(resultArrayList, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = recyclerView.getChildAdapterPosition(v);
+                int position = recyclerView.getChildAdapterPosition(v) - 1;
                 Intent intent = new Intent(getActivity(), CategoryMembersActivity.class);
-                intent.putExtra(CategoryMembersActivity.CATEGORY_NAME_EXTRA, resultArrayList.get(position).getTitle());
+                intent.putExtra(CategoryMembersActivity.CATEGORY_NAME_EXTRA, adapter.getDisplayedData().get(position).getTitle());
                 startActivity(intent);
             }
         });
@@ -72,6 +73,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
+        recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
         loadCategoryMembersViaNetwork();
 
@@ -111,7 +113,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
-                                if (resultArrayList.isEmpty()) {
+                                if (adapter.getDisplayedData().size() <= 1) {
                                     errorTextView.setVisibility(View.VISIBLE);
 
                                     if (!NetworkUtils.isInternetAvailable(getActivity())) {
@@ -142,8 +144,8 @@ public class AllCategoriesFragment extends RxBaseFragment {
                                     }
 
                                     if (!toSkip) {
-                                        resultArrayList.add(category);
-                                        adapter.notifyItemInserted(resultArrayList.indexOf(category));
+                                        adapter.getDisplayedData().add(category);
+                                        adapter.notifyDataSetChanged();
                                     }
                                 }
 
@@ -155,7 +157,10 @@ public class AllCategoriesFragment extends RxBaseFragment {
         bindToLifecycle(getAllCategoriesSubscription);
     }
 
-    private class AllCategoriesAdapter extends RecyclerView.Adapter<AllCategoriesAdapter.ViewHolder> {
+    private class AllCategoriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private final static int LIST_ITEM_TYPE = 0;
+        private final static int SPACER_ITEM_TYPE = 1;
 
         ArrayList<Allcategories> categoriesArrayList;
         View.OnClickListener onClickListener;
@@ -165,9 +170,29 @@ public class AllCategoriesFragment extends RxBaseFragment {
             this.onClickListener = onClickListener;
         }
 
+        public ArrayList<Allcategories> getDisplayedData() {
+            return categoriesArrayList;
+        }
+
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.all_categories_view_holder, parent, false);
+        public int getItemViewType(int position) {
+            if (position == 0) {
+                return SPACER_ITEM_TYPE;
+            } else {
+                return LIST_ITEM_TYPE;
+            }
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view;
+
+            if (viewType == SPACER_ITEM_TYPE) {
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.spacer_view_holder, parent, false);
+                return new SpacerViewHolder(view);
+            }
+
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.all_categories_view_holder, parent, false);
 
             if (onClickListener != null) {
                 view.setOnClickListener(onClickListener);
@@ -177,19 +202,27 @@ public class AllCategoriesFragment extends RxBaseFragment {
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            Allcategories category = categoriesArrayList.get(position);
-            String[] pages = {"страница", "страницы", "страниц"};
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (position != 0) {
+                Allcategories category = categoriesArrayList.get(position - 1);
+                String[] pages = {"страница", "страницы", "страниц"};
 
-            holder.titleTextView.setText(category.getTitle());
-            holder.membersCountTextView.setText(category.getPages()
-                    + " " + StringUtils.declarationOfNum(Integer.parseInt(category.getPages()), pages)
-                    + " " + getString(R.string.in_this_category));
+                ((ViewHolder)holder).titleTextView.setText(category.getTitle());
+                ((ViewHolder)holder).membersCountTextView.setText(category.getPages()
+                        + " " + StringUtils.declarationOfNum(Integer.parseInt(category.getPages()), pages)
+                        + " " + getString(R.string.in_this_category));
+            }
         }
 
         @Override
         public int getItemCount() {
-            return categoriesArrayList == null ? 0 : categoriesArrayList.size();
+            return categoriesArrayList == null ? 0 : categoriesArrayList.size() + 1;
+        }
+
+        private class SpacerViewHolder extends RecyclerView.ViewHolder {
+            public SpacerViewHolder(View itemView) {
+                super(itemView);
+            }
         }
 
         protected class ViewHolder extends RecyclerView.ViewHolder {

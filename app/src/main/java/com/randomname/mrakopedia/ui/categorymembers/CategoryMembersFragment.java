@@ -144,6 +144,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 loadCategoryMembers();
             }
         });
+        recyclerView.addOnScrollListener(((CategoryMembersActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
         loadCategoryMembers();
         getCategoryDescription();
@@ -475,7 +476,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private static final int LIST_TYPE = 0;
         public static final int TEXT_TYPE = 1;
         public static final int IMAGE_TYPE = 2;
-        private static final int SEPARATOR_TYPE = 5;
+        private static final int SEPARATOR_TYPE = 7;
 
         private Context context;
         private String filter = "";
@@ -513,6 +514,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
             descriptionSections = sections;
 
             if (!descriptionSections.isEmpty()) {
+                descriptionSections.add(0, new TextSection(TextSection.SPACER_TYPE, ""));
                 descriptionSections.add(new TextSection(SEPARATOR_TYPE, ""));
             }
 
@@ -546,6 +548,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 case SEPARATOR_TYPE:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_members_separator, parent, false);
                     return new SeparatorViewHolder(view);
+                case TextSection.SPACER_TYPE:
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.spacer_view_holder, parent, false);
+                    return new SpacerViewHolder(view);
                 default:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_view_holder, parent, false);
                     return new ListItemViewHolder(view);
@@ -584,6 +589,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         public int getDescriptionCount() {
             return descriptionSections.size();
+        }
+
+        private class SpacerViewHolder extends RecyclerView.ViewHolder {
+            public SpacerViewHolder(View itemView) {
+                super(itemView);
+            }
         }
 
         private class ListItemViewHolder extends RecyclerView.ViewHolder {

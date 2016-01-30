@@ -15,6 +15,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
 import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
+import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private final int DRAWER_ALL_CATEGORIES = 0;
     private final int DRAWER_FAVORITE = 1;
     private final int DRAWER_RECENT_CHANGES = 2;
+
+    public ToolbarHideRecyclerOnScrollListener toolbarHideRecyclerOnScrollListener;
 
     private static final int TIME_INTERVAL = 1000; // # milliseconds, desired time passed between two back presses.
     private long mBackPressed;
@@ -45,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         initToolbar();
         initDrawer();
+
+        toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbar);
 
         if (getSupportFragmentManager().getFragments() == null) {
             setAllCategoriesFragment();
@@ -134,6 +139,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void setFragment(Fragment fragment, String tag) {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(tag);
+
+        toolbar.setTranslationY(0);
+        toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
 
         if (frag != null) {
             return;
