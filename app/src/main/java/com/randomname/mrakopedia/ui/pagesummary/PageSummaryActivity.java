@@ -19,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,81 +56,17 @@ public class PageSummaryActivity extends AppCompatActivity {
 
         initToolbar(pageTitle);
 
-        toolbarHideListener = new RecyclerView.OnScrollListener() {
-
-            // Keeps track of the overall vertical offset in the list
-            int verticalOffset;
-
-            // Determines the scroll UP/DOWN direction
-            boolean scrollingUp;
-
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if (scrollingUp) {
-                        if (verticalOffset > toolbarWrapper.getHeight()) {
-                            toolbarAnimateHide();
-                        } else {
-                            toolbarAnimateShow(verticalOffset);
-                        }
-                    } else {
-                        if (toolbarWrapper.getTranslationY() < toolbarWrapper.getHeight() * -0.6 && verticalOffset > toolbarWrapper.getHeight()) {
-                            toolbarAnimateHide();
-                        } else {
-                            toolbarAnimateShow(verticalOffset);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public final void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                verticalOffset += dy;
-                scrollingUp = dy > 0;
-                int toolbarYOffset = (int) (dy - toolbarWrapper.getTranslationY());
-                toolbarWrapper.animate().cancel();
-                if (scrollingUp) {
-                    if (toolbarYOffset < toolbarWrapper.getHeight()) {
-                        toolbarWrapper.setTranslationY(-toolbarYOffset);
-                    } else {
-                        toolbarWrapper.setTranslationY(-toolbarWrapper.getHeight());
-                    }
-                } else {
-                    if (toolbarYOffset < 0) {
-                        toolbarWrapper.setTranslationY(0);
-                    } else {
-                        toolbarWrapper.setTranslationY(-toolbarYOffset);
-                    }
-                }
-            }
-        };
-    }
-
-    private void toolbarAnimateShow(final int verticalOffset) {
-        toolbarWrapper.animate()
-                .translationY(0)
-                .setInterpolator(new LinearInterpolator())
-                .setDuration(180);
-    }
-
-    private void toolbarAnimateHide() {
-        toolbarWrapper.animate()
-                .translationY(-toolbar.getHeight())
-                .setInterpolator(new LinearInterpolator())
-                .setDuration(180);
+        toolbarHideListener = new ToolbarHideRecyclerOnScrollListener(toolbarWrapper);
     }
 
     public void startSelection() {
         setAlphaAnimation(copyToolbar, false);
-        setAlphaAnimation(toolbar, true);
 
         isSelectedMode = true;
     }
 
     public void stopSelection() {
         setAlphaAnimation(copyToolbar, true);
-        setAlphaAnimation(toolbar, false);
-
 
         fragment.cancelSelection();
         isSelectedMode = false;
@@ -164,6 +101,7 @@ public class PageSummaryActivity extends AppCompatActivity {
             }
         });
 
+        view.setVisibility(View.VISIBLE);
         view.clearAnimation();
         view.setAnimation(alphaAnimation);
         view.animate();
