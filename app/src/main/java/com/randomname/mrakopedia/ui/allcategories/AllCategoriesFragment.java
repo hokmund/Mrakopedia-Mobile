@@ -75,7 +75,12 @@ public class AllCategoriesFragment extends RxBaseFragment {
         recyclerView.setLayoutManager(manager);
         recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
-        loadCategoryMembersViaNetwork();
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadCategoryMembersViaNetwork();
+            }
+        }, 100);
 
         return view;
     }
@@ -145,7 +150,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
                                     if (!toSkip) {
                                         adapter.getDisplayedData().add(category);
-                                        adapter.notifyDataSetChanged();
+                                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
                                     }
                                 }
 

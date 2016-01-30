@@ -94,7 +94,13 @@ public class RecentChangesFragment extends RxBaseFragment {
         });
         recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
-        getRecentChanges();
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getRecentChanges();
+            }
+        }, 100);
+
         return view;
     }
 
@@ -154,7 +160,7 @@ public class RecentChangesFragment extends RxBaseFragment {
                         .subscribe(new Subscriber<Recentchanges>() {
                             @Override
                             public void onCompleted() {
-                                adapter.notifyDataSetChanged();
+
                             }
 
                             @Override
@@ -177,6 +183,7 @@ public class RecentChangesFragment extends RxBaseFragment {
                             @Override
                             public void onNext(Recentchanges recentchanges) {
                                 adapter.getDisplayedData().add(recentchanges);
+                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(recentchanges) + 1);
                                 checkIfPageWasRead(recentchanges);
 
                             }
@@ -223,7 +230,7 @@ public class RecentChangesFragment extends RxBaseFragment {
                                             .indexOf(recentChange))
                                             .setIsViewed(aBoolean);
 
-                                    adapter.notifyItemChanged(adapter.getDisplayedData().indexOf(recentChange));
+                                    adapter.notifyItemChanged(adapter.getDisplayedData().indexOf(recentChange) + 1);
                                 }
                             }
                         });
@@ -246,6 +253,8 @@ public class RecentChangesFragment extends RxBaseFragment {
         public RecentChangesAdapter(ArrayList<Recentchanges> recentChangesArrayList, View.OnClickListener onClickListener) {
             this.recentChangesArrayList = recentChangesArrayList;
             this.onClickListener = onClickListener;
+
+            notifyItemInserted(0);
         }
 
         public ArrayList<Recentchanges> getDisplayedData() {

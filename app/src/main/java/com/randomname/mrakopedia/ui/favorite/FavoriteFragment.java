@@ -79,7 +79,12 @@ public class FavoriteFragment extends RxBaseFragment {
         recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
 
-        getFavoriteFromRealm();
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getFavoriteFromRealm();
+            }
+        }, 100);
 
         return view;
     }
@@ -114,7 +119,6 @@ public class FavoriteFragment extends RxBaseFragment {
                             @Override
                             public void onCompleted() {
                                 checkForEmpty();
-                                adapter.notifyDataSetChanged();
                             }
 
                             @Override
@@ -126,6 +130,7 @@ public class FavoriteFragment extends RxBaseFragment {
                             @Override
                             public void onNext(PageSummaryRealm pageSummaryRealm) {
                                 adapter.getDisplayedData().add(pageSummaryRealm);
+                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(pageSummaryRealm) + 1);
                             }
                         });
 
