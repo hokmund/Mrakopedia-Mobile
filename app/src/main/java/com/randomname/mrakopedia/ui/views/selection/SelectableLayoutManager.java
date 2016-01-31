@@ -8,7 +8,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-public class SelectableLayoutManager extends LinearLayoutManager {
+import com.randomname.mrakopedia.ui.views.PreCachingLayoutManager;
+
+public class SelectableLayoutManager extends PreCachingLayoutManager {
 
     private static final String TAG = ">>>>>";
     private SelectionController sh;

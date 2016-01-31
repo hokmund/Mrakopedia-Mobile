@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubeIntents;
+import com.google.android.youtube.player.YouTubeThumbnailLoader;
+import com.google.android.youtube.player.YouTubeThumbnailView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -22,10 +27,13 @@ import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.ui.views.CustomMovementMethod;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
+import com.randomname.mrakopedia.ui.views.ProportionalImageView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 import com.randomname.mrakopedia.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by vgrigoryev on 22.01.2016.
@@ -39,7 +47,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private OnCategoryClickListener categoryClickListener;
     private DisplayImageOptions options;
 
-    public PageSummaryAdapter(ArrayList<TextSection> sections, Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener, OnCategoryClickListener categoryClickListener) {
+    public PageSummaryAdapter(final ArrayList<TextSection> sections, final Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener, OnCategoryClickListener categoryClickListener) {
         this.sections = sections;
         this.context = context;
         this.linkClickListener = linkClickListener;
@@ -53,7 +61,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
                 .build();
 
-        sections.add(new TextSection(TextSection.SPACER_TYPE, ""));
+        if (sections.isEmpty()) {
+            sections.add(new TextSection(TextSection.SPACER_TYPE, ""));
+        }
     }
 
     public ArrayList<TextSection> getDisplayedData() {
@@ -89,6 +99,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.SPACER_TYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.spacer_view_holder, parent, false);
                 return new SpacerViewHolder(view);
+            case TextSection.YOUTUBE_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.youtube_viewholder, parent, false);
+                return new YoutubeViewHolder(view);
             default:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
                 return new TextViewHolder(view);
@@ -123,6 +136,21 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 categoryViewHolder.categoryTitle.setText(categories.getText());
                 categoryViewHolder.adapter.setData(categories.getCategoriesArrayList());
 
+                break;
+            case TextSection.YOUTUBE_TYPE:
+                ((YoutubeViewHolder)holder).thumbnailView.setImageResource(android.R.color.transparent);
+                String urlString = "http://img.youtube.com/vi/" + sections.get(position).getText()  + "/mqdefault.jpg";
+                ImageLoader.getInstance().displayImage(urlString, ((YoutubeViewHolder)holder).thumbnailView, options);
+
+                ((YoutubeViewHolder)holder).thumbnailView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (YouTubeIntents.canResolvePlayVideoIntentWithOptions(context)) {
+                            //Opens in the YouTube app in fullscreen and returns to this app once the video finishes
+                            context.startActivity(YouTubeIntents.createPlayVideoIntentWithOptions(context, sections.get(position).getText(), true, true));
+                        }
+                    }
+                });
                 break;
             default:
         }
@@ -228,6 +256,16 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             imageView = (ImageView)view.findViewById(R.id.image_view);
             textView = (TextView)view.findViewById(R.id.text_view);
             wrapper = (RelativeLayout)view.findViewById(R.id.wrapper);
+        }
+    }
+
+    private class YoutubeViewHolder extends RecyclerView.ViewHolder {
+
+        protected ProportionalImageView thumbnailView;
+
+        public YoutubeViewHolder(View view) {
+            super(view);
+            thumbnailView = (ProportionalImageView)view.findViewById(R.id.video_image_view);
         }
     }
 

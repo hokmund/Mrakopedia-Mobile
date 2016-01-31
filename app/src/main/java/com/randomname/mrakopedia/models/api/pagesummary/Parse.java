@@ -6,6 +6,9 @@ import java.util.ArrayList;
  * Created by Vlad on 20.01.2016.
  */
 public class Parse {
+
+    private boolean hasYoutube = false;
+
     private String[] externallinks;
 
     private String displaytitle;
@@ -33,6 +36,14 @@ public class Parse {
     private String revid;
 
     private String[] langlinks;
+
+    public boolean isHasYoutube() {
+        return hasYoutube;
+    }
+
+    public void setHasYoutube(boolean hasYoutube) {
+        this.hasYoutube = hasYoutube;
+    }
 
     public String[] getExternallinks ()
     {

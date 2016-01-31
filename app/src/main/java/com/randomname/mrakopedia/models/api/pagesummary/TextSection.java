@@ -16,6 +16,7 @@ public class TextSection implements Parcelable{
     public static final int CATEGORY_TYPE = 5;
     public static final int SPACER_TYPE = 6;
     public static final int SEPARATOR_TYPE = 7;
+    public static final int YOUTUBE_TYPE = 8;
 
     private int type;
     private String text;

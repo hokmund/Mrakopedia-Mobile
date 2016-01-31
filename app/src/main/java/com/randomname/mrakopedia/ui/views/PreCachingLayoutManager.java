@@ -3,6 +3,7 @@ package com.randomname.mrakopedia.ui.views;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 
 public class PreCachingLayoutManager extends LinearLayoutManager {
     private static final int DEFAULT_EXTRA_LAYOUT_SPACE = 600;
@@ -23,6 +24,10 @@ public class PreCachingLayoutManager extends LinearLayoutManager {
     public PreCachingLayoutManager(Context context, int orientation, boolean reverseLayout) {
         super(context, orientation, reverseLayout);
         this.context = context;
+    }
+
+    public PreCachingLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     public void setExtraLayoutSpace(int extraLayoutSpace) {

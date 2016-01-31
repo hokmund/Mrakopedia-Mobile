@@ -23,4 +23,8 @@ public class StringUtils {
 
         return source.subSequence(0, i+1);
     }
+
+    public static String escapeCharacters(String string) {
+        return string;
+    }
 }

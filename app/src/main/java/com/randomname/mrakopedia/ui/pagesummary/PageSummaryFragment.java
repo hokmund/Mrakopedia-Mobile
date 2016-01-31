@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
+import com.google.android.youtube.player.YouTubeApiServiceUtil;
+import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
@@ -37,6 +39,7 @@ import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
 import com.randomname.mrakopedia.ui.views.selection.SelectionCallback;
 import com.randomname.mrakopedia.utils.NetworkUtils;
+import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
 import org.jsoup.Jsoup;
@@ -45,6 +48,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -289,12 +293,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                             scriptTags.remove();
                         }
 
-                        Elements embedVideos = doc.select(".embedvideo");
-
-                        if (!embedVideos.isEmpty()) {
-                            embedVideos.remove();
-                        }
-
                         Elements spoilerLinks = doc.select("a.spoilerLink");
                         if (!spoilerLinks.isEmpty()) {
                             spoilerLinks.remove();
@@ -353,6 +351,31 @@ public class PageSummaryFragment extends RxBaseFragment {
                             }
                         }
 
+                        Elements iFrames = doc.select("iframe");
+
+                        if (!iFrames.isEmpty()) {
+                            for (Element iFrame : iFrames) {
+                                String src;
+                                if (iFrame.attr("src").contains("youtube")) {
+                                    src = iFrame.attr("src");
+
+                                    src = src.substring(src.indexOf("embed/") + 6);
+
+                                    if (src.charAt(src.length() - 1) == '?') {
+                                        src = src.substring(0, src.length() - 1);
+                                    }
+
+                                    iFrame.tagName("p");
+                                    iFrame.addClass("youtubeVideo");
+                                    iFrame.html(src);
+
+
+                                    pageSummaryResult.getParse().setHasYoutube(true);
+                                }
+                            }
+                        }
+
+
                         Elements imgTags = doc.select("img");
 
                         if (!imgTags.isEmpty()) {
@@ -390,6 +413,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                     @Override
                     public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
                         splitTextAndImages(pageSummaryResult);
+                        getYoutubeVideos(pageSummaryResult);
                         addHeader(pageSummaryResult);
                         addTemplates(pageSummaryResult);
                         addLinks(pageSummaryResult);
@@ -455,6 +479,13 @@ public class PageSummaryFragment extends RxBaseFragment {
                         });
                         loadingProgressBar.setAnimation(animation);
                         loadingProgressBar.animate();
+
+                        final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity());
+
+                        if (result != YouTubeInitializationResult.SUCCESS) {
+                            //If there are any issues we can show an error dialog.
+                            result.getErrorDialog(getActivity(), 0).show();
+                        }
                     }
 
                     @Override
@@ -506,6 +537,13 @@ public class PageSummaryFragment extends RxBaseFragment {
                         recyclerView.animate();
 
                         loadingProgressBar.setVisibility(View.GONE);
+
+                        final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity());
+
+                        if (result != YouTubeInitializationResult.SUCCESS) {
+                            //If there are any issues we can show an error dialog.
+                            result.getErrorDialog(getActivity(), 0).show();
+                        }
                     }
 
                     @Override
@@ -549,6 +587,49 @@ public class PageSummaryFragment extends RxBaseFragment {
         } else {
             pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.TEXT_TYPE, pageSummaryResult.getParse().getText().getText()));
         }
+    }
+
+    private void getYoutubeVideos(PageSummaryResult pageSummaryResult) {
+        if (!pageSummaryResult.getParse().isHasYoutube()) {
+            return;
+        }
+
+        TextSection textSection;
+        Document doc;
+        Elements youtubeTags;
+        ArrayList<TextSection> newSections = new ArrayList<>();
+        String stringToSplit;
+        String[] splitedString;
+
+        for (int i = 0; i < pageSummaryResult.getParse().getTextSections().size(); i++) {
+            textSection = pageSummaryResult.getParse().getTextSections().get(i);
+
+            if (textSection.getType() == TextSection.TEXT_TYPE && textSection.getText().contains("youtubeVideo")) {
+                doc = Jsoup.parse(textSection.getText());
+                stringToSplit = textSection.getText();
+
+                youtubeTags = doc.select("p.youtubeVideo");
+
+                if (!youtubeTags.isEmpty()) {
+                    for (Element youtubeElement : youtubeTags) {
+                        splitedString = stringToSplit.split(Pattern.quote(youtubeElement.outerHtml()));
+
+                        newSections.add(new TextSection(TextSection.TEXT_TYPE, splitedString[0]));
+                        newSections.add(new TextSection(TextSection.YOUTUBE_TYPE, youtubeElement.html()));
+
+                        if (splitedString.length > 1) {
+                            stringToSplit = splitedString[1];
+                        }
+                    }
+                }
+
+                newSections.add(new TextSection(TextSection.TEXT_TYPE, stringToSplit));
+            } else {
+                newSections.add(textSection);
+            }
+        }
+
+        pageSummaryResult.getParse().setTextSections(newSections);
     }
 
     private void addHeader(PageSummaryResult pageSummaryResult) {
