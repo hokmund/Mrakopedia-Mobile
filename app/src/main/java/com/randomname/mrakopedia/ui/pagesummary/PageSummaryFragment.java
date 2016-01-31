@@ -298,6 +298,11 @@ public class PageSummaryFragment extends RxBaseFragment {
                             spoilerLinks.remove();
                         }
 
+                        Elements spoilersButtons = doc.select("span.spoilers-button");
+                        if (!spoilersButtons.isEmpty()) {
+                            spoilersButtons.remove();
+                        }
+
                         Elements delTag = doc.select("del");
                         if (!delTag.isEmpty()) {
                             delTag.tagName("strike");
@@ -573,7 +578,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
         if (!imgTags.isEmpty()) {
             for (Element imgTag : imgTags) {
-                String[] splited = stringToSplit.split(imgTag.outerHtml());
+                String[] splited = stringToSplit.split(Pattern.quote(imgTag.outerHtml()));
                 if (splited.length > 1) {
                     stringToSplit = splited[1];
                 } else {
@@ -693,6 +698,15 @@ public class PageSummaryFragment extends RxBaseFragment {
 
         boolean headerAdded = false;
         boolean toSkip = false;
+        TextSection lastSection = pageSummaryResult.getParse().getTextSections().get(pageSummaryResult.getParse().getTextSections().size() - 1);
+
+        if (lastSection.getText().contains("См.также")) {
+            lastSection.setText(lastSection.getText().split(Pattern.quote("См.также"))[0]);
+        }
+
+        if (lastSection.getText().contains("Смотри также")) {
+            lastSection.setText(lastSection.getText().split(Pattern.quote("Смотри также"))[0]);
+        }
 
         for (Links link : pageSummaryResult.getParse().getLinks()) {
             toSkip = false;
