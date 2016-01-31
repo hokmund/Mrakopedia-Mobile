@@ -27,6 +27,9 @@
             android:label="@string/title_activity_category_members" />
         <activity android:name=".ui.pagesummary.PageSummaryActivity" />
         <activity android:name=".ui.fullscreenfoto.FullScreentFotoActivity"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="796d2232effc5fd4bbb83f1899010c0925d4fdeb" />
     </application>
 
 </manifest>
