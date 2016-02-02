@@ -21,7 +21,7 @@ public interface MrakopediaAPI {
             @Query("cmcontinue") String continueString
     );
 
-    @GET("api.php?action=query&continue=&format=json&list=allcategories&acmin=1&aclimit=100&acprop=size|hidden")
+    @GET("api.php?action=query&continue=&format=json&list=allcategories&acmin=1&aclimit=500&acprop=size|hidden")
     Observable<AllCategoriesResult> getAllCategories(
             @Query("accontinue") String continueString
     );

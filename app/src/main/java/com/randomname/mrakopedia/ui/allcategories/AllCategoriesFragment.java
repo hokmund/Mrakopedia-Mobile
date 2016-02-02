@@ -42,7 +42,9 @@ import rx.schedulers.Schedulers;
  * Created by vgrigoryev on 20.01.2016.
  */
 public class AllCategoriesFragment extends RxBaseFragment {
+
     private static final String TAG = "AllCategoriesFragment";
+    private static final String RESULT_ARRAY_LIST_KEY = "resultArrayListKey";
 
     @Bind(R.id.all_categories_recycler_view)
     RecyclerView recyclerView;
@@ -55,11 +57,20 @@ public class AllCategoriesFragment extends RxBaseFragment {
     private String continueString = "";
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            resultArrayList = savedInstanceState.getParcelableArrayList(RESULT_ARRAY_LIST_KEY);
+        } else {
+            resultArrayList = new ArrayList<>();
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.all_categories_fragment, null);
         ButterKnife.bind(this, view);
 
-        resultArrayList = new ArrayList<>();
         adapter = new AllCategoriesAdapter(resultArrayList, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,14 +86,23 @@ public class AllCategoriesFragment extends RxBaseFragment {
         recyclerView.setLayoutManager(manager);
         recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
-        new android.os.Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loadCategoryMembersViaNetwork();
-            }
-        }, 100);
+        if (resultArrayList.isEmpty()) {
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    loadCategoryMembersViaNetwork();
+                }
+            }, 100);
+
+        }
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(RESULT_ARRAY_LIST_KEY, resultArrayList);
+        super.onSaveInstanceState(outState);
     }
 
     private void loadCategoryMembersViaNetwork() {

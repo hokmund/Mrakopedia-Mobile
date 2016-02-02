@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,7 +35,11 @@ public class FavoriteFragment extends RxBaseFragment {
 
     private static final String TAG = "Favorite Fragment";
 
+    private static final String RECYCLER_VIEW_STATE_KEY = "recyclerViewStateKey";
+
     private static final int PAGE_SUMMARY_ACTIVITY_CODE = 11;
+
+    private Parcelable recyclerViewState;
 
     @Bind(R.id.error_text_view)
     TextView errorTextView;
@@ -42,6 +47,7 @@ public class FavoriteFragment extends RxBaseFragment {
     @Bind(R.id.favorite_recycler_view)
     RecyclerView recyclerView;
     FavoriteAdapter adapter;
+    LinearLayoutManager manager;
 
     ArrayList<PageSummaryRealm> favoritePages;
 
@@ -54,6 +60,10 @@ public class FavoriteFragment extends RxBaseFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            recyclerViewState = savedInstanceState.getParcelable(RECYCLER_VIEW_STATE_KEY);
+        }
+
         favoritePages = new ArrayList<>();
     }
 
@@ -62,7 +72,9 @@ public class FavoriteFragment extends RxBaseFragment {
         View view = inflater.inflate(R.layout.favorite_fragment, null);
         ButterKnife.bind(this, view);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        manager = new LinearLayoutManager(getActivity());
+
+        recyclerView.setLayoutManager(manager);
         adapter = new FavoriteAdapter(favoritePages, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,6 +99,12 @@ public class FavoriteFragment extends RxBaseFragment {
         }, 100);
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(RECYCLER_VIEW_STATE_KEY, manager.onSaveInstanceState());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -119,6 +137,10 @@ public class FavoriteFragment extends RxBaseFragment {
                             @Override
                             public void onCompleted() {
                                 checkForEmpty();
+                                if (recyclerViewState != null) {
+                                    manager.onRestoreInstanceState(recyclerViewState);
+                                    recyclerViewState = null;
+                                }
                             }
 
                             @Override
