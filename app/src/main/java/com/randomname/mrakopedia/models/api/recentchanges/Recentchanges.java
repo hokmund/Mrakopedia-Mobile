@@ -1,9 +1,12 @@
 package com.randomname.mrakopedia.models.api.recentchanges;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Vlad on 27.01.2016.
  */
-public class Recentchanges {
+public class Recentchanges implements Parcelable {
     private String timestamp;
 
     private String title;
@@ -21,6 +24,21 @@ public class Recentchanges {
     private String pageid;
 
     private boolean isViewed;
+
+    public Recentchanges() {
+    }
+
+    public Recentchanges(Parcel in) {
+        timestamp = in.readString();
+        title = in.readString();
+        ns = in.readString();
+        revid = in.readString();
+        old_revid = in.readString();
+        type = in.readString();
+        rcid = in.readString();
+        pageid = in.readString();
+        isViewed = in.readByte() != 0;
+    }
 
     public String getTimestamp ()
     {
@@ -115,4 +133,32 @@ public class Recentchanges {
     {
         return "ClassPojo [timestamp = "+timestamp+", title = "+title+", ns = "+ns+", revid = "+revid+", old_revid = "+old_revid+", type = "+type+", rcid = "+rcid+", pageid = "+pageid+"]";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(timestamp);
+        dest.writeString(title);
+        dest.writeString(ns);
+        dest.writeString(revid);
+        dest.writeString(old_revid);
+        dest.writeString(type);
+        dest.writeString(rcid);
+        dest.writeString(pageid);
+        dest.writeByte((byte) (isViewed ? 1 : 0));
+    }
+
+    public static final Parcelable.Creator<Recentchanges> CREATOR = new Parcelable.Creator<Recentchanges>() {
+        public Recentchanges createFromParcel(Parcel in) {
+            return new Recentchanges(in);
+        }
+
+        public Recentchanges[] newArray(int size) {
+            return new Recentchanges[size];
+        }
+    };
 }

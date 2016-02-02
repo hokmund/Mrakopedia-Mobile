@@ -48,6 +48,9 @@ public class RecentChangesFragment extends RxBaseFragment {
 
     private static final String TAG = "Recent changes Fragment";
     private static final int PAGE_SUMMARY_ACTIVITY_CODE = 11;
+    private static final String RECENT_CHANGES_ARRAY_LIST_KEY = "recentChangesArrayListKey";
+    private static final String CONTINUE_STRING_KEY = "continueStringKey";
+    private static final String SELECTED_POSITION_KEY = "selectedPositionKey";
 
     private String continueString = "";
     private ArrayList<Recentchanges> recentChangesArrayList;
@@ -65,7 +68,18 @@ public class RecentChangesFragment extends RxBaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        recentChangesArrayList = new ArrayList<>();
+
+        if (savedInstanceState != null) {
+            recentChangesArrayList = savedInstanceState.getParcelableArrayList(RECENT_CHANGES_ARRAY_LIST_KEY);
+            continueString = savedInstanceState.getString(CONTINUE_STRING_KEY);
+            selectedPosition = savedInstanceState.getInt(SELECTED_POSITION_KEY, 0);
+
+            if (recentChangesArrayList == null) {
+                recentChangesArrayList = new ArrayList<>();
+            }
+        } else {
+            recentChangesArrayList = new ArrayList<>();
+        }
     }
 
     @Override
@@ -92,24 +106,37 @@ public class RecentChangesFragment extends RxBaseFragment {
                 getRecentChanges();
             }
         });
-        recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
+        recyclerView.addOnScrollListener(((MainActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
 
-        new android.os.Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getRecentChanges();
-            }
-        }, 100);
+        if (recentChangesArrayList.isEmpty()) {
+            new android.os.Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getRecentChanges();
+                }
+            }, 100);
+        }
 
         return view;
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(RECENT_CHANGES_ARRAY_LIST_KEY, recentChangesArrayList);
+        outState.putString(CONTINUE_STRING_KEY, continueString);
+        outState.putInt(SELECTED_POSITION_KEY, selectedPosition);
+        super.onSaveInstanceState(outState);
+    }
 
-        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE) {
             adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
             adapter.notifyDataSetChanged();
+
+            Log.e(TAG, selectedPosition + " selected position");
+            Log.e(TAG, adapter.getDisplayedData().get(selectedPosition).getTitle() + " selected position title");
+            Log.e(TAG, adapter.getDisplayedData().get(selectedPosition).isViewed() + " selected position is veiwed");
         }
 
         super.onActivityResult(requestCode, resultCode, data);
