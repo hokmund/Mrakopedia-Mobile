@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -28,6 +29,7 @@ import butterknife.OnClick;
 public class PageSummaryActivity extends AppCompatActivity {
 
     public static final String PAGE_NAME_EXTRA = "pageNameExtra";
+    public static final String PAGE_ID_EXTRA = "pageIdExtra";
     private static final String PAGE_FRAGMENT_TAG = "summaryFragmentTag";
 
     private PageSummaryFragment fragment;
@@ -49,11 +51,8 @@ public class PageSummaryActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         String pageTitle = getIntent().getStringExtra(PAGE_NAME_EXTRA);
-
-        if (pageTitle != null) {
-            setPageSummaryFragment(pageTitle);
-        }
-
+        String pageId = getIntent().getStringExtra(PAGE_ID_EXTRA);
+        setPageSummaryFragment(pageTitle, pageId);
         initToolbar(pageTitle);
 
         toolbarHideListener = new ToolbarHideRecyclerOnScrollListener(toolbarWrapper);
@@ -152,7 +151,7 @@ public class PageSummaryActivity extends AppCompatActivity {
         });
     }
 
-    private void setPageSummaryFragment(String pageTitle) {
+    private void setPageSummaryFragment(String pageTitle, String pageId) {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(PAGE_FRAGMENT_TAG);
 
         if (frag != null) {
@@ -160,7 +159,7 @@ public class PageSummaryActivity extends AppCompatActivity {
             return;
         }
 
-        fragment = PageSummaryFragment.getInstance(pageTitle);
+        fragment = PageSummaryFragment.getInstance(pageTitle, pageId);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame, fragment, PAGE_FRAGMENT_TAG);
         fragmentTransaction.commit();

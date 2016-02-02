@@ -83,6 +83,7 @@ public class FavoriteFragment extends RxBaseFragment {
 
                 Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
                 intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getPageTitle());
+                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(position).getPageId());
 
                 startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }

@@ -11,11 +11,20 @@ public class PageSummaryRealm extends RealmObject {
 
     @PrimaryKey
     private String pageTitle;
+    private String pageId;
     private RealmList<TextSectionRealm> textSections;
     private boolean isFavorite;
     private boolean isRead;
 
     public PageSummaryRealm() {
+    }
+
+    public String getPageId() {
+        return pageId;
+    }
+
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
     }
 
     public String getPageTitle() {

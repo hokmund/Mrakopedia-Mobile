@@ -23,15 +23,16 @@ public class DBWorker {
         return !Realm.getDefaultInstance().where(PageSummaryRealm.class).equalTo("pageTitle", title).findAll().isEmpty();
     }
 
-    public static void savePageSummary(PageSummaryResult pageSummaryResult, boolean isRead) {
+    public static void savePageSummary(PageSummaryResult pageSummaryResult, boolean isRead, String pageId, String pageTitle) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
         PageSummaryRealm pageSummaryToSave = new PageSummaryRealm();
-        pageSummaryToSave.setPageTitle(pageSummaryResult.getParse().getTitle());
+        pageSummaryToSave.setPageTitle(pageTitle);
         pageSummaryToSave.setIsFavorite(getPageIsFavorite(pageSummaryResult.getParse().getTitle()));
         pageSummaryToSave.setIsRead(isRead);
         pageSummaryToSave.setTextSections(new RealmList<TextSectionRealm>());
+        pageSummaryToSave.setPageId(pageId);
 
         TextSectionRealm textSectionRealm;
 
@@ -57,9 +58,11 @@ public class DBWorker {
         Realm realm = Realm.getDefaultInstance();
         PageSummaryRealm pageSummaryRealm = realm.where(PageSummaryRealm.class).equalTo("pageTitle", pageTitle).findFirst();
 
-        realm.beginTransaction();
-        pageSummaryRealm.setIsFavorite(status);
-        realm.commitTransaction();
+        if (pageSummaryRealm != null) {
+            realm.beginTransaction();
+            pageSummaryRealm.setIsFavorite(status);
+            realm.commitTransaction();
+        }
 
         realm.close();
     }

@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -69,10 +70,12 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     private static final String TAG = "PageSummaryFragment";
     private static final String PAGE_TITLE_KEY = "pageTitleKey";
+    private static final String PAGE_ID_KEY = "pageIdKey";
 
     private static final String TEXT_SECTIONS_KEY = "textSectionsKey";
 
     private String pageTitle;
+    private String pageId;
     private boolean pageIsFavorite = false;
     private boolean pageIsRead = false;
 
@@ -91,10 +94,11 @@ public class PageSummaryFragment extends RxBaseFragment {
     public PageSummaryFragment() {
     }
 
-    public static PageSummaryFragment getInstance(String pageTitle) {
+    public static PageSummaryFragment getInstance(String pageTitle, String pageId) {
         PageSummaryFragment fragment = new PageSummaryFragment();
         Bundle bundle = new Bundle();
         bundle.putString(PAGE_TITLE_KEY, pageTitle);
+        bundle.putString(PAGE_ID_KEY, pageId);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -105,6 +109,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
         if (getArguments() != null) {
             pageTitle = getArguments().getString(PAGE_TITLE_KEY);
+            pageId = getArguments().getString(PAGE_ID_KEY);
         }
 
         if (savedInstanceState != null) {
@@ -269,7 +274,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
         Subscription subscription = MrakopediaApiWorker
                 .getInstance()
-                .getPageSummary(pageTitle)
+                .getPageSummary(pageId)
                 .map(new Func1<PageSummaryResult, PageSummaryResult>() {
                     @Override
                     public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
@@ -435,7 +440,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                             pageIsRead = true;
                         }
 
-                        DBWorker.savePageSummary(pageSummaryResult, pageIsRead);
+                        DBWorker.savePageSummary(pageSummaryResult, pageIsRead, pageId, pageTitle);
                     }
                 })
                 .flatMap(new Func1<PageSummaryResult, Observable<TextSection>>() {
