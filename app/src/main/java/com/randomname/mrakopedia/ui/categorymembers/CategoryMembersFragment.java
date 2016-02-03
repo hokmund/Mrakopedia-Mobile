@@ -71,6 +71,11 @@ public class CategoryMembersFragment extends RxBaseFragment {
     private static final String TAG = "categoryMembersFragment";
     private static final String CATEGORY_TITLE_KEY = "categoryTitleKey";
 
+    private static final String CATEGORY_MEMBERS_KEY = "categoryMembersKey";
+    private static final String DESCRIPTION_SECTIONS_KEY = "descriptionSectionsKey";
+    private static final String CONTINUE_STRING_KEY = "continueStringKey";
+    private static final String SELECTED_POSITION_KEY = "selectedPositionKey";
+
     private static final int PAGE_SUMMARY_ACTIVITY_CODE = 11;
 
     @Bind(R.id.category_members_recycler_view)
@@ -82,6 +87,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     private CategoryMembersAdapter adapter;
     private ArrayList<Categorymembers> categorymembersArrayList;
+    private ArrayList<TextSection> descriptionSections;
     private String continueString = "";
     private String categoryTitle;
     private int selectedPosition = 0;
@@ -103,6 +109,15 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         Bundle bundle = getArguments();
 
+        if (savedInstanceState != null) {
+            categorymembersArrayList = savedInstanceState.getParcelableArrayList(CATEGORY_MEMBERS_KEY);
+            continueString = savedInstanceState.getString(CONTINUE_STRING_KEY, null);
+            selectedPosition = savedInstanceState.getInt(SELECTED_POSITION_KEY, 0);
+            descriptionSections = savedInstanceState.getParcelableArrayList(DESCRIPTION_SECTIONS_KEY);
+        } else {
+            categorymembersArrayList = new ArrayList<>();
+        }
+
         if (bundle != null) {
             String title = bundle.getString(CATEGORY_TITLE_KEY);
             if (title != null) {
@@ -116,7 +131,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
         View view = inflater.inflate(R.layout.category_members_fragment, null);
         ButterKnife.bind(this, view);
 
-        categorymembersArrayList = new ArrayList<>();
         adapter = new CategoryMembersAdapter(getActivity(), categorymembersArrayList, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,8 +161,16 @@ public class CategoryMembersFragment extends RxBaseFragment {
         });
         recyclerView.addOnScrollListener(((CategoryMembersActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
-        loadCategoryMembers();
-        getCategoryDescription();
+        if (categorymembersArrayList.isEmpty()) {
+            loadCategoryMembers();
+            getCategoryDescription();
+        } else {
+            if (descriptionSections != null) {
+                adapter.setDescriptionSections(descriptionSections);
+            }
+
+            recyclerView.setVisibility(View.VISIBLE);
+        }
 
         return view;
     }
@@ -157,7 +179,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_category_members, menu);
 
-        ((CategoryMembersActivity)getActivity()).setSearchMenuItem(menu.findItem(R.id.action_search));
+        ((CategoryMembersActivity) getActivity()).setSearchMenuItem(menu.findItem(R.id.action_search));
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -165,12 +187,22 @@ public class CategoryMembersFragment extends RxBaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE) {
             adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
             adapter.notifyDataSetChanged();
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(CATEGORY_MEMBERS_KEY, categorymembersArrayList);
+        outState.putString(CONTINUE_STRING_KEY, continueString);
+        outState.putInt(SELECTED_POSITION_KEY, selectedPosition);
+        outState.putParcelableArrayList(DESCRIPTION_SECTIONS_KEY, adapter.getDescriptionSections());
+
+        super.onSaveInstanceState(outState);
     }
 
     public void setFilter(String filter) {
@@ -514,13 +546,17 @@ public class CategoryMembersFragment extends RxBaseFragment {
         public void setDescriptionSections(ArrayList<TextSection> sections) {
             descriptionSections = sections;
 
-            if (!descriptionSections.isEmpty()) {
+            if (!descriptionSections.isEmpty() && descriptionSections.get(0).getType() != TextSection.SPACER_TYPE) {
                 descriptionSections.add(0, new TextSection(TextSection.SPACER_TYPE, ""));
                 descriptionSections.add(new TextSection(SEPARATOR_TYPE, ""));
             }
 
             notifyDataSetChanged();
             recyclerView.scrollToPosition(0);
+        }
+
+        public ArrayList<TextSection> getDescriptionSections() {
+            return descriptionSections;
         }
 
         @Override

@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by vgrigoryev on 22.01.2016.
  */
-public class TextSection implements Parcelable{
+public class TextSection implements Parcelable {
 
     public static final int UNDEFINED_TYPE = 0;
     public static final int TEXT_TYPE = 1;
