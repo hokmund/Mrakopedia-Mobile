@@ -27,6 +27,8 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
@@ -48,6 +50,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import butterknife.Bind;
@@ -156,7 +161,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 loadCategoryMembers();
             }
         });
-        recyclerView.addOnScrollListener(((CategoryMembersActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
+        recyclerView.addOnScrollListener(((CategoryMembersActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
 
         if (categorymembersArrayList.isEmpty()) {
             loadCategoryMembers();
@@ -255,7 +260,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         .subscribe(new Subscriber<Categorymembers>() {
                             @Override
                             public void onCompleted() {
-                                adapter.notifyDataSetChanged();
                             }
 
                             @Override
@@ -267,6 +271,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             @Override
                             public void onNext(Categorymembers categorymembers) {
                                 categorymembersArrayList.add(categorymembers);
+                                adapter.notifyItemInserted(categorymembersArrayList.indexOf(categorymembers) + adapter.getDescriptionSections().size());
+
                                 checkIfPageWasRead(categorymembers);
                             }
                         });
@@ -275,6 +281,36 @@ public class CategoryMembersFragment extends RxBaseFragment {
     }
 
     private void getCategoryDescription() {
+
+        Subscription getDescriptionFromRealm =
+                DBWorker.getCategoryDescription(categoryTitle)
+                .subscribe(new Subscriber<TextSection>() {
+                    @Override
+                    public void onCompleted() {
+                        if (adapter.getDescriptionSections().isEmpty()) {
+                            getCategoryDescriptionByNetwork();
+                        } else {
+                            recyclerView.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                        getCategoryDescriptionByNetwork();
+                    }
+
+                    @Override
+                    public void onNext(TextSection textSection) {
+                        adapter.addDescriptionSection(textSection);
+                    }
+                });
+
+        bindToLifecycle(getDescriptionFromRealm);
+    }
+
+    private void getCategoryDescriptionByNetwork() {
         loadingProgressBar.setVisibility(View.VISIBLE);
         Subscription getCategoryDescriptionSubscription =
                 MrakopediaApiWorker
@@ -383,6 +419,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                 return categoryDescription;
                             }
                         })
+                        .doOnNext(new Action1<CategoryDescription>() {
+                            @Override
+                            public void call(CategoryDescription categoryDescription) {
+                                DBWorker.saveCategoryDescription(categoryDescription, categoryTitle);
+                            }
+                        })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<CategoryDescription>() {
@@ -487,7 +529,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                                     .indexOf(categorymember))
                                             .setIsViewed(aBoolean);
 
-                                    adapter.notifyItemChanged(adapter.getDisplayedData().indexOf(categorymember));
+                                    adapter.notifyItemChanged(categorymembersArrayList.indexOf(categorymember) + adapter.getDescriptionSections().size());
                                 }
                             }
                         });
@@ -577,6 +619,17 @@ public class CategoryMembersFragment extends RxBaseFragment {
             recyclerView.scrollToPosition(0);
         }
 
+        public void addDescriptionSection(TextSection textSection) {
+            if (descriptionSections.isEmpty()) {
+                descriptionSections.add(0, new TextSection(TextSection.SPACER_TYPE, ""));
+                descriptionSections.add(new TextSection(SEPARATOR_TYPE, ""));
+                notifyDataSetChanged();
+            }
+
+            descriptionSections.add(descriptionSections.size() - 1, textSection);
+            notifyItemInserted(descriptionSections.indexOf(textSection));
+        }
+
         public ArrayList<TextSection> getDescriptionSections() {
             return descriptionSections;
         }
@@ -625,7 +678,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                     ((TextViewHolder) holder).textView.setText(span);
                     ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 } else if (holder.getItemViewType() == IMAGE_TYPE) {
-                    ImageLoader.getInstance().displayImage(descriptionSections.get(position).getText(), ((ImageViewHolder)holder).imageView, options);
+                    ImageLoader.getInstance().displayImage(descriptionSections.get(position).getText(), ((ImageViewHolder)holder).imageView, options, new AnimateFirstDisplayListener(descriptionSections.get(position).getText(), ((ImageViewHolder)holder).imageView));
                 }
                 return;
             }
@@ -687,6 +740,30 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private class SeparatorViewHolder extends RecyclerView.ViewHolder {
             public SeparatorViewHolder(View itemView) {
                 super(itemView);
+            }
+        }
+    }
+
+    private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
+        static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
+        private final String imageUri;
+        private final ImageView imageView;
+
+        AnimateFirstDisplayListener(String imageUri, ImageView imageView) {
+            this.imageUri = imageUri;
+            this.imageView = imageView;
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+            if (loadedImage != null) {
+                boolean firstDisplay = !displayedImages.contains(imageUri);
+                if (firstDisplay) {
+                    FadeInBitmapDisplayer.animate(imageView, 500);
+                } else {
+                    imageView.setImageBitmap(loadedImage);
+                }
+                displayedImages.add(imageUri);
             }
         }
     }

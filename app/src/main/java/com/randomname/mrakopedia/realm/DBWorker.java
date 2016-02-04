@@ -1,7 +1,9 @@
 package com.randomname.mrakopedia.realm;
 
+import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.models.realm.CategoryRealm;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 
@@ -9,8 +11,10 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmObject;
 import io.realm.RealmResults;
 import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Created by vgrigoryev on 22.01.2016.
@@ -135,6 +139,18 @@ public class DBWorker {
         return result;
     }
 
+    public static Observable<PageSummaryRealm> getPageSummaryById(String pageId) {
+        Realm realm = Realm.getDefaultInstance();
+
+        Observable<PageSummaryRealm> result = realm
+                .where(PageSummaryRealm.class)
+                .equalTo("pageId", pageId)
+                .findFirst()
+                .asObservable();
+
+        return result;
+    }
+
     public static Observable<PageSummaryRealm> getFavoritePages() {
 
         RealmResults<PageSummaryRealm> pageSummaryRealms = Realm.getDefaultInstance()
@@ -143,5 +159,55 @@ public class DBWorker {
                 .findAll();
 
         return Observable.from(pageSummaryRealms);
+    }
+
+    public static void saveCategoryDescription(CategoryDescription categoryDescription, String title) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+
+        CategoryRealm categoryToSave = new CategoryRealm();
+        categoryToSave.setTitle(title);
+        categoryToSave.setDescriptionSections(new RealmList<TextSectionRealm>());
+
+
+        TextSectionRealm textSectionRealm;
+
+        for (TextSection textSection : categoryDescription.getTextSections()) {
+            if (textSection.getType() == TextSection.SPACER_TYPE ||textSection.getType() == TextSection.SEPARATOR_TYPE) {
+                continue;
+            }
+
+            textSectionRealm = new TextSectionRealm();
+            textSectionRealm.setText(textSection.getText());
+            textSectionRealm.setType(textSection.getType());
+            textSectionRealm.setId(title + "_category_" + categoryToSave.getDescriptionSections().size());
+
+            categoryToSave.getDescriptionSections().add(textSectionRealm);
+        }
+
+        realm.copyToRealmOrUpdate(categoryToSave);
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public static Observable<TextSection> getCategoryDescription(String title) {
+        Realm realm = Realm.getDefaultInstance();
+
+        CategoryRealm categoryRealm = realm
+                .where(CategoryRealm.class)
+                .equalTo("title", title)
+                .findFirst();
+
+        if (categoryRealm == null || categoryRealm.getDescriptionSections() == null) {
+            return Observable.empty();
+        }
+
+        return Observable.from(categoryRealm.getDescriptionSections())
+                .map(new Func1<TextSectionRealm, TextSection>() {
+                    @Override
+                    public TextSection call(TextSectionRealm textSectionRealm) {
+                        return new TextSection(textSectionRealm.getType(), textSectionRealm.getText());
+                    }
+                });
     }
 }
