@@ -3,15 +3,23 @@ package com.randomname.mrakopedia.ui.views.selection;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
-import android.view.*;
+import android.view.ActionMode;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.ui.views.selection.SelectableInfo;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;

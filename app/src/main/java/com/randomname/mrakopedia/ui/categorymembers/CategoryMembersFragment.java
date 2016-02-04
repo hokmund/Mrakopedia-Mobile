@@ -1,6 +1,5 @@
 package com.randomname.mrakopedia.ui.categorymembers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -34,7 +33,6 @@ import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescript
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
-import com.randomname.mrakopedia.models.api.recentchanges.Recentchanges;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
@@ -50,8 +48,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -357,6 +354,31 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             @Override
                             public CategoryDescription call(CategoryDescription categoryDescription) {
                                 splitTextAndImages(categoryDescription);
+
+                                return categoryDescription;
+                            }
+                        })
+                        .map(new Func1<CategoryDescription, CategoryDescription>() {
+                            @Override
+                            public CategoryDescription call(CategoryDescription categoryDescription) {
+                                TextSection lastSection = categoryDescription.getTextSections().get(categoryDescription.getTextSections().size() - 1);
+
+                                if (lastSection.getText().contains("См.также")) {
+                                    Log.e(TAG, "contains 1");
+                                    lastSection.setText(lastSection.getText().split(Pattern.quote("См.также"))[0]);
+                                }
+
+                                if (lastSection.getText().contains("Смотри также")) {
+                                    Log.e(TAG, "contains 2");
+                                    lastSection.setText(lastSection.getText().split(Pattern.quote("Смотри также"))[0]);
+                                }
+
+                                if (lastSection.getText().contains("См. также")) {
+                                    Log.e(TAG, "contains 3");
+                                    lastSection.setText(lastSection.getText().split(Pattern.quote("См. также"))[0]);
+                                }
+
+                                categoryDescription.getTextSections().set(categoryDescription.getTextSections().size() - 1, lastSection);
 
                                 return categoryDescription;
                             }

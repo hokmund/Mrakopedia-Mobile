@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeApiServiceUtil;
 import com.google.android.youtube.player.YouTubeInitializationResult;
@@ -35,12 +33,10 @@ import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
-import com.randomname.mrakopedia.ui.views.PreCachingLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
 import com.randomname.mrakopedia.ui.views.selection.SelectionCallback;
 import com.randomname.mrakopedia.utils.NetworkUtils;
-import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
 import org.jsoup.Jsoup;
@@ -54,7 +50,6 @@ import java.util.regex.Pattern;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carbon.widget.ProgressBar;
-import io.realm.internal.Util;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -411,6 +406,11 @@ public class PageSummaryFragment extends RxBaseFragment {
                                     }
                                     imgTag.attr("src", imgSrc);
                                 }
+
+                                if (imgSrc.contains(".gif")) {
+                                    imgSrc = imgSrc.substring(0, imgSrc.indexOf(".gif") + 4);
+                                    imgTag.attr("src", imgSrc);
+                                }
                             }
                         }
 
@@ -591,7 +591,12 @@ public class PageSummaryFragment extends RxBaseFragment {
                 }
 
                 pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.TEXT_TYPE, splited[0]));
-                pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.IMAGE_TYPE, imgTag.absUrl("src")));
+
+                if (imgTag.absUrl("src").contains(".gif")) {
+                    pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.GIF_TYPE, imgTag.absUrl("src")));
+                } else {
+                    pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.IMAGE_TYPE, imgTag.absUrl("src")));
+                }
             }
             pageSummaryResult.getParse().getTextSections().add(new TextSection(TextSection.TEXT_TYPE, stringToSplit));
         } else {

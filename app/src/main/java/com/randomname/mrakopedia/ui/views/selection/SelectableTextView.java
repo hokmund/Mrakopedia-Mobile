@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.text.Layout;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
 

@@ -2,23 +2,17 @@ package com.randomname.mrakopedia.ui.fullscreenfoto;
 
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -27,8 +21,6 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.views.TouchImageView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

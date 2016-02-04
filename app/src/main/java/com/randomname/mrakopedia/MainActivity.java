@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
     private final static String RECENT_CHANGES_FRAGMENT_TAG = "recentChagesFragmentTag";
 
+    private final static String DRAWER_SELECTION_KEY = "drawerSelectionKey";
+
     private final int DRAWER_ALL_CATEGORIES = 0;
     private final int DRAWER_FAVORITE = 1;
     private final int DRAWER_RECENT_CHANGES = 2;
@@ -34,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int TIME_INTERVAL = 1000; // # milliseconds, desired time passed between two back presses.
     private long mBackPressed;
+
+    private int drawerSelection = 0;
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -46,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        if (savedInstanceState != null) {
+            drawerSelection = savedInstanceState.getInt(DRAWER_SELECTION_KEY, 0);
+        }
+
         initToolbar();
         initDrawer();
 
@@ -54,6 +62,12 @@ public class MainActivity extends AppCompatActivity {
         if (getSupportFragmentManager().getFragments() == null) {
             setAllCategoriesFragment();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(DRAWER_SELECTION_KEY, drawerSelection);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -86,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE),
                     createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES)
                 )
+                .withSelectedItem(drawerSelection)
                 .build();
 
         materialDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -94,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
                 if (iDrawerItem == null) {
                     return false;
                 }
+
+                drawerSelection = iDrawerItem.getIdentifier();
 
                 switch (iDrawerItem.getIdentifier()) {
                     case DRAWER_ALL_CATEGORIES:

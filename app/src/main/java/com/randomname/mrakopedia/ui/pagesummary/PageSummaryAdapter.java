@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,25 +14,20 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.bumptech.glide.Glide;
 import com.google.android.youtube.player.YouTubeIntents;
-import com.google.android.youtube.player.YouTubeThumbnailLoader;
-import com.google.android.youtube.player.YouTubeThumbnailView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
-import com.randomname.mrakopedia.ui.views.CustomMovementMethod;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.ProportionalImageView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 import com.randomname.mrakopedia.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by vgrigoryev on 22.01.2016.
@@ -86,6 +80,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_image_view, parent, false);
                 view.setOnClickListener(imageClickListener);
                 return new ImageViewHolder(view);
+            case TextSection.GIF_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_image_view, parent, false);
+                return new ImageViewHolder(view);
             case TextSection.TEMPLATE_TYPE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_template, parent, false);
                 return new TemplateViewHolder(view);
@@ -122,6 +119,15 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
                 ImageLoader.getInstance().displayImage(sections.get(position).getText(), ((ImageViewHolder)holder).imageView, options);
+                break;
+            case TextSection.GIF_TYPE:
+
+                Glide
+                        .with(context)
+                        .load(sections.get(position).getText())
+                        .asGif()
+                        .into(((ImageViewHolder)holder).imageView);
+
                 break;
             case TextSection.TEMPLATE_TYPE:
                 bindTemplateHolder(holder, sections.get(position).getText());
