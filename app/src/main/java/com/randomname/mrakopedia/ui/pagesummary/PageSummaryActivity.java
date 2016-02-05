@@ -45,6 +45,15 @@ public class PageSummaryActivity extends AppCompatActivity {
 
         String pageTitle = getIntent().getStringExtra(PAGE_NAME_EXTRA);
         String pageId = getIntent().getStringExtra(PAGE_ID_EXTRA);
+
+        if (pageTitle == null && pageId == null) {
+            pageTitle = getIntent().getData().getQueryParameter("pageTitle");
+        }
+
+        if (pageTitle != null) {
+            pageTitle = pageTitle.replaceAll("_", " ");
+        }
+
         setPageSummaryFragment(pageTitle, pageId);
         initToolbar(pageTitle);
 

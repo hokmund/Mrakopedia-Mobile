@@ -31,6 +31,11 @@ public interface MrakopediaAPI {
             @Query("pageid") String pageId
     );
 
+    @GET("api.php?action=parse&format=json")
+    Observable<PageSummaryResult> getPageContentByTitle(
+            @Query("page") String pageTitle
+    );
+
     @GET("api.php?action=parse&prop=text&format=json")
     Observable<CategoryDescription> getCategoryDescription(
             @Query("page") String pageTitle

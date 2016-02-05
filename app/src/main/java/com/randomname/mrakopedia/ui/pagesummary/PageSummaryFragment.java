@@ -44,6 +44,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -266,10 +268,17 @@ public class PageSummaryFragment extends RxBaseFragment {
     private void getArticleByNetwork() {
         recyclerView.setVisibility(View.INVISIBLE);
         loadingProgressBar.setVisibility(View.VISIBLE);
+        Observable<PageSummaryResult> observable;
 
-        Subscription subscription = MrakopediaApiWorker
-                .getInstance()
-                .getPageSummary(pageId)
+        if (pageId == null) {
+            observable = MrakopediaApiWorker.getInstance().getPageSummaryByTitle(pageTitle);
+        } else {
+            observable = MrakopediaApiWorker.getInstance().getPageSummary(pageId);
+        }
+
+
+        Subscription subscription =
+                observable
                 .map(new Func1<PageSummaryResult, PageSummaryResult>() {
                     @Override
                     public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
@@ -313,7 +322,29 @@ public class PageSummaryFragment extends RxBaseFragment {
                         if (!aTags.isEmpty()) {
                             for (Element aTag : aTags) {
                                 if (aTag.attr("abs:href").length() == 0) {
-                                    aTag.unwrap();
+                                    // this is not a global url
+                                    String decodedHref = null;
+                                    boolean toUnwrap = true;
+
+                                    try {
+                                        decodedHref = URLDecoder.decode(aTag.attr("href"), "UTF-8");
+                                    } catch (UnsupportedEncodingException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    if (decodedHref != null && decodedHref.contains("Категория:")) {
+                                        aTag.attr("href", "mrakopediaCategory://?categoryTitle=" + decodedHref.substring(decodedHref.lastIndexOf("Категория:") + 10));
+                                        toUnwrap = false;
+                                    }
+
+                                    if (decodedHref != null && !decodedHref.contains(":") && !decodedHref.contains("#")) {
+                                        aTag.attr("href", "mrakopediaPage://?pageTitle=" + decodedHref.substring(decodedHref.lastIndexOf("wiki/") + 5));
+                                        toUnwrap = false;
+                                    }
+
+                                    if (toUnwrap) {
+                                        aTag.unwrap();
+                                    }
                                 }
                             }
                         }
@@ -449,75 +480,75 @@ public class PageSummaryFragment extends RxBaseFragment {
                         return Observable.from(pageSummaryResult.getParse().getTextSections());
                     }
                 })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<TextSection>() {
-                    @Override
-                    public void onCompleted() {
-                        new Handler().postDelayed(new Runnable() {
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<TextSection>() {
                             @Override
-                            public void run() {
-                                recyclerView.setVisibility(View.VISIBLE);
+                            public void onCompleted() {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        recyclerView.setVisibility(View.VISIBLE);
 
-                                AlphaAnimation animation = new AlphaAnimation(0f, 1f);
-                                animation.setDuration(600);
+                                        AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                                        animation.setDuration(600);
 
-                                recyclerView.setAnimation(animation);
-                                recyclerView.animate();
+                                        recyclerView.setAnimation(animation);
+                                        recyclerView.animate();
+                                    }
+                                }, 1000);
+
+                                AlphaAnimation animation = new AlphaAnimation(1f, 0.0f);
+                                animation.setDuration(1000);
+                                animation.setAnimationListener(new Animation.AnimationListener() {
+                                    @Override
+                                    public void onAnimationStart(Animation animation) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationEnd(Animation animation) {
+                                        loadingProgressBar.setVisibilityImmediate(View.GONE);
+                                        getActivity().invalidateOptionsMenu();
+                                        getActivity().setResult(Activity.RESULT_OK);
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animation animation) {
+
+                                    }
+                                });
+                                loadingProgressBar.setAnimation(animation);
+                                loadingProgressBar.animate();
+                                adapter.notifyDataSetChanged();
+
+                                final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity());
+
+                                if (result != YouTubeInitializationResult.SUCCESS) {
+                                    //If there are any issues we can show an error dialog.
+                                    result.getErrorDialog(getActivity(), 0).show();
+                                }
                             }
-                        }, 1000);
-
-                        AlphaAnimation animation = new AlphaAnimation(1f, 0.0f);
-                        animation.setDuration(1000);
-                        animation.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-
-                            }
 
                             @Override
-                            public void onAnimationEnd(Animation animation) {
-                                loadingProgressBar.setVisibilityImmediate(View.GONE);
+                            public void onError(Throwable e) {
+                                Log.e(TAG, e.toString());
+                                e.printStackTrace();
+                                errorTextView.setVisibility(View.VISIBLE);
+
+                                if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                    errorTextView.setText(errorTextView.getText() + ", " + getString(R.string.no_internet_text));
+                                }
+
+                                loadingProgressBar.setVisibility(View.GONE);
                                 getActivity().invalidateOptionsMenu();
-                                getActivity().setResult(Activity.RESULT_OK);
                             }
 
                             @Override
-                            public void onAnimationRepeat(Animation animation) {
-
+                            public void onNext(TextSection section) {
+                                adapter.getDisplayedData().add(section);
                             }
                         });
-                        loadingProgressBar.setAnimation(animation);
-                        loadingProgressBar.animate();
-
-                        final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity());
-
-                        if (result != YouTubeInitializationResult.SUCCESS) {
-                            //If there are any issues we can show an error dialog.
-                            result.getErrorDialog(getActivity(), 0).show();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.e(TAG, e.toString());
-                        e.printStackTrace();
-                        errorTextView.setVisibility(View.VISIBLE);
-
-                        if (!NetworkUtils.isInternetAvailable(getActivity())) {
-                            errorTextView.setText(errorTextView.getText() + ", " + getString(R.string.no_internet_text));
-                        }
-
-                        loadingProgressBar.setVisibility(View.GONE);
-                        getActivity().invalidateOptionsMenu();
-                    }
-
-                    @Override
-                    public void onNext(TextSection section) {
-                        adapter.getDisplayedData().add(section);
-                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(section));
-                    }
-                });
         bindToLifecycle(subscription);
     }
 

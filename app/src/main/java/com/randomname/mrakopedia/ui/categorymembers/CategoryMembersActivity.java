@@ -39,6 +39,10 @@ public class CategoryMembersActivity extends AppCompatActivity {
 
         String categoryTitle = getIntent().getStringExtra(CATEGORY_NAME_EXTRA);
 
+        if (categoryTitle == null) {
+            categoryTitle = getIntent().getData().getQueryParameter("categoryTitle");
+        }
+
         if (categoryTitle != null) {
             setCategoryMembersFragment(categoryTitle);
         }
