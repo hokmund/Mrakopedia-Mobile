@@ -324,6 +324,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                                 if (aTag.attr("abs:href").length() == 0) {
                                     // this is not a global url
                                     String decodedHref = null;
+                                    boolean toUnwrap = true;
 
                                     try {
                                         decodedHref = URLDecoder.decode(aTag.attr("href"), "UTF-8");
@@ -333,7 +334,15 @@ public class PageSummaryFragment extends RxBaseFragment {
 
                                     if (decodedHref != null && decodedHref.contains("Категория:")) {
                                         aTag.attr("href", "mrakopediaCategory://?categoryTitle=" + decodedHref.substring(decodedHref.lastIndexOf("Категория:") + 10));
-                                    } else {
+                                        toUnwrap = false;
+                                    }
+
+                                    if (decodedHref != null && !decodedHref.contains(":")) {
+                                        aTag.attr("href", "mrakopediaPage://?pageTitle=" + decodedHref.substring(decodedHref.lastIndexOf("wiki/") + 5));
+                                        toUnwrap = false;
+                                    }
+
+                                    if (toUnwrap) {
                                         aTag.unwrap();
                                     }
                                 }
@@ -471,8 +480,8 @@ public class PageSummaryFragment extends RxBaseFragment {
                         return Observable.from(pageSummaryResult.getParse().getTextSections());
                     }
                 })
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<TextSection>() {
                             @Override
                             public void onCompleted() {

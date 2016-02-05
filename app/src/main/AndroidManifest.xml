@@ -36,7 +36,16 @@
 
         </activity>
 
-        <activity android:name=".ui.pagesummary.PageSummaryActivity" />
+        <activity android:name=".ui.pagesummary.PageSummaryActivity" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="mrakopediaPage" />
+            </intent-filter>
+
+        </activity>
 
         <activity android:name=".ui.fullscreenfoto.FullScreentFotoActivity"></activity>
 
