@@ -65,6 +65,10 @@ public class MrakopediaApiWorker {
         return getMrakopediaAPI().getPageContent(pageId);
     }
 
+    public Observable<PageSummaryResult> getPageSummaryByTitle(String pageTitle) {
+        return getMrakopediaAPI().getPageContentByTitle(pageTitle);
+    }
+
     public Observable<CategoryDescription> getCategoryDescription(String categoryTitle) {
         return getMrakopediaAPI().getCategoryDescription("Категория:" + categoryTitle);
     }
