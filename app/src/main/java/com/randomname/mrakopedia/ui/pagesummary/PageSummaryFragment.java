@@ -337,7 +337,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                                         toUnwrap = false;
                                     }
 
-                                    if (decodedHref != null && !decodedHref.contains(":")) {
+                                    if (decodedHref != null && !decodedHref.contains(":") && !decodedHref.contains("#")) {
                                         aTag.attr("href", "mrakopediaPage://?pageTitle=" + decodedHref.substring(decodedHref.lastIndexOf("wiki/") + 5));
                                         toUnwrap = false;
                                     }
@@ -520,6 +520,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                                 });
                                 loadingProgressBar.setAnimation(animation);
                                 loadingProgressBar.animate();
+                                adapter.notifyDataSetChanged();
 
                                 final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity());
 
@@ -546,7 +547,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                             @Override
                             public void onNext(TextSection section) {
                                 adapter.getDisplayedData().add(section);
-                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(section));
                             }
                         });
         bindToLifecycle(subscription);
