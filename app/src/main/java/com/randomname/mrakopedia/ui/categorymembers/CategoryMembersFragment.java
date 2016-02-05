@@ -290,7 +290,18 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         if (adapter.getDescriptionSections().isEmpty()) {
                             getCategoryDescriptionByNetwork();
                         } else {
-                            recyclerView.setVisibility(View.VISIBLE);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    recyclerView.setVisibility(View.VISIBLE);
+
+                                    AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                                    animation.setDuration(600);
+
+                                    recyclerView.setAnimation(animation);
+                                    recyclerView.animate();
+                                }
+                            }, 600);
                         }
                     }
 
