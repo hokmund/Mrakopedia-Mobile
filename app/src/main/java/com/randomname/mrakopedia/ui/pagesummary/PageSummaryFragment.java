@@ -332,12 +332,16 @@ public class PageSummaryFragment extends RxBaseFragment {
                                         e.printStackTrace();
                                     }
 
+                                    if (decodedHref != null) {
+                                        Log.e(TAG, decodedHref);
+                                    }
+
                                     if (decodedHref != null && decodedHref.contains("Категория:")) {
                                         aTag.attr("href", "mrakopediaCategory://?categoryTitle=" + decodedHref.substring(decodedHref.lastIndexOf("Категория:") + 10));
                                         toUnwrap = false;
                                     }
 
-                                    if (decodedHref != null && !decodedHref.contains(":") && !decodedHref.contains("#")) {
+                                    if (decodedHref != null && !decodedHref.contains(":") && !decodedHref.contains("#") && !decodedHref.contains("index.php")) {
                                         aTag.attr("href", "mrakopediaPage://?pageTitle=" + decodedHref.substring(decodedHref.lastIndexOf("wiki/") + 5));
                                         toUnwrap = false;
                                     }
