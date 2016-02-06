@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.randomname.mrakopedia.R;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Pattern;
 
 public class SelectionController {
@@ -126,8 +128,8 @@ public class SelectionController {
     }
 
     private void initHandles() {
-        rightHandle = new Handle();
-        leftHandle = new Handle();
+        rightHandle = new Handle(selectableViewGroup);
+        leftHandle = new Handle(selectableViewGroup);
     }
 
     private void initGesture() {
@@ -287,7 +289,10 @@ public class SelectionController {
         setHandleCoordinate(rightHandle);
         setHandleCoordinate(leftHandle);
         setSelectionText();
-        selectableViewGroup.invalidate();
+
+        rightHandle.animateShow();
+        leftHandle.animateShow();
+
         return true;
     }
 
@@ -494,6 +499,8 @@ public class SelectionController {
     }
 
     private class Handle {
+        private ViewGroup viewGroup;
+
         private float x;
         private float y;
         private float width;
@@ -504,13 +511,16 @@ public class SelectionController {
         private boolean visible = true;
         public Bitmap handleImage;
         private Paint paint = new Paint();
+        private int alphaValue = 255;
 
-        Handle() {
+        Handle(ViewGroup viewGroup) {
+            this.viewGroup = viewGroup;
             setDefaultValues();
         }
 
         public void setDefaultValues() {
             paint.setColor(Color.RED);
+            paint.setAlpha(alphaValue);
             x = 0;
             y = 0;
             correctX = 0;
@@ -536,6 +546,37 @@ public class SelectionController {
             } else {
                 canvas.drawBitmap(handleImage, x, y, paint);
             }
+        }
+
+        public void animateShow() {
+            alphaValue = 0;
+            paint.setAlpha(alphaValue);
+
+            final Timer timer = new Timer();
+
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (alphaValue < 255) {
+                        alphaValue += 40;
+
+                        if (alphaValue >= 255) {
+                            alphaValue = 255;
+                            paint.setAlpha(255);
+                            viewGroup.postInvalidate();
+                            timer.cancel();
+                        }
+
+                        paint.setAlpha(alphaValue);
+                        viewGroup.postInvalidate();
+                    } else {
+                        alphaValue = 255;
+                        paint.setAlpha(255);
+                        viewGroup.postInvalidate();
+                        timer.cancel();
+                    }
+                }
+            }, 0, 50);
         }
 
         public void setHandleImage(Bitmap bitmap) {
