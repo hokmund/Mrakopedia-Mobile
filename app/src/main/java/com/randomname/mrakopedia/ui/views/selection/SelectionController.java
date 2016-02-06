@@ -32,11 +32,11 @@ public class SelectionController {
     private static final int DEFAULT_CURSOR_WIDTH = 50;
     public static final int LAST_SYMBOL = -2;
     public static final int FIRST_SYMBOL = -3;
-    private static final int DEFAULT_RIGHT_HANDLE_DRAWABLE_RES = R.drawable.text_select_handle_right;
-    private static final int DEFAULT_LEFT_HANDLE_DRAWABLE_RES = R.drawable.text_select_handle_left;
+    private static final int DEFAULT_RIGHT_HANDLE_DRAWABLE_RES = R.drawable.text_select_handle_right_mtrl_alpha;
+    private static final int DEFAULT_LEFT_HANDLE_DRAWABLE_RES = R.drawable.text_select_handle_left_mtrl_alpha;
     private static final int DEFAULT_SELECTION_COLOR_RES = R.color.text_selection;
 
-    private static final Pattern LetterDigitPattern = Pattern.compile("[A-Za-z0-9]");
+    private static final Pattern LetterDigitPattern = Pattern.compile("[\\w]");
 
     private ArrayList<SelectableInfo> selectableInfos = new ArrayList<>();
     private Handle rightHandle;
@@ -270,6 +270,7 @@ public class SelectionController {
                     break;
                 }
             }
+
             totalPos += selectableInfo.getText().length();
         }
         if (pos == -1){ //view not found

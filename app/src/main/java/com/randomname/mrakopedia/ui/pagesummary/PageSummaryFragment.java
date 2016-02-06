@@ -332,18 +332,25 @@ public class PageSummaryFragment extends RxBaseFragment {
                                         e.printStackTrace();
                                     }
 
-                                    if (decodedHref != null) {
-                                        Log.e(TAG, decodedHref);
-                                    }
-
                                     if (decodedHref != null && decodedHref.contains("Категория:")) {
                                         aTag.attr("href", "mrakopediaCategory://?categoryTitle=" + decodedHref.substring(decodedHref.lastIndexOf("Категория:") + 10));
                                         toUnwrap = false;
                                     }
 
-                                    if (decodedHref != null && !decodedHref.contains(":") && !decodedHref.contains("#") && !decodedHref.contains("index.php")) {
-                                        aTag.attr("href", "mrakopediaPage://?pageTitle=" + decodedHref.substring(decodedHref.lastIndexOf("wiki/") + 5));
-                                        toUnwrap = false;
+                                    if (decodedHref != null && !decodedHref.contains("#") && !decodedHref.contains("index.php")) {
+                                        boolean toAdd = true;
+
+                                        for (String banString : Utils.pagesBanList) {
+                                            if (decodedHref.contains(banString)) {
+                                                toAdd = false;
+                                                break;
+                                            }
+                                        }
+
+                                        if (toAdd) {
+                                            aTag.attr("href", "mrakopediaPage://?pageTitle=" + decodedHref.substring(decodedHref.lastIndexOf("wiki/") + 5));
+                                            toUnwrap = false;
+                                        }
                                     }
 
                                     if (toUnwrap) {
@@ -373,23 +380,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                             }
                         }
 
-                        if (pageSummaryResult.getParse().getSections().length > 0) {
-                            for (Sections section : pageSummaryResult.getParse().getSections()) {
-                                if (section.getLine().equals("См. также")) {
-                                    Elements lookMore = doc.select("[id^=" + section.getAnchor() + "]");
-                                    if (!lookMore.isEmpty()) {
-                                        Element lookMoreParent = lookMore.first().parent();
 
-                                        if (lookMoreParent != null) {
-                                            while (lookMoreParent.nextElementSibling() != null) {
-                                                lookMoreParent.nextElementSibling().remove();
-                                            }
-                                            lookMoreParent.remove();
-                                        }
-                                    }
-                                }
-                            }
-                        }
 
                         Elements iFrames = doc.select("iframe");
 
@@ -745,43 +736,8 @@ public class PageSummaryFragment extends RxBaseFragment {
         boolean toSkip = false;
         TextSection lastSection = pageSummaryResult.getParse().getTextSections().get(pageSummaryResult.getParse().getTextSections().size() - 1);
 
-        if (lastSection.getText().contains("См.также")) {
-            lastSection.setText(lastSection.getText().split(Pattern.quote("См.также"))[0]);
-        }
-
-        if (lastSection.getText().contains("Смотри также")) {
-            lastSection.setText(lastSection.getText().split(Pattern.quote("Смотри также"))[0]);
-        }
-
-        for (Links link : pageSummaryResult.getParse().getLinks()) {
-            toSkip = false;
-
-            for (String banString : Utils.pagesBanList) {
-                if (link.getTitle().toLowerCase().contains(banString.toLowerCase())) {
-                    toSkip = true;
-                    break;
-                }
-            }
-
-            if (toSkip) {
-                continue;
-            }
-
-            if (!headerAdded) {
-                pageSummaryResult.getParse()
-                        .getTextSections()
-                        .add(new TextSection(
-                                TextSection.TEXT_TYPE,
-                                "<h2>Смотри также</h2>"));
-                headerAdded = true;
-            }
-
-            pageSummaryResult.getParse()
-                    .getTextSections()
-                    .add(new TextSection(
-                            TextSection.LINK_TYPE,
-                            link.getTitle()));
-        }
+        lastSection.setText(lastSection.getText().replaceAll(Pattern.quote("См.также"), "Смотри также"));
+        lastSection.setText(lastSection.getText().replaceAll(Pattern.quote("См. также"), "Смотри также"));
     }
 
     private void addCategories(PageSummaryResult pageSummaryResult) {
