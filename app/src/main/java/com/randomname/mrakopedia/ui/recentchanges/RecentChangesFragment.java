@@ -264,7 +264,7 @@ public class RecentChangesFragment extends RxBaseFragment {
 
     private class RecentChangesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        private SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM ' в ' HH:mm");
+        private SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM");
 
         private ArrayList<Recentchanges> recentChangesArrayList;
 

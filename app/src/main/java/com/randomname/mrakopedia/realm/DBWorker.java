@@ -1,10 +1,12 @@
 package com.randomname.mrakopedia.realm;
 
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
+import com.randomname.mrakopedia.models.api.pagesummary.Categories;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.CategoryRealm;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
+import com.randomname.mrakopedia.models.realm.RealmString;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 
 import java.util.ArrayList;
@@ -53,6 +55,46 @@ public class DBWorker {
 
         realm.copyToRealmOrUpdate(pageSummaryToSave);
         realm.commitTransaction();
+
+        for (Categories category : pageSummaryResult.getParse().getCategories()) {
+            addPageToCategory(pageTitle, category.getTitle());
+        }
+
+        realm.close();
+    }
+
+    public static void addPageToCategory(String pageTitle, String categoryTitle) {
+        Realm realm = Realm.getDefaultInstance();
+
+        CategoryRealm categoryRealm = realm.where(CategoryRealm.class).equalTo("title", categoryTitle).findFirst();
+
+        realm.beginTransaction();
+
+        if (categoryRealm == null) {
+            categoryRealm = new CategoryRealm();
+            categoryRealm.setTitle(categoryTitle);
+            categoryRealm.setCategoryMembersTitles(new RealmList<RealmString>());
+            realm.copyToRealmOrUpdate(categoryRealm);
+        }
+
+        RealmString realmString = new RealmString();
+        realmString.setString(pageTitle);
+
+        boolean toAdd = true;
+
+        for (RealmString categoryMemberTitle : categoryRealm.getCategoryMembersTitles()) {
+            if (categoryMemberTitle.getString().equals(pageTitle)) {
+                toAdd = false;
+                break;
+            }
+        }
+
+        if (toAdd) {
+            categoryRealm.getCategoryMembersTitles().add(realmString);
+        }
+
+        realm.commitTransaction();
+
         realm.close();
     }
 
@@ -153,7 +195,9 @@ public class DBWorker {
 
     public static Observable<PageSummaryRealm> getFavoritePages() {
 
-        RealmResults<PageSummaryRealm> pageSummaryRealms = Realm.getDefaultInstance()
+        Realm realm = Realm.getDefaultInstance();
+
+        RealmResults<PageSummaryRealm> pageSummaryRealms = realm
                 .where(PageSummaryRealm.class)
                 .equalTo("isFavorite", true)
                 .findAll();
@@ -165,8 +209,13 @@ public class DBWorker {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
 
-        CategoryRealm categoryToSave = new CategoryRealm();
-        categoryToSave.setTitle(title);
+        CategoryRealm categoryToSave = realm.where(CategoryRealm.class).equalTo("title", title).findFirst();
+
+        if (categoryToSave == null) {
+            categoryToSave = new CategoryRealm();
+            categoryToSave.setTitle(title);
+        }
+
         categoryToSave.setDescriptionSections(new RealmList<TextSectionRealm>());
 
 
@@ -209,5 +258,40 @@ public class DBWorker {
                         return new TextSection(textSectionRealm.getType(), textSectionRealm.getText());
                     }
                 });
+    }
+
+    public static Observable<String> getCategoryMembers(String categoryTitle) {
+        Realm realm = Realm.getDefaultInstance();
+
+        CategoryRealm categoryRealm = realm
+                .where(CategoryRealm.class)
+                .equalTo("title", categoryTitle)
+                .findFirst();
+
+        if (categoryRealm == null || categoryRealm.getDescriptionSections() == null) {
+            return Observable.empty();
+        }
+
+        return Observable.from(categoryRealm.getCategoryMembersTitles())
+                .map(new Func1<RealmString, String>() {
+                    @Override
+                    public String call(RealmString realmString) {
+                        return realmString.getString();
+                    }
+                });
+    }
+
+    public static Observable<CategoryRealm> getAllCategories() {
+        Realm realm = Realm.getDefaultInstance();
+
+        RealmResults<CategoryRealm> categoryRealm = realm
+                .where(CategoryRealm.class)
+                .findAll();
+
+        if (categoryRealm == null) {
+            return Observable.empty();
+        }
+
+        return Observable.from(categoryRealm);
     }
 }

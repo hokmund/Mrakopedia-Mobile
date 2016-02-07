@@ -12,6 +12,7 @@ public class CategoryRealm extends RealmObject {
     @PrimaryKey
     private String title;
     private RealmList<TextSectionRealm> descriptionSections;
+    private RealmList<RealmString> categoryMembersTitles;
 
     public String getTitle() {
         return title;
@@ -19,6 +20,14 @@ public class CategoryRealm extends RealmObject {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public RealmList<RealmString> getCategoryMembersTitles() {
+        return categoryMembersTitles;
+    }
+
+    public void setCategoryMembersTitles(RealmList<RealmString> categoryMembersTitles) {
+        this.categoryMembersTitles = categoryMembersTitles;
     }
 
     public RealmList<TextSectionRealm> getDescriptionSections() {

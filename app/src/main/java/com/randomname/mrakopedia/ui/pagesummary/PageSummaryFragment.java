@@ -15,9 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-
-import com.google.android.youtube.player.YouTubeApiServiceUtil;
-import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
@@ -516,13 +513,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                                 loadingProgressBar.setAnimation(animation);
                                 loadingProgressBar.animate();
                                 adapter.notifyDataSetChanged();
-
-                                final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity());
-
-                                if (result != YouTubeInitializationResult.SUCCESS) {
-                                    //If there are any issues we can show an error dialog.
-                                    result.getErrorDialog(getActivity(), 0).show();
-                                }
                             }
 
                             @Override
@@ -573,13 +563,6 @@ public class PageSummaryFragment extends RxBaseFragment {
                         recyclerView.animate();
 
                         loadingProgressBar.setVisibility(View.GONE);
-
-                        final YouTubeInitializationResult result = YouTubeApiServiceUtil.isYouTubeApiServiceAvailable(getActivity());
-
-                        if (result != YouTubeInitializationResult.SUCCESS) {
-                            //If there are any issues we can show an error dialog.
-                            result.getErrorDialog(getActivity(), 0).show();
-                        }
                     }
 
                     @Override

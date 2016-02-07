@@ -13,11 +13,15 @@ public class ToolbarHideRecyclerOnScrollListener extends RecyclerView.OnScrollLi
     // Determines the scroll UP/DOWN direction
     private boolean scrollingUp;
     private View viewToScroll;
+    private boolean isHidden;
 
     public ToolbarHideRecyclerOnScrollListener(View viewToScroll) {
         this.viewToScroll = viewToScroll;
     }
 
+    public boolean isHidden() {
+        return isHidden;
+    }
 
     @Override
     public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -47,14 +51,18 @@ public class ToolbarHideRecyclerOnScrollListener extends RecyclerView.OnScrollLi
         if (scrollingUp) {
             if (toolbarYOffset < viewToScroll.getHeight()) {
                 viewToScroll.setTranslationY(-toolbarYOffset);
+                isHidden = true;
             } else {
                 viewToScroll.setTranslationY(-viewToScroll.getHeight());
+                isHidden = true;
             }
         } else {
             if (toolbarYOffset < 0) {
                 viewToScroll.setTranslationY(0);
+                isHidden = false;
             } else {
                 viewToScroll.setTranslationY(-toolbarYOffset);
+                isHidden = false;
             }
         }
     }
@@ -68,6 +76,8 @@ public class ToolbarHideRecyclerOnScrollListener extends RecyclerView.OnScrollLi
                 .translationY(0)
                 .setInterpolator(new LinearInterpolator())
                 .setDuration(180);
+
+        isHidden = false;
     }
 
     private void toolbarAnimateHide() {
@@ -75,5 +85,7 @@ public class ToolbarHideRecyclerOnScrollListener extends RecyclerView.OnScrollLi
                 .translationY(-viewToScroll.getHeight())
                 .setInterpolator(new LinearInterpolator())
                 .setDuration(180);
+
+        isHidden = true;
     }
 }

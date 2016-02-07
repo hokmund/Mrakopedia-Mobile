@@ -44,6 +44,8 @@ public class Utils {
                 "Обсуждение",
                 "Архив:",
                 "Шаблон:",
+                "MediaWiki:",
+                "Wikipedia:",
                 "Рейтинг"
         };
 }

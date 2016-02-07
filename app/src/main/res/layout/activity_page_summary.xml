@@ -27,26 +27,26 @@
             android:transitionName="actionBar"
             />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/copy_toolbar"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_width="match_parent"
-            style="@style/Widget.MyApp.ActionBar"
-            android:elevation="4dp"
-            android:transitionName="actionBar"
-            android:visibility="gone"
-            >
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/copy_btn"
-                android:background="@android:color/transparent"
-                android:layout_gravity="end"
-                android:src="@drawable/ic_content_copy_white_24dp" />
-
-        </android.support.v7.widget.Toolbar>
-
     </RelativeLayout>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/copy_toolbar"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        style="@style/Widget.MyApp.ActionBar"
+        android:elevation="4dp"
+        android:transitionName="actionBar"
+        android:visibility="gone"
+        >
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/copy_btn"
+            android:background="@android:color/transparent"
+            android:layout_gravity="end"
+            android:src="@drawable/ic_content_copy_white_24dp" />
+
+    </android.support.v7.widget.Toolbar>
 
 </RelativeLayout>

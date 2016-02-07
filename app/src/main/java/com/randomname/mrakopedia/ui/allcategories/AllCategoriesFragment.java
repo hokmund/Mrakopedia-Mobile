@@ -16,6 +16,8 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
 import com.randomname.mrakopedia.models.api.allcategories.Allcategories;
+import com.randomname.mrakopedia.models.realm.CategoryRealm;
+import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.utils.NetworkUtils;
@@ -80,7 +82,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
-        recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
+        recyclerView.addOnScrollListener(((MainActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
 
         if (resultArrayList.isEmpty()) {
             new android.os.Handler().postDelayed(new Runnable() {
@@ -134,13 +136,10 @@ public class AllCategoriesFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
-                                if (adapter.getDisplayedData().size() <= 1) {
-                                    errorTextView.setVisibility(View.VISIBLE);
 
-                                    if (!NetworkUtils.isInternetAvailable(getActivity())) {
-                                        errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
-                                    }
-                                    recyclerView.setVisibility(View.GONE);
+
+                                if (adapter.getDisplayedData().size() <= 1) {
+                                    loadCategoriesViaRealm();
                                 } else {
                                     Toast.makeText(getActivity(), getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text), Toast.LENGTH_SHORT).show();
                                 }
@@ -173,6 +172,51 @@ public class AllCategoriesFragment extends RxBaseFragment {
                                 loadCategoryMembersViaNetwork();
                             }
                         });
+
+
+        bindToLifecycle(getAllCategoriesSubscription);
+    }
+
+    private void loadCategoriesViaRealm() {
+
+        Subscription getAllCategoriesSubscription =
+                DBWorker.getAllCategories()
+                .subscribe(new Subscriber<CategoryRealm>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.toString());
+                        e.printStackTrace();
+
+
+                        if (adapter.getDisplayedData().size() <= 1) {
+                            errorTextView.setVisibility(View.VISIBLE);
+
+                            if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
+                            }
+                            recyclerView.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onNext(CategoryRealm categoryRealm) {
+                        Allcategories category = new Allcategories();
+                        category.setFiles("");
+                        category.setPages("" + categoryRealm.getCategoryMembersTitles().size());
+                        category.setTitle(categoryRealm.getTitle());
+                        category.setSubcats("");
+                        category.setSize("");
+
+
+                        adapter.getDisplayedData().add(category);
+                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
+                    }
+                });
 
 
         bindToLifecycle(getAllCategoriesSubscription);

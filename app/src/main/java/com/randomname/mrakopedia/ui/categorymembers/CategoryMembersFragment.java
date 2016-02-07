@@ -215,6 +215,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
         if (continueString == null) {
             return;
         }
+
+
+
         String continueStringSaved = continueString;
         continueString = null;
         Subscription getCategoryMembersSubscription =
@@ -266,6 +269,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
+
+                                if (categorymembersArrayList.isEmpty()) {
+                                    getCategoryMembersFromRealm();
+                                }
                             }
 
                             @Override
@@ -278,6 +285,41 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         });
 
         bindToLifecycle(getCategoryMembersSubscription);
+    }
+
+    private void getCategoryMembersFromRealm() {
+        Subscription subscription =
+                DBWorker.getCategoryMembers(categoryTitle)
+                .subscribe(new Subscriber<String>() {
+                    @Override
+                    public void onCompleted() {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        loadingProgressBar.setVisibilityImmediate(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.e(TAG, e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        Categorymembers categorymembers = new Categorymembers();
+                        categorymembers.setTitle(s);
+                        categorymembers.setPageid(null);
+                        categorymembers.setIsViewed(true);
+                        categorymembers.setNs("");
+                        categorymembers.setType("");
+
+                        categorymembersArrayList.add(categorymembers);
+                        adapter.notifyItemInserted(categorymembersArrayList.indexOf(categorymembers) + adapter.getDescriptionSections().size());
+
+                        checkIfPageWasRead(categorymembers);
+                    }
+                });
+
+        bindToLifecycle(subscription);
     }
 
     private void getCategoryDescription() {
@@ -457,6 +499,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                     recyclerView.setVisibility(View.GONE);
                                 } else {
                                     Toast.makeText(getActivity(), getString(R.string.error_loading_category) + " " + getString(R.string.no_internet_text), Toast.LENGTH_SHORT).show();
+                                    adapter.setDescriptionSections(new ArrayList<TextSection>());
                                 }
                             }
 
@@ -621,7 +664,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
         public void setDescriptionSections(ArrayList<TextSection> sections) {
             descriptionSections = sections;
 
-            if (!descriptionSections.isEmpty() && descriptionSections.get(0).getType() != TextSection.SPACER_TYPE) {
+            if (descriptionSections.isEmpty() || descriptionSections.get(0).getType() != TextSection.SPACER_TYPE) {
                 descriptionSections.add(0, new TextSection(TextSection.SPACER_TYPE, ""));
                 descriptionSections.add(new TextSection(SEPARATOR_TYPE, ""));
             }

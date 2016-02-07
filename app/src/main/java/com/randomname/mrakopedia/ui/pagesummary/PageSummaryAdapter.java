@@ -1,7 +1,9 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -15,7 +17,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.youtube.player.YouTubeIntents;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -151,10 +152,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((YoutubeViewHolder)holder).thumbnailView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (YouTubeIntents.canResolvePlayVideoIntentWithOptions(context)) {
-                            //Opens in the YouTube app in fullscreen and returns to this app once the video finishes
-                            context.startActivity(YouTubeIntents.createPlayVideoIntentWithOptions(context, sections.get(position).getText(), true, true));
-                        }
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + sections.get(position).getText())));
                     }
                 });
                 break;
