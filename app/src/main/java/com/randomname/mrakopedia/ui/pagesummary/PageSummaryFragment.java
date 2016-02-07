@@ -180,7 +180,7 @@ public class PageSummaryFragment extends RxBaseFragment {
         recyclerView.addOnScrollListener(((PageSummaryActivity)getActivity()).toolbarHideListener);
 
         if (adapter.getDisplayedData().size() <= 1) {
-            if (DBWorker.isPageSummarySaved("")) {
+            if (DBWorker.isPageSummarySavedById(pageId) || DBWorker.isPageSummarySaved(pageTitle)) {
                 getArticleByRealm();
             } else {
                 getArticleByNetwork();
@@ -538,7 +538,16 @@ public class PageSummaryFragment extends RxBaseFragment {
     }
 
     private void getArticleByRealm() {
-        Subscription subscription = DBWorker.getPageSummary(pageTitle)
+        Observable<PageSummaryRealm> observable;
+
+        if (pageId == null) {
+            observable = DBWorker.getPageSummary(pageTitle);
+        } else {
+            observable = DBWorker.getPageSummaryById(pageId);
+        }
+
+
+        Subscription subscription = observable
                 .flatMap(new Func1<PageSummaryRealm, Observable<TextSectionRealm>>() {
                     @Override
                     public Observable<TextSectionRealm> call(PageSummaryRealm pageSummaryRealm) {

@@ -184,7 +184,14 @@ public class AllCategoriesFragment extends RxBaseFragment {
                 .subscribe(new Subscriber<CategoryRealm>() {
                     @Override
                     public void onCompleted() {
+                        if (adapter.getDisplayedData().size() <= 1) {
+                            errorTextView.setVisibility(View.VISIBLE);
 
+                            if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
+                            }
+                            recyclerView.setVisibility(View.GONE);
+                        }
                     }
 
                     @Override
@@ -205,6 +212,10 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
                     @Override
                     public void onNext(CategoryRealm categoryRealm) {
+                        if (categoryRealm.getCategoryMembersTitles().isEmpty()) {
+                            return;
+                        }
+
                         Allcategories category = new Allcategories();
                         category.setFiles("");
                         category.setPages("" + categoryRealm.getCategoryMembersTitles().size());

@@ -1,5 +1,7 @@
 package com.randomname.mrakopedia.realm;
 
+import android.util.Log;
+
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
@@ -25,6 +27,10 @@ public class DBWorker {
 
     public static boolean isPageSummarySaved(String title) {
         return !Realm.getDefaultInstance().where(PageSummaryRealm.class).equalTo("pageTitle", title).findAll().isEmpty();
+    }
+
+    public static boolean isPageSummarySavedById(String id) {
+        return !Realm.getDefaultInstance().where(PageSummaryRealm.class).equalTo("pageId", id).findAll().isEmpty();
     }
 
     public static void savePageSummary(PageSummaryResult pageSummaryResult, boolean isRead, String pageId, String pageTitle) {
@@ -74,7 +80,6 @@ public class DBWorker {
             categoryRealm = new CategoryRealm();
             categoryRealm.setTitle(categoryTitle);
             categoryRealm.setCategoryMembersTitles(new RealmList<RealmString>());
-            realm.copyToRealmOrUpdate(categoryRealm);
         }
 
         RealmString realmString = new RealmString();
@@ -93,8 +98,9 @@ public class DBWorker {
             categoryRealm.getCategoryMembersTitles().add(realmString);
         }
 
-        realm.commitTransaction();
 
+        realm.copyToRealmOrUpdate(categoryRealm);
+        realm.commitTransaction();
         realm.close();
     }
 
