@@ -72,6 +72,7 @@ public class PageSummaryFragment extends RxBaseFragment {
     private String pageId;
     private boolean pageIsFavorite = false;
     private boolean pageIsRead = false;
+    private boolean isLoading = false;
 
     @Bind(R.id.page_summary_recycler_view)
     SelectableRecyclerView recyclerView;
@@ -270,6 +271,12 @@ public class PageSummaryFragment extends RxBaseFragment {
     }
 
     private void getArticleByNetwork() {
+        if (isLoading) {
+            return;
+        }
+
+        isLoading = true;
+
         recyclerView.setVisibility(View.INVISIBLE);
         errorTextView.setVisibility(View.INVISIBLE);
         loadingProgressBar.setVisibility(View.VISIBLE);
@@ -485,6 +492,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                         .subscribe(new Subscriber<TextSection>() {
                             @Override
                             public void onCompleted() {
+                                isLoading = false;
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
@@ -532,6 +540,8 @@ public class PageSummaryFragment extends RxBaseFragment {
                                 if (!NetworkUtils.isInternetAvailable(getActivity())) {
                                     errorTextView.setText(errorTextView.getText() + ", " + getString(R.string.no_internet_text));
                                 }
+
+                                isLoading = false;
 
                                 loadingProgressBar.setVisibility(View.GONE);
                                 getActivity().invalidateOptionsMenu();

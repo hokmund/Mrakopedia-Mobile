@@ -87,6 +87,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
     @Bind(R.id.loading_progress_bar)
     ProgressBar loadingProgressBar;
 
+    private boolean isLoading = false;
     private CategoryMembersAdapter adapter;
     private ArrayList<Categorymembers> categorymembersArrayList;
     private ArrayList<TextSection> descriptionSections;
@@ -223,12 +224,13 @@ public class CategoryMembersFragment extends RxBaseFragment {
     }
 
     private void loadCategoryMembers() {
-        if (continueString == null && !categorymembersArrayList.isEmpty()) {
+        if ((continueString == null && !categorymembersArrayList.isEmpty()) || (isLoading)) {
             return;
         }
 
         String continueStringSaved = continueString;
         continueString = null;
+        isLoading = true;
         Subscription getCategoryMembersSubscription =
                 MrakopediaApiWorker
                         .getInstance()
@@ -272,12 +274,15 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         .subscribe(new Subscriber<Categorymembers>() {
                             @Override
                             public void onCompleted() {
+                                isLoading = false;
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
+
+                                isLoading = false;
 
                                 if (categorymembersArrayList.isEmpty()) {
                                     getCategoryMembersFromRealm();

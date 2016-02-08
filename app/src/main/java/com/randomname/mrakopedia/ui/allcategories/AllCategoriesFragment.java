@@ -53,6 +53,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
     private ArrayList<Allcategories> resultArrayList;
 
     private String continueString = "";
+    private boolean isLoading = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,9 +112,11 @@ public class AllCategoriesFragment extends RxBaseFragment {
     }
 
     private void loadCategoryMembersViaNetwork() {
-        if (continueString == null) {
+        if (continueString == null || isLoading) {
             return;
         }
+
+        isLoading = true;
 
         Subscription getAllCategoriesSubscription =
                 MrakopediaApiWorker
@@ -144,6 +147,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
                                 Log.e(TAG, e.toString());
                                 e.printStackTrace();
 
+                                isLoading = false;
 
                                 if (adapter.getDisplayedData().size() <= 1) {
                                     loadCategoriesViaRealm();
@@ -175,6 +179,8 @@ public class AllCategoriesFragment extends RxBaseFragment {
                                         adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
                                     }
                                 }
+
+                                isLoading = false;
 
                                 loadCategoryMembersViaNetwork();
 

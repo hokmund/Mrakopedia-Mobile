@@ -55,6 +55,7 @@ public class RecentChangesFragment extends RxBaseFragment {
     private ArrayList<Recentchanges> recentChangesArrayList;
     private RecentChangesAdapter adapter;
     private int selectedPosition = 0;
+    private boolean isLoading = false;
 
     @Bind(R.id.recent_changes_recycler_view)
     RecyclerView recyclerView;
@@ -139,10 +140,12 @@ public class RecentChangesFragment extends RxBaseFragment {
     }
 
     private void getRecentChanges() {
-        if (!adapter.getDisplayedData().isEmpty() && continueString == null) {
+        if ((!adapter.getDisplayedData().isEmpty() && continueString == null) || isLoading) {
             return;
         }
         Log.e(TAG, "start downloading");
+
+        isLoading = true;
 
         String savedString = continueString;
         continueString = null;
@@ -187,13 +190,14 @@ public class RecentChangesFragment extends RxBaseFragment {
                                     recyclerView.setVisibility(View.VISIBLE);
                                     errorTextView.setVisibility(View.GONE);
                                 }
+                                isLoading = false;
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
-
+                                isLoading = false;
                                 if (adapter.getDisplayedData().size() <= 1) {
                                     errorTextView.setVisibility(View.VISIBLE);
 

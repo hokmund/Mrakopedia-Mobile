@@ -192,13 +192,16 @@ public class DBWorker {
     public static Observable<PageSummaryRealm> getPageSummary(String title) {
         Realm realm = Realm.getDefaultInstance();
 
-        Observable<PageSummaryRealm> result = realm
+        PageSummaryRealm find = realm
                 .where(PageSummaryRealm.class)
                 .equalTo("pageTitle", title)
-                .findFirst()
-                .asObservable();
+                .findFirst();
 
-        return result;
+        if (find == null) {
+            return Observable.empty();
+        }
+
+        return find.asObservable();
     }
 
     public static Observable<PageSummaryRealm> getPageSummaryById(String pageId) {

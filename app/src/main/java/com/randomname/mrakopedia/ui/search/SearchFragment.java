@@ -161,6 +161,10 @@ public class SearchFragment extends RxBaseFragment {
                 .flatMap(new Func1<SearchResult, Observable<Search>>() {
                     @Override
                     public Observable<Search> call(SearchResult searchResult) {
+                        if (searchResult.getQuery() == null || searchResult.getQuery().getSearch() == null) {
+                            return Observable.empty();
+                        }
+
                         return Observable.from(searchResult.getQuery().getSearch());
                     }
                 })
