@@ -557,7 +557,11 @@ public class PageSummaryFragment extends RxBaseFragment {
                 .map(new Func1<TextSectionRealm, TextSection>() {
                     @Override
                     public TextSection call(TextSectionRealm textSectionRealm) {
-                        return new TextSection(textSectionRealm.getType(), textSectionRealm.getText());
+                        if (textSectionRealm.getType() == TextSection.CATEGORY_TYPE) {
+                            return new CategoriesTextSection(textSectionRealm.getCategoriesTitles());
+                        } else {
+                            return new TextSection(textSectionRealm.getType(), textSectionRealm.getText());
+                        }
                     }
                 })
                 .subscribe(new Subscriber<TextSection>() {

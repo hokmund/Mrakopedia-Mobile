@@ -5,18 +5,14 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 /**
- * Created by vgrigoryev on 22.01.2016.
+ * Created by vgrigoryev on 08.02.2016.
  */
-public class TextSectionRealm extends RealmObject {
-
+public class CategoryTextSectionRealm extends RealmObject {
     private int type;
     private String text;
-    private RealmList<RealmString> categoriesTitles;
+    private RealmList<RealmString> categoriesArrayList;
     @PrimaryKey
     private String id;
-
-    public TextSectionRealm () {
-    }
 
     public void setId(String id) {
         this.id = id;
@@ -42,11 +38,11 @@ public class TextSectionRealm extends RealmObject {
         return text;
     }
 
-    public RealmList<RealmString> getCategoriesTitles() {
-        return categoriesTitles;
+    public RealmList<RealmString> getCategoriesArrayList() {
+        return categoriesArrayList;
     }
 
-    public void setCategoriesTitles(RealmList<RealmString> categoriesTitles) {
-        this.categoriesTitles = categoriesTitles;
+    public void setCategoriesArrayList(RealmList<RealmString> categoriesArrayList) {
+        this.categoriesArrayList = categoriesArrayList;
     }
 }

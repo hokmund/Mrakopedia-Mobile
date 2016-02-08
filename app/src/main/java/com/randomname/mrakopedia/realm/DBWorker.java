@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
+import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.CategoryRealm;
@@ -55,6 +56,19 @@ public class DBWorker {
             textSectionRealm.setText(textSection.getText());
             textSectionRealm.setType(textSection.getType());
             textSectionRealm.setId(pageSummaryResult.getParse().getTitle() + pageSummaryToSave.getTextSections().size());
+
+            if (textSection.getType() == TextSection.CATEGORY_TYPE) {
+                ArrayList<String> categoriesTitles = ((CategoriesTextSection)textSection).getCategoriesArrayList();
+                textSectionRealm.setCategoriesTitles(new RealmList<RealmString>());
+                RealmString realmString;
+
+                for (String categoryTitle : categoriesTitles) {
+                    realmString = new RealmString();
+                    realmString.setString(categoryTitle);
+                    textSectionRealm.getCategoriesTitles().add(realmString);
+                }
+
+            }
 
             pageSummaryToSave.getTextSections().add(textSectionRealm);
         }

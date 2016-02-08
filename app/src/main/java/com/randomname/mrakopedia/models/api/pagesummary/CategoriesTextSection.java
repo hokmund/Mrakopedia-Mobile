@@ -3,7 +3,11 @@ package com.randomname.mrakopedia.models.api.pagesummary;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.randomname.mrakopedia.models.realm.RealmString;
+
 import java.util.ArrayList;
+
+import io.realm.RealmList;
 
 /**
  * Created by vgrigoryev on 26.01.2016.
@@ -15,6 +19,15 @@ public class CategoriesTextSection extends TextSection implements Parcelable {
     public CategoriesTextSection() {
         super(CATEGORY_TYPE, "Категории статьи");
         categoriesArrayList = new ArrayList<>();
+    }
+
+    public CategoriesTextSection(RealmList<RealmString> categoriesTitles) {
+        super(CATEGORY_TYPE, "Категории статьи");
+        categoriesArrayList = new ArrayList<>();
+
+        for (RealmString realmString : categoriesTitles) {
+            categoriesArrayList.add(realmString.getString());
+        }
     }
 
     public CategoriesTextSection(Parcel in) {
