@@ -139,7 +139,7 @@ public class RecentChangesFragment extends RxBaseFragment {
     }
 
     private void getRecentChanges() {
-        if (continueString == null) {
+        if (!adapter.getDisplayedData().isEmpty() && continueString == null) {
             return;
         }
         Log.e(TAG, "start downloading");
@@ -183,7 +183,10 @@ public class RecentChangesFragment extends RxBaseFragment {
                         .subscribe(new Subscriber<Recentchanges>() {
                             @Override
                             public void onCompleted() {
-
+                                if (recyclerView.getVisibility() != View.VISIBLE) {
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    errorTextView.setVisibility(View.GONE);
+                                }
                             }
 
                             @Override
@@ -208,11 +211,17 @@ public class RecentChangesFragment extends RxBaseFragment {
                                 adapter.getDisplayedData().add(recentchanges);
                                 adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(recentchanges) + 1);
                                 checkIfPageWasRead(recentchanges);
-
                             }
                         });
 
         bindToLifecycle(subscription);
+    }
+
+    @Override
+    public void onConnectedToInternet() {
+        if (adapter.getDisplayedData().isEmpty()) {
+            getRecentChanges();
+        }
     }
 
     private void checkIfPageWasRead(final Recentchanges recentChange) {

@@ -15,6 +15,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
 import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
+import com.randomname.mrakopedia.ui.search.SearchFragment;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 
 import butterknife.Bind;
@@ -25,12 +26,14 @@ public class MainActivity extends AppCompatActivity {
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
     private final static String RECENT_CHANGES_FRAGMENT_TAG = "recentChagesFragmentTag";
+    private final static String SEARCH_FRAGMENT_TAG = "searchFragmentTag";
 
     private final static String DRAWER_SELECTION_KEY = "drawerSelectionKey";
 
     private final int DRAWER_ALL_CATEGORIES = 0;
     private final int DRAWER_FAVORITE = 1;
     private final int DRAWER_RECENT_CHANGES = 2;
+    private final int DRAWER_SEARCH_FRAGMENT = 3;
 
     public ToolbarHideRecyclerOnScrollListener toolbarHideRecyclerOnScrollListener;
 
@@ -98,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
                 .addDrawerItems(
                     createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES),
                     createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE),
-                    createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES)
+                    createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES),
+                    createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT)
                 )
                 .withSelectedItem(drawerSelection)
                 .build();
@@ -121,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case DRAWER_RECENT_CHANGES:
                         setRecentChangesFragment();
+                        break;
+                    case DRAWER_SEARCH_FRAGMENT:
+                        setSearchFragment();
                         break;
                     default:
                         break;
@@ -152,6 +159,11 @@ public class MainActivity extends AppCompatActivity {
     private void setRecentChangesFragment() {
         setTitle(R.string.recent_changes_drawer);
         setFragment(new RecentChangesFragment(), RECENT_CHANGES_FRAGMENT_TAG);
+    }
+
+    private void setSearchFragment() {
+        setTitle(R.string.search_drawer);
+        setFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG);
     }
 
     private void setFragment(Fragment fragment, String tag) {

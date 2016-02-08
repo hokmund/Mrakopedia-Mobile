@@ -5,6 +5,7 @@ import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescript
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
+import com.randomname.mrakopedia.models.api.search.SearchResult;
 
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -48,5 +49,11 @@ public interface MrakopediaAPI {
 
     @GET("api.php?action=query&list=recentchanges&format=json&continue=&rctype=new&rclimit=50")
     Observable<RecentChangesResult> getRecentChanges(
+    );
+
+    @GET("api.php?action=query&format=json&continue=&list=search&srwhat=text&srlimit=50")
+    Observable<SearchResult> search(
+        @Query("srsearch") String searchString,
+        @Query("sroffset") String offset
     );
 }

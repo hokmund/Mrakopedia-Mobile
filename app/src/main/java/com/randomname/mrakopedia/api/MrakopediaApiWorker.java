@@ -5,6 +5,7 @@ import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescript
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
+import com.randomname.mrakopedia.models.api.search.SearchResult;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -74,10 +75,14 @@ public class MrakopediaApiWorker {
     }
 
     public Observable<RecentChangesResult> getRecentChanges(String continueString) {
-        if (continueString.isEmpty()) {
+        if (continueString == null || continueString.isEmpty()) {
             return getMrakopediaAPI().getRecentChanges();
         } else {
             return getMrakopediaAPI().getRecentChanges(continueString);
         }
+    }
+
+    public Observable<SearchResult> search(String searchString, String offset) {
+        return getMrakopediaAPI().search(searchString, offset);
     }
 }

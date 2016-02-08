@@ -103,6 +103,13 @@ public class AllCategoriesFragment extends RxBaseFragment {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void onConnectedToInternet() {
+        if (adapter.getDisplayedData().size() <= 1) {
+           loadCategoryMembersViaNetwork();
+        }
+    }
+
     private void loadCategoryMembersViaNetwork() {
         if (continueString == null) {
             return;
@@ -170,6 +177,11 @@ public class AllCategoriesFragment extends RxBaseFragment {
                                 }
 
                                 loadCategoryMembersViaNetwork();
+
+                                if (recyclerView.getVisibility() != View.VISIBLE) {
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    errorTextView.setVisibility(View.GONE);
+                                }
                             }
                         });
 

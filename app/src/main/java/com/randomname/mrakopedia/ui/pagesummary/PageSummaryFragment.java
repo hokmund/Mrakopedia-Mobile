@@ -190,6 +190,13 @@ public class PageSummaryFragment extends RxBaseFragment {
         return view;
     }
 
+    @Override
+    public void onConnectedToInternet() {
+        if (adapter.getDisplayedData().size() <= 1) {
+            getArticleByNetwork();
+        }
+    }
+
     public void copySelectedText() {
         if (recyclerView != null) {
             recyclerView.copyTextToClipboard();
@@ -264,6 +271,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     private void getArticleByNetwork() {
         recyclerView.setVisibility(View.INVISIBLE);
+        errorTextView.setVisibility(View.INVISIBLE);
         loadingProgressBar.setVisibility(View.VISIBLE);
         Observable<PageSummaryResult> observable;
 

@@ -211,12 +211,21 @@ public class CategoryMembersFragment extends RxBaseFragment {
         adapter.setFilter(filter);
     }
 
-    private void loadCategoryMembers() {
-        if (continueString == null) {
-            return;
+    @Override
+    public void onConnectedToInternet() {
+        if (categorymembersArrayList.isEmpty()) {
+            loadCategoryMembers();
         }
 
+        if (adapter.getDescriptionCount() <= 2) {
+            getCategoryDescriptionByNetwork();
+        }
+    }
 
+    private void loadCategoryMembers() {
+        if (continueString == null && !categorymembersArrayList.isEmpty()) {
+            return;
+        }
 
         String continueStringSaved = continueString;
         continueString = null;
@@ -365,6 +374,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     private void getCategoryDescriptionByNetwork() {
         loadingProgressBar.setVisibility(View.VISIBLE);
+        errorTextView.setVisibility(View.GONE);
         Subscription getCategoryDescriptionSubscription =
                 MrakopediaApiWorker
                         .getInstance()
