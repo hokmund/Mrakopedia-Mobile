@@ -291,7 +291,9 @@ public class PageSummaryFragment extends RxBaseFragment {
                 .map(new Func1<PageSummaryResult, PageSummaryResult>() {
                     @Override
                     public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
-                        Document doc = Jsoup.parse(pageSummaryResult.getParse().getText().getText());
+                        String htmlText = pageSummaryResult.getParse().getText().getText();
+
+                        Document doc = Jsoup.parse(htmlText);
 
                         Elements ratingSpan = doc.select("span#w4g_rb_area-1");
 
@@ -311,19 +313,25 @@ public class PageSummaryFragment extends RxBaseFragment {
                             scriptTags.remove();
                         }
 
-                        Elements spoilerLinks = doc.select("a.spoilerLink");
-                        if (!spoilerLinks.isEmpty()) {
-                            spoilerLinks.remove();
+                        if (htmlText.contains("spoilerLink")) {
+                            Elements spoilerLinks = doc.select("a.spoilerLink");
+                            if (!spoilerLinks.isEmpty()) {
+                                spoilerLinks.remove();
+                            }
                         }
 
-                        Elements spoilersButtons = doc.select("span.spoilers-button");
-                        if (!spoilersButtons.isEmpty()) {
-                            spoilersButtons.remove();
+                        if (htmlText.contains("spoilers-button")) {
+                            Elements spoilersButtons = doc.select("span.spoilers-button");
+                            if (!spoilersButtons.isEmpty()) {
+                                spoilersButtons.remove();
+                            }
                         }
 
-                        Elements delTag = doc.select("del");
-                        if (!delTag.isEmpty()) {
-                            delTag.tagName("strike");
+                        if (htmlText.contains("del")) {
+                            Elements delTag = doc.select("del");
+                            if (!delTag.isEmpty()) {
+                                delTag.tagName("strike");
+                            }
                         }
 
                         Elements aTags = doc.select("a");
@@ -369,47 +377,55 @@ public class PageSummaryFragment extends RxBaseFragment {
                             }
                         }
 
-                        Elements boxDivs = doc.select("div.box");
+                        if (htmlText.contains("box")) {
+                            Elements boxDivs = doc.select("div.box");
 
-                        if (!boxDivs.isEmpty()) {
-                            boxDivs.remove();
+                            if (!boxDivs.isEmpty()) {
+                                boxDivs.remove();
+                            }
                         }
 
-                        Elements editSections = doc.select("span.mw-editsection");
+                        if (htmlText.contains("mw-editsection")) {
+                            Elements editSections = doc.select("span.mw-editsection");
 
-                        if (!editSections.isEmpty()) {
-                            editSections.remove();
+                            if (!editSections.isEmpty()) {
+                                editSections.remove();
+                            }
                         }
 
-                        Elements liTags = doc.select("li");
+                        if (htmlText.contains("li")) {
+                            Elements liTags = doc.select("li");
 
-                        if (!liTags.isEmpty()) {
-                            for (Element liTag : liTags) {
-                                liTag.tagName("p");
+                            if (!liTags.isEmpty()) {
+                                for (Element liTag : liTags) {
+                                    liTag.tagName("p");
+                                }
                             }
                         }
 
 
-                        Elements iFrames = doc.select("iframe");
+                        if (htmlText.contains("iframe")) {
+                            Elements iFrames = doc.select("iframe");
 
-                        if (!iFrames.isEmpty()) {
-                            for (Element iFrame : iFrames) {
-                                String src;
-                                if (iFrame.attr("src").contains("youtube")) {
-                                    src = iFrame.attr("src");
+                            if (!iFrames.isEmpty()) {
+                                for (Element iFrame : iFrames) {
+                                    String src;
+                                    if (iFrame.attr("src").contains("youtube")) {
+                                        src = iFrame.attr("src");
 
-                                    src = src.substring(src.indexOf("embed/") + 6);
+                                        src = src.substring(src.indexOf("embed/") + 6);
 
-                                    if (src.charAt(src.length() - 1) == '?') {
-                                        src = src.substring(0, src.length() - 1);
+                                        if (src.charAt(src.length() - 1) == '?') {
+                                            src = src.substring(0, src.length() - 1);
+                                        }
+
+                                        iFrame.tagName("p");
+                                        iFrame.addClass("youtubeVideo");
+                                        iFrame.html(src);
+
+
+                                        pageSummaryResult.getParse().setHasYoutube(true);
                                     }
-
-                                    iFrame.tagName("p");
-                                    iFrame.addClass("youtubeVideo");
-                                    iFrame.html(src);
-
-
-                                    pageSummaryResult.getParse().setHasYoutube(true);
                                 }
                             }
                         }
