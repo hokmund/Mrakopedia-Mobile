@@ -1,9 +1,12 @@
 package com.randomname.mrakopedia.models.api.search;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by vgrigoryev on 08.02.2016.
  */
-public class Search {
+public class Search implements Parcelable {
     private String timestamp;
 
     private String title;
@@ -75,6 +78,43 @@ public class Search {
     {
         this.size = size;
     }
+
+    public Search() {
+    }
+
+    public Search(Parcel in) {
+        timestamp = in.readString();
+        title = in.readString();
+        ns = in.readString();
+        snippet = in.readString();
+        wordcount = in.readString();
+        size = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(timestamp);
+        dest.writeString(title);
+        dest.writeString(ns);
+        dest.writeString(snippet);
+        dest.writeString(wordcount);
+        dest.writeString(size);
+    }
+
+    public static final Parcelable.Creator<Search> CREATOR = new Parcelable.Creator<Search>() {
+        public Search createFromParcel(Parcel in) {
+            return new Search(in);
+        }
+
+        public Search[] newArray(int size) {
+            return new Search[size];
+        }
+    };
 
     @Override
     public String toString()

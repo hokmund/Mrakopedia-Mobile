@@ -5,7 +5,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -15,8 +17,12 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
 import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
+import com.randomname.mrakopedia.ui.search.SearchCallback;
 import com.randomname.mrakopedia.ui.search.SearchFragment;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
+import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
+
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,9 +47,14 @@ public class MainActivity extends AppCompatActivity {
     private long mBackPressed;
 
     private int drawerSelection = 0;
+    private ArrayList<SearchCallback>searchListeners = new ArrayList<>();
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.toolbar_container)
+    RelativeLayout toolbarContainer;
+    @Bind(R.id.search_view)
+    MaterialSearchView searchView;
 
     private Drawer materialDrawer;
 
@@ -60,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         initToolbar();
         initDrawer();
 
-        toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbar);
+        toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
             setAllCategoriesFragment();
@@ -92,6 +103,38 @@ public class MainActivity extends AppCompatActivity {
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
+        searchView.setUpButtonIcon(R.drawable.ic_menu_black_24dp);
+        searchView.setUpButtonListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!materialDrawer.isDrawerOpen()) {
+                    materialDrawer.openDrawer();
+                }
+            }
+        });
+        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                for (SearchCallback searchCallback : searchListeners) {
+                    searchCallback.onSearchChanged(newText);
+                }
+
+                return true;
+            }
+        });
+    }
+
+    public void registerForSearchListener(SearchCallback searchCallback) {
+        searchListeners.add(searchCallback);
+    }
+
+    public void unregisterForSearchListener(SearchCallback searchCallback) {
+        searchListeners.remove(searchCallback);
     }
 
     private void initDrawer() {
@@ -163,14 +206,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void setSearchFragment() {
         setTitle(R.string.search_drawer);
-        setFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG);
+        setFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG, true);
     }
 
     private void setFragment(Fragment fragment, String tag) {
+        setFragment(fragment, tag, false);
+    }
+
+    private void setFragment(Fragment fragment, String tag, Boolean isSearchViewOpen) {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(tag);
 
-        toolbar.setTranslationY(0);
+        toolbarContainer.setTranslationY(0);
         toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
+
+        if (isSearchViewOpen) {
+            searchView.showSearch(true);
+        } else {
+            searchView.closeSearch();
+        }
+
+        Log.e("bla", searchListeners.size() + "");
 
         if (frag != null) {
             return;

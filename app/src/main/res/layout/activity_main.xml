@@ -11,12 +11,20 @@
         android:id="@+id/main_frame"
         />
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_height="?attr/actionBarSize"
+    <RelativeLayout
+        android:id="@+id/toolbar_container"
         android:layout_width="match_parent"
-        style="@style/Widget.MyApp.ActionBar"
-        android:elevation="4dp"
-        android:transitionName="actionBar"
-        />
+        android:layout_height="wrap_content"
+        >
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            style="@style/Widget.MyApp.ActionBar"
+            />
+        <com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView
+            android:id="@+id/search_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
 </RelativeLayout>

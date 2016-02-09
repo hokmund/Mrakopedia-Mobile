@@ -164,6 +164,14 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         mSuggestionsListView.setVisibility(GONE);
     }
 
+    public void setUpButtonIcon(int resId) {
+        mBackBtn.setImageResource(resId);
+    }
+
+    public void setUpButtonListener(OnClickListener listener) {
+        mBackBtn.setOnClickListener(listener);
+    }
+
     private void initSearchView() {
         mSearchSrcTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -258,8 +266,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         CharSequence query = mSearchSrcTextView.getText();
         if (query != null && TextUtils.getTrimmedLength(query) > 0) {
             if (mOnQueryChangeListener == null || !mOnQueryChangeListener.onQueryTextSubmit(query.toString())) {
-                closeSearch();
-                mSearchSrcTextView.setText(null);
+                hideKeyboard(this);
             }
         }
     }

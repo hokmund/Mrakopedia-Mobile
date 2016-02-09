@@ -181,6 +181,12 @@ public class RecentChangesFragment extends RxBaseFragment {
                                 return true;
                             }
                         })
+                        .filter(new Func1<Recentchanges, Boolean>() {
+                            @Override
+                            public Boolean call(Recentchanges recentchanges) {
+                                return recentchanges.getRedirect() == null;
+                            }
+                        })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<Recentchanges>() {

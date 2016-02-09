@@ -10,8 +10,17 @@
 
         <item name="windowActionModeOverlay">true</item>
         <item name="actionModeBackground">@drawable/action_mode_background</item>
+
+        <item name="android:textSelectHandle">@drawable/text_select_handle_middle_mtrl_alpha</item>
+        <item name="android:textSelectHandleLeft">@drawable/text_select_handle_left_mtrl_alpha</item>
+        <item name="android:textSelectHandleRight">@drawable/text_select_handle_right_mtrl_alpha</item>
     </style>
 
+    <style name="MyCustomTheme" parent="@style/AppTheme">
+        <item name="android:textSelectHandle">@drawable/text_select_handle_middle_mtrl_alpha</item>
+        <item name="android:textSelectHandleLeft">@drawable/text_select_handle_left_mtrl_alpha</item>
+        <item name="android:textSelectHandleRight">@drawable/text_select_handle_right_mtrl_alpha</item>
+    </style>
 
     <style name="Widget.MyApp.ActionBar" parent="Widget.AppCompat.ActionBar">
         <item name="android:background">@color/colorPrimary</item>

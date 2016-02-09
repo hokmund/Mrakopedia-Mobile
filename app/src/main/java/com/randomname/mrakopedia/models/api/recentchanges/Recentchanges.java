@@ -25,6 +25,8 @@ public class Recentchanges implements Parcelable {
 
     private boolean isViewed;
 
+    private String redirect;
+
     public Recentchanges() {
     }
 
@@ -37,6 +39,7 @@ public class Recentchanges implements Parcelable {
         type = in.readString();
         rcid = in.readString();
         pageid = in.readString();
+        redirect = in.readString();
         isViewed = in.readByte() != 0;
     }
 
@@ -128,6 +131,14 @@ public class Recentchanges implements Parcelable {
         this.isViewed = isViewed;
     }
 
+    public void setRedirect(String redirect) {
+        this.redirect = redirect;
+    }
+
+    public String getRedirect() {
+        return redirect;
+    }
+
     @Override
     public String toString()
     {
@@ -149,6 +160,7 @@ public class Recentchanges implements Parcelable {
         dest.writeString(type);
         dest.writeString(rcid);
         dest.writeString(pageid);
+        dest.writeString(redirect);
         dest.writeByte((byte) (isViewed ? 1 : 0));
     }
 

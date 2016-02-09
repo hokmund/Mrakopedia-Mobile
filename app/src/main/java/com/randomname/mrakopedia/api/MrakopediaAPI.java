@@ -42,12 +42,12 @@ public interface MrakopediaAPI {
             @Query("page") String pageTitle
     );
 
-    @GET("api.php?action=query&list=recentchanges&format=json&continue=&rctype=new&rclimit=50")
+    @GET("api.php?action=query&list=recentchanges&format=json&continue=&rctype=new&rclimit=50&rcprop=redirect|timestamp|title|ids")
     Observable<RecentChangesResult> getRecentChanges(
         @Query("rccontinue") String continueString
     );
 
-    @GET("api.php?action=query&list=recentchanges&format=json&continue=&rctype=new&rclimit=50")
+    @GET("api.php?action=query&list=recentchanges&format=json&continue=&rctype=new&rclimit=50&rcprop=redirect|timestamp|title|ids")
     Observable<RecentChangesResult> getRecentChanges(
     );
 
