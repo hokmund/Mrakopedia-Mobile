@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         materialDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
+                .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
                     createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES),
                     createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE),
