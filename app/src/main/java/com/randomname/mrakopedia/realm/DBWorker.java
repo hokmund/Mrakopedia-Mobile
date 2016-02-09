@@ -189,7 +189,7 @@ public class DBWorker {
         return result;
     }
 
-    public static Observable<PageSummaryRealm> getPageSummary(String title) {
+    public static PageSummaryRealm getPageSummary(String title) {
         Realm realm = Realm.getDefaultInstance();
 
         PageSummaryRealm find = realm
@@ -198,22 +198,19 @@ public class DBWorker {
                 .findFirst();
 
         if (find == null) {
-            return Observable.empty();
+            return null;
         }
 
-        return find.asObservable();
+        return find;
     }
 
-    public static Observable<PageSummaryRealm> getPageSummaryById(String pageId) {
+    public static PageSummaryRealm getPageSummaryById(String pageId) {
         Realm realm = Realm.getDefaultInstance();
 
-        Observable<PageSummaryRealm> result = realm
+        return realm
                 .where(PageSummaryRealm.class)
                 .equalTo("pageId", pageId)
-                .findFirst()
-                .asObservable();
-
-        return result;
+                .findFirst();
     }
 
     public static Observable<PageSummaryRealm> getFavoritePages() {

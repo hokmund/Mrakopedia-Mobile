@@ -193,9 +193,6 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     @Override
     public void onConnectedToInternet() {
-        if (adapter.getDisplayedData().size() <= 1) {
-            getArticleByNetwork();
-        }
     }
 
     public void copySelectedText() {
@@ -387,11 +384,10 @@ public class PageSummaryFragment extends RxBaseFragment {
                         Elements liTags = doc.select("li");
 
                         if (!liTags.isEmpty()) {
-                            for (Element liTag: liTags) {
+                            for (Element liTag : liTags) {
                                 liTag.tagName("p");
                             }
                         }
-
 
 
                         Elements iFrames = doc.select("iframe");
@@ -556,19 +552,25 @@ public class PageSummaryFragment extends RxBaseFragment {
     }
 
     private void getArticleByRealm() {
-        Observable<PageSummaryRealm> observable;
 
-        if (pageId == null) {
-            observable = DBWorker.getPageSummary(pageTitle);
-        } else {
-            observable = DBWorker.getPageSummaryById(pageId);
-        }
-
-
-        Subscription subscription = observable
+        Subscription subscription = Observable.just("")
+                .flatMap(new Func1<String, Observable<PageSummaryRealm>>() {
+                    @Override
+                    public Observable<PageSummaryRealm> call(String s) {
+                        if (pageId == null) {
+                            return Observable.just(DBWorker.getPageSummary(pageTitle));
+                        } else {
+                            return Observable.just(DBWorker.getPageSummaryById(pageId));
+                        }
+                    }
+                })
                 .flatMap(new Func1<PageSummaryRealm, Observable<TextSectionRealm>>() {
                     @Override
                     public Observable<TextSectionRealm> call(PageSummaryRealm pageSummaryRealm) {
+                        if (pageSummaryRealm == null) {
+                            return Observable.empty();
+                        }
+
                         return Observable.from(pageSummaryRealm.getTextSections());
                     }
                 })
@@ -582,6 +584,8 @@ public class PageSummaryFragment extends RxBaseFragment {
                         }
                     }
                 })
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<TextSection>() {
                     @Override
                     public void onCompleted() {
