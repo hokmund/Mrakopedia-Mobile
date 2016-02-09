@@ -178,7 +178,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                 ((PageSummaryActivity) getActivity()).stopSelection();
             }
         });
-        recyclerView.addOnScrollListener(((PageSummaryActivity)getActivity()).toolbarHideListener);
+        recyclerView.addOnScrollListener(((PageSummaryActivity) getActivity()).toolbarHideListener);
 
         if (adapter.getDisplayedData().size() <= 1) {
             if (DBWorker.isPageSummarySavedById(pageId) || DBWorker.isPageSummarySaved(pageTitle)) {
@@ -268,6 +268,7 @@ public class PageSummaryFragment extends RxBaseFragment {
     }
 
     private void getArticleByNetwork() {
+
         if (isLoading) {
             return;
         }

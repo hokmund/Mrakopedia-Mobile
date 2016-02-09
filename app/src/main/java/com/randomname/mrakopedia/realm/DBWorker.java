@@ -27,10 +27,18 @@ import rx.functions.Func1;
 public class DBWorker {
 
     public static boolean isPageSummarySaved(String title) {
+        if (title == null) {
+            return false;
+        }
+
         return !Realm.getDefaultInstance().where(PageSummaryRealm.class).equalTo("pageTitle", title).findAll().isEmpty();
     }
 
     public static boolean isPageSummarySavedById(String id) {
+        if (id == null) {
+            return false;
+        }
+
         return !Realm.getDefaultInstance().where(PageSummaryRealm.class).equalTo("pageId", id).findAll().isEmpty();
     }
 

@@ -142,6 +142,11 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         mSearchLayout = findViewById(R.id.search_layout);
 
         mSearchTopBar = (RelativeLayout) mSearchLayout.findViewById(R.id.search_top_bar);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            mSearchTopBar.setBackgroundResource(android.R.drawable.dialog_holo_light_frame);
+        }
+
         mSuggestionsListView = (ListView) mSearchLayout.findViewById(R.id.suggestion_list);
         mSearchSrcTextView = (EditText) mSearchLayout.findViewById(R.id.searchTextView);
         mBackBtn = (ImageButton) mSearchLayout.findViewById(R.id.action_up_btn);
