@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
@@ -143,10 +144,10 @@ public class MainActivity extends AppCompatActivity {
                 .withToolbar(toolbar)
                 .withHeader(R.layout.drawer_header)
                 .addDrawerItems(
-                    createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES),
-                    createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE),
-                    createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES),
-                    createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT)
+                        createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES, R.drawable.ic_document_gray, R.drawable.ic_document_selected),
+                        createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE, R.drawable.ic_star_outline_gray, R.drawable.ic_star_outline_selected),
+                        createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES, R.drawable.ic_new_gray, R.drawable.ic_new_selected),
+                        createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT, R.drawable.ic_search_gray, R.drawable.ic_search_selected)
                 )
                 .withSelectedItem(drawerSelection)
                 .build();
@@ -182,10 +183,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private PrimaryDrawerItem createDrawerItem(int name, int index) {
-        PrimaryDrawerItem item = new PrimaryDrawerItem()
+    private SecondaryDrawerItem createDrawerItem(int name, int index, int icon, int selectedIcon) {
+        SecondaryDrawerItem item = new SecondaryDrawerItem()
                 .withName(name)
-                .withIdentifier(index);
+                .withIdentifier(index)
+                .withIcon(icon)
+                .withSelectedIcon(selectedIcon);
 
         return item;
     }
