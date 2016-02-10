@@ -22,6 +22,7 @@ import com.randomname.mrakopedia.ui.search.SearchCallback;
 import com.randomname.mrakopedia.ui.search.SearchFragment;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
+import com.randomname.mrakopedia.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -222,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
         toolbarContainer.setTranslationY(0);
         toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
+        Utils.hideKeyboard(this);
 
         if (isSearchViewOpen) {
             searchView.showSearch(true);

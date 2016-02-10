@@ -22,6 +22,7 @@
             android:layout_width="match_parent"
             style="@style/Widget.MyApp.ActionBar"
             />
+
         <com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"
