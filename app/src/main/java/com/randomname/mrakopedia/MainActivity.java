@@ -223,15 +223,12 @@ public class MainActivity extends AppCompatActivity {
 
         toolbarContainer.setTranslationY(0);
         toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
-        Utils.hideKeyboard(this);
 
         if (isSearchViewOpen) {
             searchView.showSearch(true);
         } else {
             searchView.closeSearch();
         }
-
-        Log.e("bla", searchListeners.size() + "");
 
         if (frag != null) {
             return;
