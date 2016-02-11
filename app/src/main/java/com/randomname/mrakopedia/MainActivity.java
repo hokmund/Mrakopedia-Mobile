@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -140,10 +141,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initDrawer() {
+        int headerId = 0;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            headerId = R.layout.drawer_header_lollipop;
+        } else {
+            headerId = R.layout.drawer_header;
+        }
+
+
         materialDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
-                .withHeader(R.layout.drawer_header)
+                .withHeader(headerId)
+                .withSliderBackgroundColorRes(R.color.primary)
                 .addDrawerItems(
                         createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES, R.drawable.ic_document_gray, R.drawable.ic_document_selected),
                         createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE, R.drawable.ic_star_outline_gray, R.drawable.ic_star_outline_selected),
@@ -189,7 +200,10 @@ public class MainActivity extends AppCompatActivity {
                 .withName(name)
                 .withIdentifier(index)
                 .withIcon(icon)
-                .withSelectedIcon(selectedIcon);
+                .withSelectedIcon(selectedIcon)
+                .withSelectedColorRes(R.color.colorPrimaryDark)
+                .withTextColorRes(R.color.colorPrimaryLight)
+                .withSelectedTextColorRes(R.color.iconsColor);
 
         return item;
     }

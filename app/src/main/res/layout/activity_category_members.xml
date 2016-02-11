@@ -21,7 +21,6 @@
             android:id="@+id/toolbar"
             android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
-            android:elevation="4dp"
             style="@style/Widget.MyApp.ActionBar"
             />
         <com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView
