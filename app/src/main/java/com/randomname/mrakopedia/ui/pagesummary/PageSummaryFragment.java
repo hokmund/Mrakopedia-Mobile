@@ -30,6 +30,7 @@ import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
 import com.randomname.mrakopedia.ui.views.selection.SelectionCallback;
@@ -485,13 +486,15 @@ public class PageSummaryFragment extends RxBaseFragment {
                 .doOnNext(new Action1<PageSummaryResult>() {
                     @Override
                     public void call(PageSummaryResult pageSummaryResult) {
-                        if (DBWorker.isPageSummarySaved(pageTitle)) {
-                            pageIsRead = DBWorker.getPageIsRead(pageTitle);
-                        } else {
-                            pageIsRead = true;
-                        }
+                        if (SettingsWorker.getInstance(getActivity()).isPagesCachingEnabled()) {
+                            if (DBWorker.isPageSummarySaved(pageTitle)) {
+                                pageIsRead = DBWorker.getPageIsRead(pageTitle);
+                            } else {
+                                pageIsRead = true;
+                            }
 
-                        DBWorker.savePageSummary(pageSummaryResult, pageIsRead, pageId, pageTitle);
+                            DBWorker.savePageSummary(pageSummaryResult, pageIsRead, pageId, pageTitle);
+                        }
                     }
                 })
                 .flatMap(new Func1<PageSummaryResult, Observable<TextSection>>() {

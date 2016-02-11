@@ -12,6 +12,10 @@
     <string name="favorite_drawer">Избранное</string>
     <string name="recent_changes_drawer">Новые статьи</string>
     <string name="search_drawer">Поиск</string>
+    <string name="settings_drawer">Настройки</string>
+
+    <string name="caching_photo_option">Кэшировать фото</string>
+    <string name="caching_pages_option">Кэшировать страницы</string>
 
     <string name="text_was_copied_to_clipboard">Текст скопирован в буфер</string>
 

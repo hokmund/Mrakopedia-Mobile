@@ -21,6 +21,7 @@ import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
 import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
 import com.randomname.mrakopedia.ui.search.SearchCallback;
 import com.randomname.mrakopedia.ui.search.SearchFragment;
+import com.randomname.mrakopedia.ui.settings.SettingsFragment;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
 import com.randomname.mrakopedia.utils.Utils;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
     private final static String RECENT_CHANGES_FRAGMENT_TAG = "recentChagesFragmentTag";
     private final static String SEARCH_FRAGMENT_TAG = "searchFragmentTag";
+    private final static String SETTINGS_FRAGMENT_TAG = "settingsFragmentTag";
 
     private final static String DRAWER_SELECTION_KEY = "drawerSelectionKey";
 
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private final int DRAWER_FAVORITE = 1;
     private final int DRAWER_RECENT_CHANGES = 2;
     private final int DRAWER_SEARCH_FRAGMENT = 3;
+    private final int DRAWER_SETTINGS_FRAGMENT = 4;
 
     public ToolbarHideRecyclerOnScrollListener toolbarHideRecyclerOnScrollListener;
 
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
-            setAllCategoriesFragment();
+            setSettingsFragment();
         }
     }
 
@@ -161,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
                         createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES, R.drawable.ic_document_gray, R.drawable.ic_document_selected),
                         createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE, R.drawable.ic_star_outline_gray, R.drawable.ic_star_outline_selected),
                         createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES, R.drawable.ic_new_gray, R.drawable.ic_new_selected),
-                        createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT, R.drawable.ic_search_gray, R.drawable.ic_search_selected)
+                        createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT, R.drawable.ic_search_gray, R.drawable.ic_search_selected),
+                        createDrawerItem(R.string.settings_drawer, DRAWER_SETTINGS_FRAGMENT, R.drawable.ic_new_gray, R.drawable.ic_new_selected)
                 )
                 .withSelectedItem(drawerSelection)
                 .build();
@@ -187,6 +191,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case DRAWER_SEARCH_FRAGMENT:
                         setSearchFragment();
+                        break;
+                    case DRAWER_SETTINGS_FRAGMENT:
+                        setSettingsFragment();
                         break;
                     default:
                         break;
@@ -228,6 +235,11 @@ public class MainActivity extends AppCompatActivity {
     private void setSearchFragment() {
         setTitle(R.string.search_drawer);
         setFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG, true);
+    }
+
+    private void setSettingsFragment() {
+        setTitle(R.string.settings_drawer);
+        setFragment(new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
     }
 
     private void setFragment(Fragment fragment, String tag) {
