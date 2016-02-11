@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
@@ -100,6 +101,9 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     @Bind(R.id.options_layout)
     LinearLayout optionsLayout;
+
+    @Bind(R.id.font_size_seek_bar)
+    SeekBar fontSizeSeekBar;
 
     @Bind(R.id.color_scheme_recycler_view)
     RecyclerView colorSchemeRecyclerView;
@@ -209,8 +213,34 @@ public class PageSummaryFragment extends RxBaseFragment {
             }
         }
 
+        fontSizeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    adapter.notifyFontSizeChanged(progress);
+                    adapter.notifyDataSetChanged();
+                    SettingsWorker.getInstance(getActivity()).setCurrentFontSize(progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
         recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
+
+        float currentFontSize = SettingsWorker.getInstance(getActivity()).getCurrentFontSize();
+
+        fontSizeSeekBar.setProgress(Math.round(currentFontSize));
+        adapter.notifyFontSizeChanged(currentFontSize);
 
         if (!isOptionsShown) {
             final ViewTreeObserver observer = optionsLayout.getViewTreeObserver();
@@ -254,7 +284,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                 recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
 
                 adapter.notifyColorSchemeChanged(colorScheme);
-                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+                adapter.notifyDataSetChanged();
             }
         });
         colorSchemeRecyclerView.setAdapter(colorSchemeAdapter);

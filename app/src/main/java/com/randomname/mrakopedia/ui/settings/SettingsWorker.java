@@ -17,6 +17,7 @@ public class SettingsWorker {
 
     private static final String CACHING_PHOTO_ENABLED = "cachingPhotoEnabled";
     private static final String CACHING_PAGES_ENABLED = "cachingPagesEnabled";
+    private static final String CURRENT_FONT_SIZE = "currentFontSize";
     private static final String CURRENT_COLOR_SCHEME = "currentColorScheme";
 
     private static final String PREFERENCES_FILE = "mrak_prefs";
@@ -62,6 +63,10 @@ public class SettingsWorker {
 
     private void putInt(String key, int value) { edit().putInt(key, value).commit(); }
 
+    private float getFloat(String key) { return open().getFloat(key, 0f); }
+
+    private void putFloat(String key, float value) { edit().putFloat(key, value).commit(); }
+
     public boolean isPhotoCachingEnabled() {
         return getBoolean(CACHING_PHOTO_ENABLED, true);
     }
@@ -76,6 +81,20 @@ public class SettingsWorker {
 
     public void setIsPagesCachingEnabled(boolean value) {
         putBoolean(CACHING_PAGES_ENABLED, value);
+    }
+
+    public void setCurrentFontSize(float fontSize) {
+        putFloat(CURRENT_FONT_SIZE, fontSize);
+    }
+
+    public float getCurrentFontSize() {
+        float fontSize = getFloat(CURRENT_FONT_SIZE);
+
+        if (fontSize == 0f) {
+            fontSize = 14f;
+        }
+
+        return fontSize;
     }
 
     public void setCurrentColorScheme(ColorScheme colorScheme) {

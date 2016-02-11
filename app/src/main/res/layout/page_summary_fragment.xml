@@ -76,7 +76,8 @@
                     android:gravity="center_horizontal"
                     android:layout_gravity="center_horizontal" />
 
-                <carbon.widget.SeekBar
+                <SeekBar
+                    android:id="@+id/font_size_seek_bar"
                     android:layout_width="match_parent"
                     android:layout_height="24dp"
                     android:layout_margin="8dp"
@@ -84,10 +85,7 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:padding="8dp"
-                    app:carbon_rippleColor="@color/colorPrimaryLight"
-                    app:carbon_rippleHotspot="true"
-                    app:carbon_rippleStyle="borderless"
-                    app:carbon_tint="@color/colorAccent"
+                    android:max="36"
                     />
             </LinearLayout>
 

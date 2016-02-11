@@ -44,6 +44,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private OnCategoryClickListener categoryClickListener;
     private DisplayImageOptions options;
     private ColorScheme colorScheme;
+    private float fontSize = 14.0f;
 
     public PageSummaryAdapter(final ArrayList<TextSection> sections, final Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener, OnCategoryClickListener categoryClickListener) {
         this.sections = sections;
@@ -76,6 +77,10 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public void notifyColorSchemeChanged(ColorScheme colorScheme) {
         this.colorScheme = colorScheme;
+    }
+
+    public void notifyFontSizeChanged(float fontSize) {
+        this.fontSize = fontSize;
     }
 
     public ArrayList<TextSection> getDisplayedData() {
@@ -134,6 +139,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 ((TextViewHolder) holder).textView.setKey(" pos: " + position + span.toString());
                 ((TextViewHolder) holder).textView.setTextColor(colorScheme.getTextColor());
+                ((TextViewHolder) holder).textView.setTextSize(fontSize);
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
