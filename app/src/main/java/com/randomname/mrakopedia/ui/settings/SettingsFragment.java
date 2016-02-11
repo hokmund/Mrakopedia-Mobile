@@ -14,16 +14,21 @@ import com.randomname.mrakopedia.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import carbon.widget.RelativeLayout;
 
 /**
  * Created by vgrigoryev on 11.02.2016.
  */
-public class SettingsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
+public class SettingsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     @Bind(R.id.caching_photo_switch)
     SwitchCompat cachingPhotoSwitch;
+    @Bind(R.id.caching_photo_layout)
+    RelativeLayout cachingPhotoLayout;
     @Bind(R.id.caching_pages_switch)
     SwitchCompat cachingPagesSwitch;
+    @Bind(R.id.caching_pages_layout)
+    RelativeLayout cachingPagesLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,6 +46,8 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
         cachingPagesSwitch.setOnCheckedChangeListener(this);
         cachingPhotoSwitch.setOnCheckedChangeListener(this);
+        cachingPagesLayout.setOnClickListener(this);
+        cachingPhotoLayout.setOnClickListener(this);
     }
 
     @Override
@@ -51,6 +58,21 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                 break;
             case R.id.caching_pages_switch:
                 SettingsWorker.getInstance(getActivity()).setIsPagesCachingEnabled(isChecked);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.caching_pages_layout:
+                cachingPagesSwitch.setChecked(!cachingPagesSwitch.isChecked());
+                break;
+            case R.id.caching_photo_layout:
+                cachingPhotoSwitch.setChecked(!cachingPhotoSwitch.isChecked());
                 break;
             default:
                 break;

@@ -38,6 +38,7 @@ import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.utils.NetworkUtils;
@@ -338,6 +339,11 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     private void getCategoryDescription() {
 
+        if (!SettingsWorker.getInstance(getActivity()).isPagesCachingEnabled()) {
+            getCategoryDescriptionByNetwork();
+            return;
+        }
+
         Subscription getDescriptionFromRealm =
                 DBWorker.getCategoryDescription(categoryTitle)
                 .subscribe(new Subscriber<TextSection>() {
@@ -490,7 +496,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         .doOnNext(new Action1<CategoryDescription>() {
                             @Override
                             public void call(CategoryDescription categoryDescription) {
-                                DBWorker.saveCategoryDescription(categoryDescription, categoryTitle);
+                                if (SettingsWorker.getInstance(getActivity()).isPagesCachingEnabled()) {
+                                    DBWorker.saveCategoryDescription(categoryDescription, categoryTitle);
+                                }
                             }
                         })
                         .subscribeOn(Schedulers.newThread())
@@ -668,12 +676,16 @@ public class CategoryMembersFragment extends RxBaseFragment {
             this.onClickListener = onClickListener;
             descriptionSections = new ArrayList<>();
 
-            options = new DisplayImageOptions.Builder()
+            DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder()
                     .cacheInMemory(true)
-                    .cacheOnDisk(true)
                     .bitmapConfig(Bitmap.Config.RGB_565)
-                    .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-                    .build();
+                    .imageScaleType(ImageScaleType.IN_SAMPLE_INT);
+
+            if (SettingsWorker.getInstance(getActivity()).isPhotoCachingEnabled()) {
+                builder.cacheOnDisk(true);
+            }
+
+            options = builder.build();
         }
 
         public void setDescriptionSections(ArrayList<TextSection> sections) {

@@ -23,6 +23,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.ProportionalImageView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
@@ -49,12 +50,16 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.imageClickListener = imageClickListener;
         this.categoryClickListener = categoryClickListener;
 
-        options = new DisplayImageOptions.Builder()
+        DisplayImageOptions.Builder builder = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
-                .cacheOnDisk(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
-                .imageScaleType(ImageScaleType.IN_SAMPLE_INT)
-                .build();
+                .imageScaleType(ImageScaleType.IN_SAMPLE_INT);
+
+        if (SettingsWorker.getInstance(context).isPhotoCachingEnabled()) {
+            builder.cacheOnDisk(true);
+        }
+
+        options = builder.build();
 
         if (sections.isEmpty()) {
             sections.add(new TextSection(TextSection.SPACER_TYPE, ""));

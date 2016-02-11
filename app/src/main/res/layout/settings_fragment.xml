@@ -14,9 +14,14 @@
         android:paddingTop="?attr/actionBarSize"
         >
 
-        <RelativeLayout
+        <carbon.widget.RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clickable="true"
+            app:carbon_rippleColor="#333333"
+            android:id="@+id/caching_photo_layout"
             >
 
             <carbon.widget.TextView
@@ -28,6 +33,7 @@
                 android:text="@string/caching_photo_option"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
                 />
 
             <android.support.v7.widget.SwitchCompat
@@ -41,12 +47,16 @@
                 android:layout_marginEnd="16dp"
                 />
 
-        </RelativeLayout>
+        </carbon.widget.RelativeLayout>
 
-        <RelativeLayout
+        <carbon.widget.RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clickable="true"
+            app:carbon_rippleColor="#333333"
+            android:id="@+id/caching_pages_layout"
             >
 
             <carbon.widget.TextView
@@ -58,6 +68,7 @@
                 android:text="@string/caching_pages_option"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
                 />
 
             <android.support.v7.widget.SwitchCompat
@@ -71,7 +82,7 @@
                 android:layout_marginEnd="16dp"
                 />
 
-        </RelativeLayout>
+        </carbon.widget.RelativeLayout>
 
     </LinearLayout>
 
