@@ -20,6 +20,7 @@
     <color name="textColorSecondary">#727272</color>
     <color name="iconsColor">#FFFFFF</color>
     <color name="dividerColor">#B6B6B6</color>
+    <color name="listColor">#ECEFF1</color>
 
     <color name="ripple_color">#9E9E9E</color>
     <color name="ripple_color_alpha">#26333333</color>

@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/listColor"
     >
 
     <carbon.widget.TextView
@@ -40,7 +41,7 @@
         android:id="@+id/page_summary_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
+        android:background="@color/listColor"
         />
 
 </RelativeLayout>
