@@ -16,4 +16,10 @@
         app:showAsAction="ifRoom"
         android:title="страница просмотрена"/>
 
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        app:showAsAction="always"
+        android:title="настройки"/>
+
 </menu>

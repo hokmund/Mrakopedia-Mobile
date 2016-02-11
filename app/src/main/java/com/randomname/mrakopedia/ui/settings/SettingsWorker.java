@@ -2,6 +2,11 @@ package com.randomname.mrakopedia.ui.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+
+import com.randomname.mrakopedia.models.realm.ColorScheme;
+import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
+import com.randomname.mrakopedia.realm.DBWorker;
 
 import java.util.prefs.Preferences;
 
@@ -12,6 +17,7 @@ public class SettingsWorker {
 
     private static final String CACHING_PHOTO_ENABLED = "cachingPhotoEnabled";
     private static final String CACHING_PAGES_ENABLED = "cachingPagesEnabled";
+    private static final String CURRENT_COLOR_SCHEME = "currentColorScheme";
 
     private static final String PREFERENCES_FILE = "mrak_prefs";
 
@@ -52,6 +58,10 @@ public class SettingsWorker {
 
     private void putString(String key, String value) { edit().putString(key, value).commit(); }
 
+    private int getInt(String key) { return open().getInt(key, 0); }
+
+    private void putInt(String key, int value) { edit().putInt(key, value).commit(); }
+
     public boolean isPhotoCachingEnabled() {
         return getBoolean(CACHING_PHOTO_ENABLED, true);
     }
@@ -66,5 +76,21 @@ public class SettingsWorker {
 
     public void setIsPagesCachingEnabled(boolean value) {
         putBoolean(CACHING_PAGES_ENABLED, value);
+    }
+
+    public void setCurrentColorScheme(ColorScheme colorScheme) {
+        putInt(CURRENT_COLOR_SCHEME, colorScheme.getSchemeId());
+    }
+
+    public ColorScheme getCurrentColorScheme() {
+        int schemeId = getInt(CURRENT_COLOR_SCHEME);
+
+        ColorScheme colorScheme = DBWorker.getColorScheme(schemeId);
+
+        if (colorScheme != null) {
+            return colorScheme;
+        }
+
+        return new ColorScheme(DBWorker.getNextColorSchemeId(), Color.WHITE, Color.BLACK, Color.GREEN);
     }
 }

@@ -23,6 +23,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.ProportionalImageView;
@@ -42,6 +43,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private View.OnClickListener imageClickListener;
     private OnCategoryClickListener categoryClickListener;
     private DisplayImageOptions options;
+    private ColorScheme colorScheme;
 
     public PageSummaryAdapter(final ArrayList<TextSection> sections, final Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener, OnCategoryClickListener categoryClickListener) {
         this.sections = sections;
@@ -64,6 +66,16 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (sections.isEmpty()) {
             sections.add(new TextSection(TextSection.SPACER_TYPE, ""));
         }
+
+        colorScheme = SettingsWorker.getInstance(context).getCurrentColorScheme();
+    }
+
+    public void notifyColorSchemeChanged() {
+        colorScheme = SettingsWorker.getInstance(context).getCurrentColorScheme();
+    }
+
+    public void notifyColorSchemeChanged(ColorScheme colorScheme) {
+        this.colorScheme = colorScheme;
     }
 
     public ArrayList<TextSection> getDisplayedData() {
@@ -121,6 +133,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((TextViewHolder) holder).textView.setText(span);
                 ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 ((TextViewHolder) holder).textView.setKey(" pos: " + position + span.toString());
+                ((TextViewHolder) holder).textView.setTextColor(colorScheme.getTextColor());
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);

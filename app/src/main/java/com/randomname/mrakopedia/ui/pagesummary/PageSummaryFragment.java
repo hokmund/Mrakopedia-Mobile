@@ -2,10 +2,12 @@ package com.randomname.mrakopedia.ui.pagesummary;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,15 +15,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
-import com.randomname.mrakopedia.models.api.pagesummary.Links;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
-import com.randomname.mrakopedia.models.api.pagesummary.Sections;
 import com.randomname.mrakopedia.models.api.pagesummary.Templates;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
@@ -30,6 +37,7 @@ import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
+import com.randomname.mrakopedia.ui.settings.ColorSchemeAdapter;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
@@ -49,7 +57,9 @@ import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import carbon.widget.ProgressBar;
+import io.realm.Realm;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -74,9 +84,13 @@ public class PageSummaryFragment extends RxBaseFragment {
     private boolean pageIsFavorite = false;
     private boolean pageIsRead = false;
     private boolean isLoading = false;
+    private boolean isOptionsShown = false;
 
     @Bind(R.id.page_summary_recycler_view)
     SelectableRecyclerView recyclerView;
+
+    private ArrayList<TextSection> textSections;
+    private PageSummaryAdapter adapter;
 
     @Bind(R.id.error_text_view)
     carbon.widget.TextView errorTextView;
@@ -84,8 +98,14 @@ public class PageSummaryFragment extends RxBaseFragment {
     @Bind(R.id.loading_progress_bar)
     ProgressBar loadingProgressBar;
 
-    private ArrayList<TextSection> textSections;
-    private PageSummaryAdapter adapter;
+    @Bind(R.id.options_layout)
+    LinearLayout optionsLayout;
+
+    @Bind(R.id.color_scheme_recycler_view)
+    RecyclerView colorSchemeRecyclerView;
+
+    private ArrayList<ColorScheme> colorsList;
+    private ColorSchemeAdapter colorSchemeAdapter;
 
     public PageSummaryFragment() {
     }
@@ -189,6 +209,57 @@ public class PageSummaryFragment extends RxBaseFragment {
             }
         }
 
+        ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
+        recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
+
+        if (!isOptionsShown) {
+            final ViewTreeObserver observer = optionsLayout.getViewTreeObserver();
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    optionsLayout.setTranslationY(-optionsLayout.getHeight());
+
+                    if (Build.VERSION.SDK_INT < 16) {
+                        optionsLayout.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    } else {
+                        optionsLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+            });
+        }
+
+        colorsList = new ArrayList<>();
+
+        loadColorSchemes();
+
+        colorSchemeAdapter = new ColorSchemeAdapter(colorsList);
+        colorSchemeAdapter.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                int position = colorSchemeRecyclerView.getChildAdapterPosition(v);
+                DBWorker.deleteColorScheme(colorsList.get(position));
+
+                colorsList.remove(position);
+                colorSchemeAdapter.notifyItemRemoved(position);
+                return true;
+            }
+        });
+        colorSchemeAdapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = colorSchemeRecyclerView.getChildAdapterPosition(v);
+                ColorScheme colorScheme = colorsList.get(position);
+                SettingsWorker.getInstance(getActivity()).setCurrentColorScheme(colorScheme);
+
+                recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
+
+                adapter.notifyColorSchemeChanged(colorScheme);
+                adapter.notifyItemRangeChanged(0, adapter.getItemCount());
+            }
+        });
+        colorSchemeRecyclerView.setAdapter(colorSchemeAdapter);
+        colorSchemeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
         return view;
     }
 
@@ -233,11 +304,43 @@ public class PageSummaryFragment extends RxBaseFragment {
                 DBWorker.setPageReadStatus(pageTitle, pageIsRead);
                 setMenuReadStatus(item);
                 return true;
+            case R.id.action_settings:
+
+                if (!isOptionsShown) {
+                    showOptions();
+                } else {
+                    closeOptions();
+                }
+
+                return true;
             default:
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick(R.id.add_color_scheme_button)
+    public void addColorClick() {
+        Toast.makeText(getActivity(), "bla", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showOptions() {
+        optionsLayout.animate()
+                .translationY(0)
+                .setInterpolator(new LinearInterpolator())
+                .setDuration(180);
+
+        isOptionsShown = true;
+    }
+
+    private void closeOptions() {
+        optionsLayout.animate()
+                .translationY(-optionsLayout.getHeight())
+                .setInterpolator(new LinearInterpolator())
+                .setDuration(180);
+
+        isOptionsShown = false;
     }
 
     private void setMenuFavoriteStatus(MenuItem favoriteItem) {
@@ -266,6 +369,36 @@ public class PageSummaryFragment extends RxBaseFragment {
             outState.putParcelableArrayList(TEXT_SECTIONS_KEY, textSections);
         }
         super.onSaveInstanceState(outState);
+    }
+
+    private void loadColorSchemes() {
+        Subscription subscription =
+                Observable.just("")
+                        .flatMap(new Func1<String, Observable<ColorScheme>>() {
+                            @Override
+                            public Observable<ColorScheme> call(String s) {
+                                return Observable.from(DBWorker.getColorSchemes());
+                            }
+                        })
+                        .subscribe(new Subscriber<ColorScheme>() {
+                            @Override
+                            public void onCompleted() {
+                                colorSchemeAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onNext(ColorScheme colorScheme) {
+                                colorsList.add(colorScheme);
+                            }
+                        });
+
+        bindToLifecycle(subscription);
+
     }
 
     private void getArticleByNetwork() {

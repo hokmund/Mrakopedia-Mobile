@@ -1,7 +1,8 @@
 package com.randomname.mrakopedia.realm;
 
-import android.util.Log;
+import android.graphics.Color;
 
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
@@ -16,8 +17,8 @@ import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmObject;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import rx.Observable;
 import rx.functions.Func1;
 
@@ -321,5 +322,80 @@ public class DBWorker {
         }
 
         return Observable.from(categoryRealm);
+    }
+
+    public static void generateDefaultColorSchemes() {
+        Realm realm = Realm.getDefaultInstance();
+
+        RealmResults<ColorScheme> categoryRealm = realm
+                .where(ColorScheme.class)
+                .findAll();
+
+        if (!categoryRealm.isEmpty()) {
+            return;
+        }
+
+        realm.beginTransaction();
+
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.WHITE, Color.BLACK, Color.GREEN));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.BLACK, Color.WHITE, Color.GREEN));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.GRAY, Color.BLACK, Color.GREEN));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.GRAY, Color.WHITE, Color.GREEN));
+
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public static void addColorScheme(ColorScheme colorScheme) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.beginTransaction();
+
+        colorScheme.setSchemeId(getNextColorSchemeId());
+        realm.copyToRealmOrUpdate(colorScheme);
+
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public static void deleteColorScheme(ColorScheme colorScheme) {
+        Realm realm = Realm.getDefaultInstance();
+
+        realm.beginTransaction();
+
+        colorScheme.removeFromRealm();
+
+        realm.commitTransaction();
+        realm.close();
+    }
+
+    public static RealmResults<ColorScheme> getColorSchemes() {
+        Realm realm = Realm.getDefaultInstance();
+
+        return realm.where(ColorScheme.class).findAll();
+    }
+
+    public static ColorScheme getColorScheme(int id) {
+        return Realm.getDefaultInstance()
+                .where(ColorScheme.class)
+                .equalTo("schemeId", id)
+                .findFirst();
+    }
+
+    public static int getNextColorSchemeId() {
+        Realm realm = Realm.getDefaultInstance();
+
+        RealmResults<ColorScheme> categoryRealm = realm
+                .where(ColorScheme.class)
+                .findAll();
+
+        categoryRealm.sort("schemeId", Sort.ASCENDING);
+
+        if (categoryRealm.isEmpty()) {
+            realm.close();
+            return 0;
+        }
+
+        return categoryRealm.get(categoryRealm.size() - 1).getSchemeId() + 1;
     }
 }

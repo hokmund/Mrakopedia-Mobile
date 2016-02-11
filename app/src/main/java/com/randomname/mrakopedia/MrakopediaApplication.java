@@ -6,6 +6,7 @@ import com.crashlytics.android.Crashlytics;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.randomname.mrakopedia.realm.DBWorker;
 
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
@@ -28,5 +29,7 @@ public class MrakopediaApplication extends Application {
                 .memoryCache(new WeakMemoryCache())
                 .build();
         ImageLoader.getInstance().init(imageConfig);
+
+        DBWorker.generateDefaultColorSchemes();
     }
 }

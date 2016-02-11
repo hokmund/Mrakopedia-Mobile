@@ -64,6 +64,10 @@ public class PageSummaryActivity extends AppCompatActivity {
         toolbarHideListener = new ToolbarHideRecyclerOnScrollListener(toolbarWrapper);
     }
 
+    public boolean toolbarIsHidden() {
+        return ((ToolbarHideRecyclerOnScrollListener)toolbarHideListener).isHidden();
+    }
+
     public void startSelection() {
         setAlphaAnimation(copyToolbar, false);
         setAlphaAnimation(shadowViewCopy, false);
