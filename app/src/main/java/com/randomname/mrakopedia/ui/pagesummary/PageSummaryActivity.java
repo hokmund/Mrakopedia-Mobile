@@ -38,6 +38,8 @@ public class PageSummaryActivity extends AppCompatActivity {
     Toolbar copyToolbar;
     @Bind(R.id.toolbarWrapper)
     RelativeLayout toolbarWrapper;
+    @Bind(R.id.shadow_view_copy)
+    View shadowViewCopy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +66,14 @@ public class PageSummaryActivity extends AppCompatActivity {
 
     public void startSelection() {
         setAlphaAnimation(copyToolbar, false);
+        setAlphaAnimation(shadowViewCopy, false);
 
         isSelectedMode = true;
     }
 
     public void stopSelection() {
         setAlphaAnimation(copyToolbar, true);
+        setAlphaAnimation(shadowViewCopy, true);
 
         fragment.cancelSelection();
         isSelectedMode = false;

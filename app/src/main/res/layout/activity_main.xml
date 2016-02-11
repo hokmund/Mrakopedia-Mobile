@@ -22,6 +22,13 @@
             android:layout_width="match_parent"
             style="@style/Widget.MyApp.ActionBar"
             />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/material_drawer_shadow_bottom"
+            android:layout_below="@id/toolbar"
+            android:id="@+id/shadow_view"
+            />
 
         <com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView
             android:id="@+id/search_view"

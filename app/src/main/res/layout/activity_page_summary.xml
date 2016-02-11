@@ -26,6 +26,14 @@
             android:transitionName="actionBar"
             />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/material_drawer_shadow_bottom"
+            android:layout_below="@id/toolbar"
+            android:id="@+id/shadow_view"
+            />
+
     </RelativeLayout>
 
     <android.support.v7.widget.Toolbar
@@ -35,8 +43,7 @@
         style="@style/Widget.MyApp.ActionBar"
         android:elevation="4dp"
         android:transitionName="actionBar"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -47,5 +54,14 @@
             android:src="@drawable/ic_content_copy_white_24dp" />
 
     </android.support.v7.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@drawable/material_drawer_shadow_bottom"
+        android:layout_below="@id/copy_toolbar"
+        android:id="@+id/shadow_view_copy"
+        android:visibility="gone"
+        />
 
 </RelativeLayout>

@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout toolbarContainer;
     @Bind(R.id.search_view)
     MaterialSearchView searchView;
+    @Bind(R.id.shadow_view)
+    View shadowView;
 
     private Drawer materialDrawer;
 
@@ -240,8 +242,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (isSearchViewOpen) {
             searchView.showSearch(true);
+            shadowView.setVisibility(View.INVISIBLE);
         } else {
             searchView.closeSearch();
+            shadowView.setVisibility(View.VISIBLE);
         }
 
         if (frag != null) {
