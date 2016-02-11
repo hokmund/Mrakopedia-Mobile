@@ -124,7 +124,10 @@ public class PageSummaryActivity extends AppCompatActivity {
         if (isSelectedMode) {
             stopSelection();
         } else {
-            super.onBackPressed();
+
+            if (fragment.onBackPressed()) {
+                super.onBackPressed();
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 
+import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
@@ -110,6 +111,6 @@ public class SettingsWorker {
             return colorScheme;
         }
 
-        return new ColorScheme(DBWorker.getNextColorSchemeId(), Color.WHITE, Color.BLACK, Color.GREEN);
+        return new ColorScheme(DBWorker.getNextColorSchemeId(), context.getResources().getColor(R.color.iconsColor), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary));
     }
 }

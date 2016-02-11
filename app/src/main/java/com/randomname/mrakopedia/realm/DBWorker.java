@@ -1,7 +1,10 @@
 package com.randomname.mrakopedia.realm;
 
+import android.content.Context;
 import android.graphics.Color;
 
+import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.models.api.categorymembers.Continue;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
@@ -324,7 +327,7 @@ public class DBWorker {
         return Observable.from(categoryRealm);
     }
 
-    public static void generateDefaultColorSchemes() {
+    public static void generateDefaultColorSchemes(Context context) {
         Realm realm = Realm.getDefaultInstance();
 
         RealmResults<ColorScheme> categoryRealm = realm
@@ -337,10 +340,10 @@ public class DBWorker {
 
         realm.beginTransaction();
 
-        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.WHITE, Color.BLACK, Color.GREEN));
-        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.BLACK, Color.WHITE, Color.GREEN));
-        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.GRAY, Color.BLACK, Color.GREEN));
-        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.GRAY, Color.WHITE, Color.GREEN));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.iconsColor), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.listColor), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.colorPrimaryLight), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.colorPrimaryLight), context.getResources().getColor(R.color.iconsColor), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
 
         realm.commitTransaction();
         realm.close();

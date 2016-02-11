@@ -2,6 +2,7 @@
     <string name="app_name">Мракопедия</string>
     <string name="title_activity_category_members">CategoryMembersActivity</string>
     <string name="DEVELOPER_KEY">AIzaSyDMzCENnS1V73PJyY9kRYOXUdtnw2_zVsQ</string>
+    <string name="font_size_can_change_key">fontSizeCanChange</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

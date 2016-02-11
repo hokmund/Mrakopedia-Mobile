@@ -14,6 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/text_view"
+        android:tag="@string/font_size_can_change_key"
         android:textColor="#D9000000"
         app:carbon_fontPath="carbon/Roboto-Regular.ttf"
         android:textSize="14sp"

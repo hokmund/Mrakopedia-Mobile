@@ -140,6 +140,8 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((TextViewHolder) holder).textView.setKey(" pos: " + position + span.toString());
                 ((TextViewHolder) holder).textView.setTextColor(colorScheme.getTextColor());
                 ((TextViewHolder) holder).textView.setTextSize(fontSize);
+                ((TextViewHolder) holder).textView.setLinkTextColor(colorScheme.getLinkColor());
+                ((TextViewHolder) holder).textView.setColor(colorScheme.getSelectedColor());
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
@@ -159,6 +161,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
             case TextSection.LINK_TYPE:
                 ((TextViewHolder) holder).textView.setText(Html.fromHtml("<a href='dummy'>" + sections.get(position).getText() + "</a>"));
+                ((TextViewHolder) holder).textView.setLinkTextColor(colorScheme.getLinkColor());
                 break;
             case TextSection.CATEGORY_TYPE:
                 CategoriesViewHolder categoryViewHolder = (CategoriesViewHolder)holder;

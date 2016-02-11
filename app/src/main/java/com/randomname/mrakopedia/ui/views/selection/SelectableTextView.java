@@ -2,6 +2,7 @@ package com.randomname.mrakopedia.ui.views.selection;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.text.Layout;
@@ -22,7 +23,7 @@ public class SelectableTextView extends carbon.widget.TextView implements Select
     private int startSelection = 0;
     private final Paint paint = new Paint();
     private Rect bounds;
-    private int selectionColor = R.color.text_selection;
+    private int selectionColor = Color.BLUE;
     private String key;
 
     public SelectableTextView(Context context) {
@@ -93,7 +94,7 @@ public class SelectableTextView extends carbon.widget.TextView implements Select
             return;
         }
 
-        paint.setColor(getResources().getColor(selectionColor));
+        paint.setColor(selectionColor);
 
         final int save = canvas.save();
         canvas.translate(getPaddingLeft(), getPaddingTop());

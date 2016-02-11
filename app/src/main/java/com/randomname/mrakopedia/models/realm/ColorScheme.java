@@ -13,15 +13,17 @@ public class ColorScheme extends RealmObject{
     private int backgroundColor;
     private int textColor;
     private int selectedColor;
+    private int linkColor;
 
     public ColorScheme() {
     }
 
-    public ColorScheme(int schemeId, int backgroundColor, int textColor, int selectedColor) {
+    public ColorScheme(int schemeId, int backgroundColor, int textColor, int selectedColor, int linkColor) {
         this.schemeId = schemeId;
         this.backgroundColor = backgroundColor;
         this.textColor = textColor;
         this.selectedColor = selectedColor;
+        this.linkColor = linkColor;
     }
 
     public ColorScheme(ColorScheme colorScheme) {
@@ -29,6 +31,7 @@ public class ColorScheme extends RealmObject{
         this.backgroundColor = colorScheme.getBackgroundColor();
         this.textColor = colorScheme.getTextColor();
         this.selectedColor = colorScheme.getSelectedColor();
+        this.linkColor = colorScheme.getLinkColor();
     }
 
     public void setSchemeId(int schemeId) {
@@ -61,5 +64,13 @@ public class ColorScheme extends RealmObject{
 
     public void setTextColor(int textColor) {
         this.textColor = textColor;
+    }
+
+    public int getLinkColor() {
+        return linkColor;
+    }
+
+    public void setLinkColor(int linkColor) {
+        this.linkColor = linkColor;
     }
 }

@@ -30,6 +30,6 @@ public class MrakopediaApplication extends Application {
                 .build();
         ImageLoader.getInstance().init(imageConfig);
 
-        DBWorker.generateDefaultColorSchemes();
+        DBWorker.generateDefaultColorSchemes(this);
     }
 }

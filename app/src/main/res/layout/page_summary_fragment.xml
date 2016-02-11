@@ -50,7 +50,7 @@
         android:orientation="vertical"
         android:id="@+id/options_layout"
         android:layout_marginTop="?attr/actionBarSize"
-        android:visibility="gone">
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -79,13 +79,13 @@
                 <SeekBar
                     android:id="@+id/font_size_seek_bar"
                     android:layout_width="match_parent"
-                    android:layout_height="24dp"
+                    android:layout_height="wrap_content"
                     android:layout_margin="8dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
-                    android:padding="8dp"
                     android:max="36"
+                    android:theme="@style/Theme.AppCompat"
                     />
             </LinearLayout>
 

@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -22,6 +23,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
@@ -40,8 +42,10 @@ import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemeAdapter;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
+import com.randomname.mrakopedia.ui.views.selection.Selectable;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
+import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 import com.randomname.mrakopedia.ui.views.selection.SelectionCallback;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.Utils;
@@ -72,13 +76,17 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Vlad on 20.01.2016.
  */
-public class PageSummaryFragment extends RxBaseFragment {
+public class PageSummaryFragment extends RxBaseFragment implements OnPageSummaryFragmentBackListener {
 
     private static final String TAG = "PageSummaryFragment";
     private static final String PAGE_TITLE_KEY = "pageTitleKey";
     private static final String PAGE_ID_KEY = "pageIdKey";
 
+    private static final String IS_OPTIONS_SHOWN_KEY = "isOptionsShownKey";
     private static final String TEXT_SECTIONS_KEY = "textSectionsKey";
+
+    private static final float MIN_TEXT_SIZE = 10f;
+    private static final float MAX_TEXT_SIZE = 32f;
 
     private String pageTitle;
     private String pageId;
@@ -138,6 +146,7 @@ public class PageSummaryFragment extends RxBaseFragment {
             } else {
                 textSections = new ArrayList<>();
             }
+            isOptionsShown = savedInstanceState.getBoolean(IS_OPTIONS_SHOWN_KEY);
         } else {
             textSections = new ArrayList<>();
         }
@@ -149,7 +158,7 @@ public class PageSummaryFragment extends RxBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.page_summary_fragment, null);
+        final View view = inflater.inflate(R.layout.page_summary_fragment, null);
         ButterKnife.bind(this, view);
 
         adapter = new PageSummaryAdapter(textSections, getActivity(), new View.OnClickListener() {
@@ -187,7 +196,7 @@ public class PageSummaryFragment extends RxBaseFragment {
             }
         });
 
-        LinearLayoutManager manager = new SelectableLayoutManager(getActivity());
+        SelectableLayoutManager manager = new SelectableLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
 
         recyclerView.setLayoutManager(manager);
@@ -203,6 +212,19 @@ public class PageSummaryFragment extends RxBaseFragment {
                 ((PageSummaryActivity) getActivity()).stopSelection();
             }
         });
+        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (isOptionsShown) {
+                    closeOptions();
+                    return true;
+                }
+
+                return false;
+            }
+        });
+
+
         recyclerView.addOnScrollListener(((PageSummaryActivity) getActivity()).toolbarHideListener);
 
         if (adapter.getDisplayedData().size() <= 1) {
@@ -217,8 +239,19 @@ public class PageSummaryFragment extends RxBaseFragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
+                    progress += MIN_TEXT_SIZE;
+
                     adapter.notifyFontSizeChanged(progress);
-                    adapter.notifyDataSetChanged();
+
+                    for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                        View v = recyclerView.getChildAt(i);
+                        View tv = v.findViewWithTag(getString(R.string.font_size_can_change_key));
+
+                        if (tv != null) {
+                            ((TextView) tv).setTextSize(progress);
+                        }
+                    }
+
                     SettingsWorker.getInstance(getActivity()).setCurrentFontSize(progress);
                 }
             }
@@ -236,10 +269,13 @@ public class PageSummaryFragment extends RxBaseFragment {
 
         ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
         recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
+        view.setBackgroundColor(colorScheme.getBackgroundColor());
 
         float currentFontSize = SettingsWorker.getInstance(getActivity()).getCurrentFontSize();
 
         fontSizeSeekBar.setProgress(Math.round(currentFontSize));
+        fontSizeSeekBar.setMax(Math.round(MAX_TEXT_SIZE - MIN_TEXT_SIZE));
+
         adapter.notifyFontSizeChanged(currentFontSize);
 
         if (!isOptionsShown) {
@@ -282,9 +318,20 @@ public class PageSummaryFragment extends RxBaseFragment {
                 SettingsWorker.getInstance(getActivity()).setCurrentColorScheme(colorScheme);
 
                 recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
+                view.setBackgroundColor(colorScheme.getBackgroundColor());
 
                 adapter.notifyColorSchemeChanged(colorScheme);
-                adapter.notifyDataSetChanged();
+
+                for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                    View view = recyclerView.getChildAt(i);
+                    View tv = view.findViewWithTag(getString(R.string.font_size_can_change_key));
+
+                    if (tv != null) {
+                        ((TextView)tv).setTextColor(colorScheme.getTextColor());
+                        ((TextView)tv).setLinkTextColor(colorScheme.getLinkColor());
+                        ((SelectableTextView)tv).setColor(colorScheme.getSelectedColor());
+                    }
+                }
             }
         });
         colorSchemeRecyclerView.setAdapter(colorSchemeAdapter);
@@ -334,7 +381,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                 DBWorker.setPageReadStatus(pageTitle, pageIsRead);
                 setMenuReadStatus(item);
                 return true;
-            /*case R.id.action_settings:
+            case R.id.action_settings:
 
                 if (!isOptionsShown) {
                     showOptions();
@@ -342,7 +389,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                     closeOptions();
                 }
 
-                return true;*/
+                return true;
             default:
                 break;
         }
@@ -398,6 +445,7 @@ public class PageSummaryFragment extends RxBaseFragment {
         if (!adapter.getDisplayedData().isEmpty()) {
             outState.putParcelableArrayList(TEXT_SECTIONS_KEY, textSections);
         }
+        outState.putBoolean(IS_OPTIONS_SHOWN_KEY, isOptionsShown);
         super.onSaveInstanceState(outState);
     }
 
@@ -964,5 +1012,15 @@ public class PageSummaryFragment extends RxBaseFragment {
             pageSummaryResult.getParse()
                     .getTextSections().add(categoryWrapper);
         }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (isOptionsShown) {
+            closeOptions();
+            return false;
+        }
+
+        return true;
     }
 }
