@@ -334,7 +334,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                 DBWorker.setPageReadStatus(pageTitle, pageIsRead);
                 setMenuReadStatus(item);
                 return true;
-            case R.id.action_settings:
+            /*case R.id.action_settings:
 
                 if (!isOptionsShown) {
                     showOptions();
@@ -342,7 +342,7 @@ public class PageSummaryFragment extends RxBaseFragment {
                     closeOptions();
                 }
 
-                return true;
+                return true;*/
             default:
                 break;
         }
