@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,12 +37,17 @@ public class ColorSchemeEditorFragment extends Fragment {
 
     private static final String PREVIEW_STRING = "<h1>Test header</h1> \n <p>test test </p> \n <a href=''>Link test</a>";
 
+    private static final String BACKGROUND_COLOR_KEY = "backgroundColorKey";
+    private static final String TEXT_COLOR_KEY = "textColorKey";
+    private static final String SELECTED_COLOR_KEY = "selectedColorKey";
+    private static final String LINK_COLOR_KEY = "linkColorKey";
+
     private ColorScheme colorScheme;
 
-    private int backgroundColor = -1;
-    private int textColor = -1;
-    private int selectedColor = -1;
-    private int linkColor = -1;
+    private int backgroundColor = 0;
+    private int textColor = 0;
+    private int selectedColor = 0;
+    private int linkColor = 0;
 
     @Bind(R.id.preview_layout)
     RelativeLayout previewLayout;
@@ -73,6 +79,25 @@ public class ColorSchemeEditorFragment extends Fragment {
             colorScheme = DBWorker.getColorScheme(schemeId);
         }
 
+        if (savedInstanceState != null) {
+            backgroundColor = savedInstanceState.getInt(BACKGROUND_COLOR_KEY, (colorScheme != null ? colorScheme.getBackgroundColor() : getActivity().getResources().getColor(R.color.iconsColor) ));
+            textColor = savedInstanceState.getInt(TEXT_COLOR_KEY, (colorScheme != null ? colorScheme.getTextColor() : getActivity().getResources().getColor(R.color.textColorPrimary) ));
+            linkColor = savedInstanceState.getInt(LINK_COLOR_KEY, (colorScheme != null ? colorScheme.getLinkColor() : getActivity().getResources().getColor(R.color.colorPrimary) ));
+            selectedColor = savedInstanceState.getInt(SELECTED_COLOR_KEY, (colorScheme != null ? colorScheme.getSelectedColor() : getActivity().getResources().getColor(R.color.colorPrimary) ));
+        } else {
+            if (colorScheme != null) {
+                backgroundColor = colorScheme.getBackgroundColor();
+                textColor = colorScheme.getTextColor();
+                linkColor = colorScheme.getLinkColor();
+                selectedColor = colorScheme.getSelectedColor();
+            } else {
+                backgroundColor = getActivity().getResources().getColor(R.color.iconsColor);
+                textColor = getActivity().getResources().getColor(R.color.textColorPrimary);
+                linkColor = getActivity().getResources().getColor(R.color.colorPrimary);
+                selectedColor = getActivity().getResources().getColor(R.color.colorPrimary);
+            }
+        }
+
         setHasOptionsMenu(true);
     }
 
@@ -84,41 +109,29 @@ public class ColorSchemeEditorFragment extends Fragment {
         previewTextView.setText(Html.fromHtml(PREVIEW_STRING));
         previewTextView.selectText(0, 2);
 
-        if (colorScheme != null) {
-            previewLayout.setBackgroundColor(colorScheme.getBackgroundColor());
-            backgroundColorView.setBackgroundColor(colorScheme.getBackgroundColor());
-            backgroundColor = colorScheme.getBackgroundColor();
+        previewLayout.setBackgroundColor(backgroundColor);
+        backgroundColorView.setBackgroundColor(backgroundColor);
 
-            previewTextView.setTextColor(colorScheme.getTextColor());
-            textColorView.setBackgroundColor(colorScheme.getTextColor());
-            textColor = colorScheme.getTextColor();
+        previewTextView.setTextColor(textColor);
+        textColorView.setBackgroundColor(textColor);
 
-            previewTextView.setLinkTextColor(colorScheme.getLinkColor());
-            linkColorView.setBackgroundColor(colorScheme.getLinkColor());
-            linkColor = colorScheme.getLinkColor();
+        previewTextView.setLinkTextColor(linkColor);
+        linkColorView.setBackgroundColor(linkColor);
 
-            previewTextView.setColor(colorScheme.getSelectedColor());
-            selectedColorView.setBackgroundColor(colorScheme.getSelectedColor());
-            selectedColor = colorScheme.getSelectedColor();
-        } else {
-            previewLayout.setBackgroundColor(getActivity().getResources().getColor(R.color.iconsColor));
-            backgroundColorView.setBackgroundColor(getActivity().getResources().getColor(R.color.iconsColor));
-            backgroundColor = colorScheme.getBackgroundColor();
-
-            previewTextView.setTextColor(getActivity().getResources().getColor(R.color.textColorPrimary));
-            textColorView.setBackgroundColor(getActivity().getResources().getColor(R.color.textColorPrimary));
-            textColor = getActivity().getResources().getColor(R.color.textColorPrimary);
-
-            previewTextView.setLinkTextColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            linkColorView.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            linkColor = getActivity().getResources().getColor(R.color.colorPrimary);
-
-            previewTextView.setColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            selectedColorView.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
-            selectedColor = getActivity().getResources().getColor(R.color.colorPrimary);
-        }
+        previewTextView.setColor(selectedColor);
+        selectedColorView.setBackgroundColor(selectedColor);
 
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(BACKGROUND_COLOR_KEY, backgroundColor);
+        outState.putInt(TEXT_COLOR_KEY, textColor);
+        outState.putInt(LINK_COLOR_KEY, linkColor);
+        outState.putInt(SELECTED_COLOR_KEY, selectedColor);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -142,33 +155,27 @@ public class ColorSchemeEditorFragment extends Fragment {
 
     private void saveColorScheme() {
         Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
 
         if (colorScheme == null) {
-            realm.beginTransaction();
             colorScheme = new ColorScheme();
             colorScheme.setSchemeId(DBWorker.getNextColorSchemeId());
-            realm.copyToRealmOrUpdate(colorScheme);
         }
 
-        if (backgroundColor >= 0) {
-            colorScheme.setBackgroundColor(backgroundColor);
-        }
+        colorScheme.setBackgroundColor(backgroundColor);
 
-        if (textColor >= 0) {
-            colorScheme.setTextColor(textColor);
-        }
+        colorScheme.setTextColor(textColor);
 
-        if (selectedColor >= 0) {
-            colorScheme.setSelectedColor(selectedColor);
-        }
+        colorScheme.setSelectedColor(selectedColor);
 
-        if (linkColor >= 0) {
-            colorScheme.setLinkColor(linkColor);
-        }
+        colorScheme.setLinkColor(linkColor);
 
+        realm.copyToRealmOrUpdate(colorScheme);
         realm.commitTransaction();
         realm.close();
-        getActivity().finishActivity(Activity.RESULT_OK);
+
+        getActivity().setResult(Activity.RESULT_OK);
+        getActivity().finish();
     }
 
     @OnClick(R.id.background_color_scheme_layout)
@@ -185,9 +192,7 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        if (backgroundColor >= 0) {
-            lobsterPicker.setColor(backgroundColor);
-        }
+        lobsterPicker.setColor(backgroundColor);
 
         dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -218,9 +223,7 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        if (textColor >= 0) {
-            lobsterPicker.setColor(textColor);
-        }
+        lobsterPicker.setColor(textColor);
 
         dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -251,9 +254,7 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        if (selectedColor >= 0) {
-            lobsterPicker.setColor(selectedColor);
-        }
+        lobsterPicker.setColor(selectedColor);
 
         dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -284,9 +285,7 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        if (linkColor >= 0) {
-            lobsterPicker.setColor(linkColor);
-        }
+        lobsterPicker.setColor(linkColor);
 
         dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override

@@ -272,7 +272,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
         float currentFontSize = SettingsWorker.getInstance(getActivity()).getCurrentFontSize();
 
-        fontSizeSeekBar.setProgress(Math.round(currentFontSize));
+        fontSizeSeekBar.setProgress(Math.round(currentFontSize - MIN_TEXT_SIZE));
         fontSizeSeekBar.setMax(Math.round(MAX_TEXT_SIZE - MIN_TEXT_SIZE));
 
         adapter.notifyFontSizeChanged(currentFontSize);
@@ -294,7 +294,6 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         }
 
         colorsList = new ArrayList<>();
-
         loadColorSchemes();
 
         colorSchemeAdapter = new ColorSchemeAdapter(colorsList);
@@ -343,6 +342,21 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == COLOR_SCHEME_EDITOR_RESULT && resultCode == Activity.RESULT_OK) {
             loadColorSchemes();
+
+            ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
+            recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
+            adapter.notifyColorSchemeChanged(colorScheme);
+
+            for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                View view = recyclerView.getChildAt(i);
+                View tv = view.findViewWithTag(getString(R.string.font_size_can_change_key));
+
+                if (tv != null) {
+                    ((TextView)tv).setTextColor(colorScheme.getTextColor());
+                    ((TextView)tv).setLinkTextColor(colorScheme.getLinkColor());
+                    ((SelectableTextView)tv).setColor(colorScheme.getSelectedColor());
+                }
+            }
         }
 
         super.onActivityResult(requestCode, resultCode, data);
