@@ -29,6 +29,10 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     SwitchCompat cachingPagesSwitch;
     @Bind(R.id.caching_pages_layout)
     RelativeLayout cachingPagesLayout;
+    @Bind(R.id.keep_screen_on_switch)
+    SwitchCompat keepScreenOnSwitch;
+    @Bind(R.id.keep_screen_on_layout)
+    RelativeLayout keepScreenOnLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,11 +47,15 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     private void initUI() {
         cachingPagesSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isPagesCachingEnabled());
         cachingPhotoSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isPhotoCachingEnabled());
+        keepScreenOnSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isKeepScreenOn());
 
         cachingPagesSwitch.setOnCheckedChangeListener(this);
         cachingPhotoSwitch.setOnCheckedChangeListener(this);
+        keepScreenOnSwitch.setOnCheckedChangeListener(this);
+
         cachingPagesLayout.setOnClickListener(this);
         cachingPhotoLayout.setOnClickListener(this);
+        keepScreenOnLayout.setOnClickListener(this);
     }
 
     @Override
@@ -58,6 +66,9 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                 break;
             case R.id.caching_pages_switch:
                 SettingsWorker.getInstance(getActivity()).setIsPagesCachingEnabled(isChecked);
+                break;
+            case R.id.keep_screen_on_switch:
+                SettingsWorker.getInstance(getActivity()).setKeepScreenOn(isChecked);
                 break;
             default:
                 break;
@@ -73,6 +84,9 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                 break;
             case R.id.caching_photo_layout:
                 cachingPhotoSwitch.setChecked(!cachingPhotoSwitch.isChecked());
+                break;
+            case R.id.keep_screen_on_layout:
+                keepScreenOnSwitch.setChecked(!keepScreenOnSwitch.isChecked());
                 break;
             default:
                 break;

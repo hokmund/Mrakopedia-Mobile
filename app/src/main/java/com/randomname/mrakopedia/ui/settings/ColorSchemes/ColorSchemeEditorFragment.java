@@ -185,7 +185,11 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        dialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+        if (backgroundColor >= 0) {
+            lobsterPicker.setColor(backgroundColor);
+        }
+
+        dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 backgroundColorView.setBackgroundColor(lobsterPicker.getColor());
@@ -194,7 +198,7 @@ public class ColorSchemeEditorFragment extends Fragment {
             }
         });
 
-        dialogBuilder.setNegativeButton("cancel", null);
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
 
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
@@ -214,7 +218,11 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        dialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+        if (textColor >= 0) {
+            lobsterPicker.setColor(textColor);
+        }
+
+        dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 textColorView.setBackgroundColor(lobsterPicker.getColor());
@@ -223,7 +231,7 @@ public class ColorSchemeEditorFragment extends Fragment {
             }
         });
 
-        dialogBuilder.setNegativeButton("cancel", null);
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
 
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
@@ -243,7 +251,11 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        dialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+        if (selectedColor >= 0) {
+            lobsterPicker.setColor(selectedColor);
+        }
+
+        dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 previewTextView.setColor(lobsterPicker.getColor());
@@ -252,7 +264,7 @@ public class ColorSchemeEditorFragment extends Fragment {
             }
         });
 
-        dialogBuilder.setNegativeButton("cancel", null);
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
 
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
@@ -272,7 +284,11 @@ public class ColorSchemeEditorFragment extends Fragment {
         lobsterPicker.addDecorator(shadeSlider);
         lobsterPicker.addDecorator(opacitySlider);
 
-        dialogBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+        if (linkColor >= 0) {
+            lobsterPicker.setColor(linkColor);
+        }
+
+        dialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 previewTextView.setLinkTextColor(lobsterPicker.getColor());
@@ -281,7 +297,7 @@ public class ColorSchemeEditorFragment extends Fragment {
             }
         });
 
-        dialogBuilder.setNegativeButton("cancel", null);
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
 
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();

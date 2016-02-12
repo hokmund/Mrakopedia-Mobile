@@ -18,6 +18,7 @@ public class SettingsWorker {
 
     private static final String CACHING_PHOTO_ENABLED = "cachingPhotoEnabled";
     private static final String CACHING_PAGES_ENABLED = "cachingPagesEnabled";
+    private static final String KEEP_SCREEN_ON = "keepScreenOn";
     private static final String CURRENT_FONT_SIZE = "currentFontSize";
     private static final String CURRENT_COLOR_SCHEME = "currentColorScheme";
 
@@ -96,6 +97,14 @@ public class SettingsWorker {
         }
 
         return fontSize;
+    }
+
+    public void setKeepScreenOn(boolean keepScreenOn) {
+        putBoolean(KEEP_SCREEN_ON, keepScreenOn);
+    }
+
+    public boolean isKeepScreenOn() {
+        return getBoolean(KEEP_SCREEN_ON);
     }
 
     public void setCurrentColorScheme(ColorScheme colorScheme) {

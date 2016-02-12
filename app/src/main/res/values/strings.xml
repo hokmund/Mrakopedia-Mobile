@@ -17,6 +17,7 @@
 
     <string name="caching_photo_option">Кэшировать фото</string>
     <string name="caching_pages_option">Кэшировать страницы</string>
+    <string name="keep_screen_on_option">Не выключать экран при чтении</string>
 
     <string name="font_size_text">Размер шрифта</string>
     <string name="color_scheme_text">Цветовая схема</string>
@@ -43,6 +44,9 @@
     <string name="action_share_photo">Поделиться фото</string>
     <string name="action_save_photo">Сохранить фото</string>
     <string name="action_save_scheme">Сохранить схему</string>
+
+    <string name="ok">ОК</string>
+    <string name="cancel">Отмена</string>
 
     <string name="press_back_again_to_exit">Нажмите еще раз для выхода</string>
 

@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -15,6 +16,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 
 import butterknife.Bind;
@@ -62,6 +64,10 @@ public class PageSummaryActivity extends AppCompatActivity {
         initToolbar(pageTitle);
 
         toolbarHideListener = new ToolbarHideRecyclerOnScrollListener(toolbarWrapper);
+
+        if (SettingsWorker.getInstance(this).isKeepScreenOn()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     public boolean toolbarIsHidden() {
