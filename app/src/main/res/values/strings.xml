@@ -20,6 +20,12 @@
 
     <string name="font_size_text">Размер шрифта</string>
     <string name="color_scheme_text">Цветовая схема</string>
+    <string name="create_color_scheme">Создать цветовую схему</string>
+    <string name="edit_color_scheme">Редактировать цветовую схему</string>
+    <string name="background_color_scheme">Цвет фона</string>
+    <string name="text_color_scheme">Цвет текста</string>
+    <string name="selected_color_scheme">Цвет выделенного текста</string>
+    <string name="link_color_scheme">Цвет ссылок</string>
 
     <string name="text_was_copied_to_clipboard">Текст скопирован в буфер</string>
 
@@ -36,6 +42,7 @@
     <string name="no_favorite_error">Вы не добавили в избранное не одной статьи</string>
     <string name="action_share_photo">Поделиться фото</string>
     <string name="action_save_photo">Сохранить фото</string>
+    <string name="action_save_scheme">Сохранить схему</string>
 
     <string name="press_back_again_to_exit">Нажмите еще раз для выхода</string>
 
@@ -50,4 +57,5 @@
     <string name="classic_description">Эта история является одним из первооткрывателей жанра крипи.</string>
     <string name="humor_description">В роли страшилки эта история Настолько Плоха, Что Даже Хороша. Хотя она и пытается казаться страшной, её истинная цель отнюдь не в запугивании.</string>
     <string name="so_bad_so_good_description">Эта история Настолько Плоха, Что Даже Хороша. Она претендует на серьёзность, но написана так плохо, что может вызвать лишь смех.</string>
+    <string name="title_activity_color_scheme_editor">ColorSchemeEditorActivity</string>
 </resources>

@@ -20,11 +20,9 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
@@ -40,9 +38,9 @@ import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
-import com.randomname.mrakopedia.ui.settings.ColorSchemeAdapter;
+import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeAdapter;
+import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeEditorActivity;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
-import com.randomname.mrakopedia.ui.views.selection.Selectable;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
@@ -64,7 +62,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import carbon.widget.ProgressBar;
-import io.realm.Realm;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -84,6 +81,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
     private static final String IS_OPTIONS_SHOWN_KEY = "isOptionsShownKey";
     private static final String TEXT_SECTIONS_KEY = "textSectionsKey";
+
+    private static final int COLOR_SCHEME_EDITOR_RESULT = 42;
 
     private static final float MIN_TEXT_SIZE = 10f;
     private static final float MAX_TEXT_SIZE = 32f;
@@ -303,10 +302,10 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             @Override
             public boolean onLongClick(View v) {
                 int position = colorSchemeRecyclerView.getChildAdapterPosition(v);
-                DBWorker.deleteColorScheme(colorsList.get(position));
+                Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
+                intent.putExtra(ColorSchemeEditorActivity.COLOR_SCHEME_ID, colorsList.get(position).getSchemeId());
+                startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
 
-                colorsList.remove(position);
-                colorSchemeAdapter.notifyItemRemoved(position);
                 return true;
             }
         });
@@ -338,6 +337,15 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         colorSchemeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == COLOR_SCHEME_EDITOR_RESULT && resultCode == Activity.RESULT_OK) {
+            loadColorSchemes();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -399,7 +407,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
     @OnClick(R.id.add_color_scheme_button)
     public void addColorClick() {
-        Toast.makeText(getActivity(), "bla", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
+        startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
     }
 
     private void showOptions() {
@@ -450,6 +459,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     }
 
     private void loadColorSchemes() {
+        colorsList.clear();
         Subscription subscription =
                 Observable.just("")
                         .flatMap(new Func1<String, Observable<ColorScheme>>() {

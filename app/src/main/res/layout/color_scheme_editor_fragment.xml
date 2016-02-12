@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <carbon.widget.RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:carbon_rippleColor="#333333"
+                android:clickable="true"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:id="@+id/background_color_scheme_layout"
+                >
+
+                <carbon.widget.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/background_color_scheme"
+                    android:textColor="@color/textColorPrimary"
+                    app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#000"
+                    android:padding="1dp"
+                    >
+
+                    <View
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/iconsColor"
+                        android:id="@+id/background_color_scheme_view"
+                        />
+
+                </RelativeLayout>
+
+            </carbon.widget.RelativeLayout>
+
+            <carbon.widget.RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:carbon_rippleColor="#333333"
+                android:clickable="true"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:id="@+id/text_color_scheme_layout"
+                >
+
+                <carbon.widget.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_color_scheme"
+                    android:textColor="@color/textColorPrimary"
+                    app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#000"
+                    android:padding="1dp"
+                    >
+
+                    <View
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/iconsColor"
+                        android:id="@+id/text_color_scheme_view"
+                        />
+
+                </RelativeLayout>
+
+            </carbon.widget.RelativeLayout>
+
+            <carbon.widget.RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:carbon_rippleColor="#333333"
+                android:clickable="true"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:id="@+id/selected_color_scheme_layout"
+                >
+
+                <carbon.widget.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/selected_color_scheme"
+                    android:textColor="@color/textColorPrimary"
+                    app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#000"
+                    android:padding="1dp"
+                    >
+
+                    <View
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/iconsColor"
+                        android:id="@+id/selected_color_scheme_view"
+                        />
+
+                </RelativeLayout>
+
+            </carbon.widget.RelativeLayout>
+
+            <carbon.widget.RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:carbon_rippleColor="#333333"
+                android:clickable="true"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:id="@+id/link_color_scheme_layout"
+                >
+
+                <carbon.widget.TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/link_color_scheme"
+                    android:textColor="@color/textColorPrimary"
+                    app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_centerVertical="true" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="#000"
+                    android:padding="1dp"
+                    >
+
+                    <View
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="@color/iconsColor"
+                        android:id="@+id/link_color_scheme_view"
+                        />
+
+                </RelativeLayout>
+
+            </carbon.widget.RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:background="@drawable/material_drawer_shadow_bottom"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:id="@+id/preview_layout"
+                android:background="@color/iconsColor"
+                >
+
+                <com.randomname.mrakopedia.ui.views.selection.SelectableTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/preview_text_view"
+                    android:textColor="@color/textColorPrimary"
+                    />
+
+            </RelativeLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

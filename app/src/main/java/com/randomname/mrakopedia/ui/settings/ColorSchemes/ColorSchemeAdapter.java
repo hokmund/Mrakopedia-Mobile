@@ -1,4 +1,4 @@
-package com.randomname.mrakopedia.ui.settings;
+package com.randomname.mrakopedia.ui.settings.ColorSchemes;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
