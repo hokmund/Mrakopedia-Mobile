@@ -301,6 +301,11 @@ public class SelectionController {
         final int textLength = text.length();
         handlesPosition[0] = 0;
         for (int i = pos; i >= 0; i--) {
+            if (i >= text.length()) {
+                handlesPosition[0] = i + 1;
+                break;
+            }
+
             if (!LetterDigitPattern.matcher(String.valueOf(text.charAt(i))).matches()){
                 handlesPosition[0] = i + 1;
                 break;

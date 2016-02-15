@@ -46,6 +46,7 @@ import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeAdapter;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeEditorActivity;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
+import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.StickySummaryDecoration;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
@@ -242,8 +243,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
         if (adapter.getDisplayedData().size() <= 1) {
             if (DBWorker.isPageSummarySavedById(pageId) || DBWorker.isPageSummarySaved(pageTitle)) {
-                //getArticleByRealm();
-                getArticleByNetwork();
+                getArticleByRealm();
             } else {
                 getArticleByNetwork();
             }
@@ -788,8 +788,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                     public void call(PageSummaryResult pageSummaryResult) {
                         for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
                             if (textSection.getType() == TextSection.TEXT_TYPE) {
-                                textSection.setText(Html.fromHtml(textSection.getText().toString()));
-                                textSection.setText(StringUtils.trimTrailingWhitespace(textSection.getText()));
+                                textSection.setText(Html.fromHtml(textSection.getText().toString(), null, new HtmlTagHandler()));
                             }
                         }
                     }
@@ -801,24 +800,18 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                         for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
                             if (textSection.getType() == TextSection.TEXT_TYPE) {
-                                textSection.setText("test1\n test2 \n test3");
 
-                                int start = 0;
                                 String[] splited = textSection.getText().toString().split("\n");
 
                                 for (String splitString : splited) {
 
+                                    int start = textSection.getText().toString().indexOf(splitString);
+                                    int end = splitString.length() + start;
                                     try {
-
-                                        Log.e("bla", "start:" + start + " end:" + (splitString.length() + start));
-                                        Log.e("bla", textSection.getText().subSequence(start, splitString.length() + start).toString());
-
-                                        newSections.add(new TextSection(TextSection.TEXT_TYPE, textSection.getText().subSequence(start, splitString.length() + start)));
+                                        newSections.add(new TextSection(TextSection.TEXT_TYPE, textSection.getText().subSequence(start, end)));
                                     } catch (IndexOutOfBoundsException e) {
                                         e.printStackTrace();
                                     }
-
-                                    start += splitString.length();
                                 }
 
 
@@ -829,6 +822,16 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                         pageSummaryResult.getParse().setTextSections(newSections);
                         return pageSummaryResult;
+                    }
+                })
+                .doOnNext(new Action1<PageSummaryResult>() {
+                    @Override
+                    public void call(PageSummaryResult pageSummaryResult) {
+                        for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
+                            if (textSection.getType() == TextSection.TEXT_TYPE) {
+                                textSection.setText(StringUtils.trimTrailingWhitespace(textSection.getText()));
+                            }
+                        }
                     }
                 })
                 .flatMap(new Func1<PageSummaryResult, Observable<TextSection>>() {

@@ -134,7 +134,7 @@ public class SelectableTextView extends carbon.widget.TextView implements Select
             return;
         }
 
-        if (start == 0 && end == getText().length()) {
+        if (start == 0 && end == getText().length() && getLayout() != null) {
             rectTop.left = 0;
             rectTop.top = 0;
             rectTop.right = 0;
