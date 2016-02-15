@@ -20,6 +20,7 @@ public class ColorSchemeAdapter extends RecyclerView.Adapter<ColorSchemeAdapter.
     private ArrayList<ColorScheme> colorsList;
     private View.OnLongClickListener onLongClickListener;
     private View.OnClickListener onClickListener;
+    private boolean useFixedSize = true;
 
     public ColorSchemeAdapter(ArrayList<ColorScheme> colorsList) {
         this.colorsList = colorsList;
@@ -33,9 +34,15 @@ public class ColorSchemeAdapter extends RecyclerView.Adapter<ColorSchemeAdapter.
         this.onClickListener = onClickListener;
     }
 
+    public void setUseFixedSize(boolean useFixedSize) {
+        this.useFixedSize = useFixedSize;
+    }
+
     @Override
     public ColorSchemeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.color_scheme_view_holder, parent, false);
+        int viewLayout = useFixedSize ? R.layout.color_scheme_view_holder : R.layout.color_scheme_view_holder_relative;
+
+        View view = LayoutInflater.from(parent.getContext()).inflate(viewLayout, parent, false);
         view.setOnLongClickListener(onLongClickListener);
         view.setOnClickListener(onClickListener);
         return new ColorSchemeViewHolder(view);

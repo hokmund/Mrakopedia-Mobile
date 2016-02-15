@@ -30,8 +30,9 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import carbon.widget.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ShowSubFragment {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
-            setAllCategoriesFragment();
+            setSettingsFragment();
         }
     }
 
@@ -219,34 +220,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void setAllCategoriesFragment() {
         setTitle(R.string.all_categories_drawer);
-        setFragment(new AllCategoriesFragment(), ALL_CATEGORIES_FRAGMENT_TAG);
+        setDrawerFragment(new AllCategoriesFragment(), ALL_CATEGORIES_FRAGMENT_TAG);
     }
 
     private void setFavoriteFragment() {
         setTitle(R.string.favorite_drawer);
-        setFragment(new FavoriteFragment(), FAVORITE_FRAGMENT_TAG);
+        setDrawerFragment(new FavoriteFragment(), FAVORITE_FRAGMENT_TAG);
     }
 
     private void setRecentChangesFragment() {
         setTitle(R.string.recent_changes_drawer);
-        setFragment(new RecentChangesFragment(), RECENT_CHANGES_FRAGMENT_TAG);
+        setDrawerFragment(new RecentChangesFragment(), RECENT_CHANGES_FRAGMENT_TAG);
     }
 
     private void setSearchFragment() {
         setTitle(R.string.search_drawer);
-        setFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG, true);
+        setDrawerFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG, true);
     }
 
     private void setSettingsFragment() {
         setTitle(R.string.settings_drawer);
-        setFragment(new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
+        setDrawerFragment(new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
     }
 
-    private void setFragment(Fragment fragment, String tag) {
-        setFragment(fragment, tag, false);
+    private void setDrawerFragment(Fragment fragment, String tag) {
+        setDrawerFragment(fragment, tag, false);
     }
 
-    private void setFragment(Fragment fragment, String tag, Boolean isSearchViewOpen) {
+    private void setDrawerFragment(Fragment fragment, String tag, Boolean isSearchViewOpen) {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(tag);
 
         toolbarContainer.setTranslationY(0);
@@ -268,4 +269,10 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.main_frame, fragment, tag);
         fragmentTransaction.commit();
     }
+
+    @Override
+    public void showSubFragment(Fragment fragment) {
+        setDrawerFragment(fragment, fragment.getClass().getName());
+    }
+
 }

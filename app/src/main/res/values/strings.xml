@@ -18,6 +18,7 @@
     <string name="caching_photo_option">Кэшировать фото</string>
     <string name="caching_pages_option">Кэшировать страницы</string>
     <string name="keep_screen_on_option">Не выключать экран при чтении</string>
+    <string name="current_color_scheme">Текущая цветовая схема</string>
 
     <string name="font_size_text">Размер шрифта</string>
     <string name="color_scheme_text">Цветовая схема</string>

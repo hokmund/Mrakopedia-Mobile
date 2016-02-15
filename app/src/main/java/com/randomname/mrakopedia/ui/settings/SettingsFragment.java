@@ -9,8 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
+import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -33,6 +38,12 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     SwitchCompat keepScreenOnSwitch;
     @Bind(R.id.keep_screen_on_layout)
     RelativeLayout keepScreenOnLayout;
+    @Bind(R.id.current_color_scheme_layout)
+    RelativeLayout currentColorSchemeLayout;
+    @Bind(R.id.color_view)
+    View colorSchemeBackgroundColor;
+    @Bind(R.id.text_view)
+    TextView colorSchemeTextView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,6 +67,11 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         cachingPagesLayout.setOnClickListener(this);
         cachingPhotoLayout.setOnClickListener(this);
         keepScreenOnLayout.setOnClickListener(this);
+        currentColorSchemeLayout.setOnClickListener(this);
+
+        ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
+        colorSchemeBackgroundColor.setBackgroundColor(colorScheme.getBackgroundColor());
+        colorSchemeTextView.setTextColor(colorScheme.getTextColor());
     }
 
     @Override
@@ -88,8 +104,15 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             case R.id.keep_screen_on_layout:
                 keepScreenOnSwitch.setChecked(!keepScreenOnSwitch.isChecked());
                 break;
+            case R.id.current_color_scheme_layout:
+                showColorSchemes();
+                break;
             default:
                 break;
         }
+    }
+
+    private void showColorSchemes() {
+        ((MainActivity)getActivity()).showSubFragment(new ColorSchemesFragment());
     }
 }

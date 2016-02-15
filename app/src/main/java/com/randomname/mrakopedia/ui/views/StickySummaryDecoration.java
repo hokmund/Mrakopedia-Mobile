@@ -38,7 +38,7 @@ public class StickySummaryDecoration extends RecyclerView.ItemDecoration {
                 }
             }
 
-            extraTop -= Utils.convertDpToPixel(75.0f, context);
+            extraTop -= Utils.convertDpToPixel(90.0f, context);
 
             if (extraTop > 0) {
                 outRect.top = extraTop;

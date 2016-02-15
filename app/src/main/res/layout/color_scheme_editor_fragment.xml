@@ -206,6 +206,8 @@
                 android:layout_height="300dp"
                 android:id="@+id/preview_layout"
                 android:background="@color/iconsColor"
+                android:paddingRight="16dp"
+                android:paddingLeft="16dp"
                 >
 
                 <com.randomname.mrakopedia.ui.views.selection.SelectableTextView
