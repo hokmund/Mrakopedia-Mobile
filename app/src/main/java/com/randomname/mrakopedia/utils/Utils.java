@@ -1,11 +1,13 @@
 package com.randomname.mrakopedia.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.inputmethod.InputMethodManager;
 
 /**
@@ -51,8 +53,10 @@ public class Utils {
                 "Рейтинг"
         };
 
-        public static void hideKeyboard(Context ctx) {
-                InputMethodManager imm = (InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        public static int convertDpToPixel(float dp, Context context){
+                Resources resources = context.getResources();
+                DisplayMetrics metrics = resources.getDisplayMetrics();
+                float px = dp * (metrics.densityDpi / 160f);
+                return Math.round(px);
         }
 }

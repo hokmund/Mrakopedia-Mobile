@@ -41,6 +41,7 @@ import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeAdapter;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeEditorActivity;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
+import com.randomname.mrakopedia.ui.views.StickySummaryDecoration;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
 import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
@@ -222,6 +223,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                 return false;
             }
         });
+        recyclerView.addItemDecoration(new StickySummaryDecoration(getActivity()));
 
 
         recyclerView.addOnScrollListener(((PageSummaryActivity) getActivity()).toolbarHideListener);
