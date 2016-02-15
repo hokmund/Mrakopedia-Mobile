@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -28,6 +29,8 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.codetail.animation.SupportAnimator;
+import io.codetail.animation.ViewAnimationUtils;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -49,6 +52,9 @@ public class ColorSchemesFragment extends RxBaseFragment {
     @Bind(R.id.add_action_button)
     FloatingActionButton addActionButton;
 
+    @Bind(R.id.reveal_view)
+    View revealView;
+
     @Bind(R.id.color_schemes_recycler_view)
     RecyclerView colorSchemesRecyclerView;
     ColorSchemeAdapter adapter;
@@ -65,12 +71,50 @@ public class ColorSchemesFragment extends RxBaseFragment {
             @Override
             public void onClick(View v) {
                 int position = colorSchemesRecyclerView.getChildAdapterPosition(v);
-                ColorScheme currentScheme = colorSchemes.get(position);
+                final ColorScheme currentScheme = colorSchemes.get(position);
                 SettingsWorker.getInstance(getActivity()).setCurrentColorScheme(currentScheme);
 
                 previewTextView.setTextColor(currentScheme.getTextColor());
                 previewTextView.setLinkTextColor(currentScheme.getLinkColor());
-                previewLayout.setBackgroundColor(currentScheme.getBackgroundColor());
+
+                int cx = (revealView.getLeft() + revealView.getRight()) / 2;
+                int cy = (revealView.getTop() + revealView.getBottom()) / 2;
+
+                // get the final radius for the clipping circle
+                int dx = Math.max(cx, revealView.getWidth() - cx);
+                int dy = Math.max(cy, revealView.getHeight() - cy);
+                float finalRadius = (float) Math.hypot(dx, dy);
+
+                SupportAnimator animator =
+                        ViewAnimationUtils.createCircularReveal(revealView, cx, cy, 0, finalRadius);
+                animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                animator.setDuration(1500);
+                animator.addListener(new SupportAnimator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart() {
+                    }
+
+                    @Override
+                    public void onAnimationEnd() {
+                        previewLayout.setBackgroundColor(currentScheme.getBackgroundColor());
+                        revealView.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel() {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat() {
+
+                    }
+                });
+
+                revealView.setBackgroundColor(currentScheme.getBackgroundColor());
+                revealView.setVisibility(View.VISIBLE);
+
+                animator.start();
             }
         });
 
