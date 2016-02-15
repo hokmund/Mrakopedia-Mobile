@@ -8,6 +8,9 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -49,6 +52,7 @@ import com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 import com.randomname.mrakopedia.ui.views.selection.SelectionCallback;
 import com.randomname.mrakopedia.utils.NetworkUtils;
+import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
 import org.jsoup.Jsoup;
@@ -186,7 +190,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                 for (TextSection section : adapter.getDisplayedData()) {
                     if (section.getType() == TextSection.IMAGE_TYPE) {
-                        imageArray.add(section.getText());
+                        imageArray.add(section.getText().toString());
                     }
                 }
 
@@ -238,7 +242,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
         if (adapter.getDisplayedData().size() <= 1) {
             if (DBWorker.isPageSummarySavedById(pageId) || DBWorker.isPageSummarySaved(pageTitle)) {
-                getArticleByRealm();
+                //getArticleByRealm();
+                getArticleByNetwork();
             } else {
                 getArticleByNetwork();
             }
@@ -778,6 +783,54 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                         }
                     }
                 })
+                .doOnNext(new Action1<PageSummaryResult>() {
+                    @Override
+                    public void call(PageSummaryResult pageSummaryResult) {
+                        for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
+                            if (textSection.getType() == TextSection.TEXT_TYPE) {
+                                textSection.setText(Html.fromHtml(textSection.getText().toString()));
+                                textSection.setText(StringUtils.trimTrailingWhitespace(textSection.getText()));
+                            }
+                        }
+                    }
+                })
+                .map(new Func1<PageSummaryResult, PageSummaryResult>() {
+                    @Override
+                    public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
+                        ArrayList<TextSection> newSections = new ArrayList<TextSection>();
+
+                        for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
+                            if (textSection.getType() == TextSection.TEXT_TYPE) {
+                                textSection.setText("test1\n test2 \n test3");
+
+                                int start = 0;
+                                String[] splited = textSection.getText().toString().split("\n");
+
+                                for (String splitString : splited) {
+
+                                    try {
+
+                                        Log.e("bla", "start:" + start + " end:" + (splitString.length() + start));
+                                        Log.e("bla", textSection.getText().subSequence(start, splitString.length() + start).toString());
+
+                                        newSections.add(new TextSection(TextSection.TEXT_TYPE, textSection.getText().subSequence(start, splitString.length() + start)));
+                                    } catch (IndexOutOfBoundsException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    start += splitString.length();
+                                }
+
+
+                            } else {
+                                newSections.add(textSection);
+                            }
+                        }
+
+                        pageSummaryResult.getParse().setTextSections(newSections);
+                        return pageSummaryResult;
+                    }
+                })
                 .flatMap(new Func1<PageSummaryResult, Observable<TextSection>>() {
                     @Override
                     public Observable<TextSection> call(PageSummaryResult pageSummaryResult) {
@@ -964,9 +1017,9 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         for (int i = 0; i < pageSummaryResult.getParse().getTextSections().size(); i++) {
             textSection = pageSummaryResult.getParse().getTextSections().get(i);
 
-            if (textSection.getType() == TextSection.TEXT_TYPE && textSection.getText().contains("youtubeVideo")) {
-                doc = Jsoup.parse(textSection.getText());
-                stringToSplit = textSection.getText();
+            if (textSection.getType() == TextSection.TEXT_TYPE && textSection.getText().toString().contains("youtubeVideo")) {
+                doc = Jsoup.parse(textSection.getText().toString());
+                stringToSplit = textSection.getText().toString();
 
                 youtubeTags = doc.select("p.youtubeVideo");
 
@@ -1055,8 +1108,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         boolean toSkip = false;
         TextSection lastSection = pageSummaryResult.getParse().getTextSections().get(pageSummaryResult.getParse().getTextSections().size() - 1);
 
-        lastSection.setText(lastSection.getText().replaceAll(Pattern.quote("См.также"), "Смотри также"));
-        lastSection.setText(lastSection.getText().replaceAll(Pattern.quote("См. также"), "Смотри также"));
+        lastSection.setText(lastSection.getText().toString().replaceAll(Pattern.quote("См.также"), "Смотри также"));
+        lastSection.setText(lastSection.getText().toString().replaceAll(Pattern.quote("См. также"), "Смотри также"));
     }
 
     private void addCategories(PageSummaryResult pageSummaryResult) {

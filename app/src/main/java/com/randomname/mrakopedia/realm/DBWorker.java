@@ -65,7 +65,7 @@ public class DBWorker {
             }
 
             textSectionRealm = new TextSectionRealm();
-            textSectionRealm.setText(textSection.getText());
+            textSectionRealm.setText(textSection.getText().toString());
             textSectionRealm.setType(textSection.getType());
             textSectionRealm.setId(pageSummaryResult.getParse().getTitle() + pageSummaryToSave.getTextSections().size());
 
@@ -259,7 +259,7 @@ public class DBWorker {
             }
 
             textSectionRealm = new TextSectionRealm();
-            textSectionRealm.setText(textSection.getText());
+            textSectionRealm.setText(textSection.getText().toString());
             textSectionRealm.setType(textSection.getType());
             textSectionRealm.setId(title + "_category_" + categoryToSave.getDescriptionSections().size());
 

@@ -473,19 +473,19 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             public CategoryDescription call(CategoryDescription categoryDescription) {
                                 TextSection lastSection = categoryDescription.getTextSections().get(categoryDescription.getTextSections().size() - 1);
 
-                                if (lastSection.getText().contains("См.также")) {
+                                if (lastSection.getText().toString().contains("См.также")) {
                                     Log.e(TAG, "contains 1");
-                                    lastSection.setText(lastSection.getText().split(Pattern.quote("См.также"))[0]);
+                                    lastSection.setText(lastSection.getText().toString().split(Pattern.quote("См.также"))[0]);
                                 }
 
-                                if (lastSection.getText().contains("Смотри также")) {
+                                if (lastSection.getText().toString().contains("Смотри также")) {
                                     Log.e(TAG, "contains 2");
-                                    lastSection.setText(lastSection.getText().split(Pattern.quote("Смотри также"))[0]);
+                                    lastSection.setText(lastSection.getText().toString().split(Pattern.quote("Смотри также"))[0]);
                                 }
 
-                                if (lastSection.getText().contains("См. также")) {
+                                if (lastSection.getText().toString().contains("См. также")) {
                                     Log.e(TAG, "contains 3");
-                                    lastSection.setText(lastSection.getText().split(Pattern.quote("См. также"))[0]);
+                                    lastSection.setText(lastSection.getText().toString().split(Pattern.quote("См. также"))[0]);
                                 }
 
                                 categoryDescription.getTextSections().set(categoryDescription.getTextSections().size() - 1, lastSection);
@@ -754,12 +754,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (position < descriptionSections.size()) {
                 if (holder.getItemViewType() == TEXT_TYPE) {
-                    Spannable span = (Spannable) Html.fromHtml(descriptionSections.get(position).getText().replaceAll("&nbsp", ""), null, new HtmlTagHandler());
+                    Spannable span = (Spannable) Html.fromHtml(descriptionSections.get(position).getText().toString().replaceAll("&nbsp", ""), null, new HtmlTagHandler());
                     span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                     ((TextViewHolder) holder).textView.setText(span);
                     ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
                 } else if (holder.getItemViewType() == IMAGE_TYPE) {
-                    ImageLoader.getInstance().displayImage(descriptionSections.get(position).getText(), ((ImageViewHolder)holder).imageView, options, new AnimateFirstDisplayListener(descriptionSections.get(position).getText(), ((ImageViewHolder)holder).imageView));
+                    ImageLoader.getInstance().displayImage(descriptionSections.get(position).getText().toString(), ((ImageViewHolder)holder).imageView, options, new AnimateFirstDisplayListener(descriptionSections.get(position).getText().toString(), ((ImageViewHolder)holder).imageView));
                 }
                 return;
             }

@@ -133,11 +133,10 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         switch (holder.getItemViewType()) {
             case TextSection.TEXT_TYPE:
-                Spannable span = (Spannable) Html.fromHtml(sections.get(position).getText(), null, new HtmlTagHandler());
-                span = (Spannable) StringUtils.trimTrailingWhitespace(span);
-                ((TextViewHolder) holder).textView.setText(span);
+
+                ((TextViewHolder) holder).textView.setText(sections.get(position).getText());
                 ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
-                ((TextViewHolder) holder).textView.setKey(" pos: " + position + span.toString());
+                ((TextViewHolder) holder).textView.setKey(" pos: " + position + sections.get(position).getText().toString());
                 ((TextViewHolder) holder).textView.setTextColor(colorScheme.getTextColor());
                 ((TextViewHolder) holder).textView.setTextSize(fontSize);
                 ((TextViewHolder) holder).textView.setLinkTextColor(colorScheme.getLinkColor());
@@ -145,7 +144,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
-                ImageLoader.getInstance().displayImage(sections.get(position).getText(), ((ImageViewHolder)holder).imageView, options);
+                ImageLoader.getInstance().displayImage(sections.get(position).getText().toString(), ((ImageViewHolder)holder).imageView, options);
                 break;
             case TextSection.GIF_TYPE:
 
@@ -157,7 +156,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 break;
             case TextSection.TEMPLATE_TYPE:
-                bindTemplateHolder(holder, sections.get(position).getText());
+                bindTemplateHolder(holder, sections.get(position).getText().toString());
                 break;
             case TextSection.LINK_TYPE:
                 ((TextViewHolder) holder).textView.setText(Html.fromHtml("<a href='dummy'>" + sections.get(position).getText() + "</a>"));

@@ -2,6 +2,7 @@ package com.randomname.mrakopedia.models.api.pagesummary;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 /**
  * Created by vgrigoryev on 22.01.2016.
@@ -20,16 +21,16 @@ public class TextSection implements Parcelable {
     public static final int GIF_TYPE = 9;
 
     private int type;
-    private String text;
+    private CharSequence text;
 
-    public TextSection(int type, String text) {
+    public TextSection(int type, CharSequence text) {
         this.type = type;
         this.text = text;
     }
 
     public TextSection(Parcel in) {
         type = in.readInt();
-        text = in.readString();
+        text = TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
     }
 
     public void setType(int type) {
@@ -40,11 +41,11 @@ public class TextSection implements Parcelable {
         return type;
     }
 
-    public void setText(String text) {
+    public void setText(CharSequence text) {
         this.text = text;
     }
 
-    public String getText() {
+    public CharSequence getText() {
         return text;
     }
 
@@ -56,7 +57,7 @@ public class TextSection implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(type);
-        dest.writeString(text);
+        TextUtils.writeToParcel(text, dest, flags);
     }
 
     public static final Parcelable.Creator<TextSection> CREATOR = new Parcelable.Creator<TextSection>() {
