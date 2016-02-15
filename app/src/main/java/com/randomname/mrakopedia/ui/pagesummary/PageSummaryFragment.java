@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
@@ -909,6 +910,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     }
 
     private void getArticleByRealm() {
+        recyclerView.setVisibility(View.INVISIBLE);
+        loadingProgressBar.setVisibility(View.VISIBLE);
 
         Subscription subscription = Observable.just("")
                 .flatMap(new Func1<String, Observable<PageSummaryRealm>>() {
@@ -921,24 +924,52 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                         }
                     }
                 })
-                .flatMap(new Func1<PageSummaryRealm, Observable<TextSectionRealm>>() {
+                .flatMap(new Func1<PageSummaryRealm, Observable<TextSection>>() {
                     @Override
-                    public Observable<TextSectionRealm> call(PageSummaryRealm pageSummaryRealm) {
+                    public Observable<TextSection> call(PageSummaryRealm pageSummaryRealm) {
                         if (pageSummaryRealm == null) {
                             return Observable.empty();
                         }
-
-                        return Observable.from(pageSummaryRealm.getTextSections());
-                    }
-                })
-                .map(new Func1<TextSectionRealm, TextSection>() {
-                    @Override
-                    public TextSection call(TextSectionRealm textSectionRealm) {
-                        if (textSectionRealm.getType() == TextSection.CATEGORY_TYPE) {
-                            return new CategoriesTextSection(textSectionRealm.getCategoriesTitles());
-                        } else {
-                            return new TextSection(textSectionRealm.getType(), textSectionRealm.getText());
+                        ArrayList<TextSection> textSections = new ArrayList<TextSection>();
+                        if (pageSummaryRealm.getTextSections() == null) {
+                            return Observable.from(textSections);
                         }
+
+                        TextSection textSection = null;
+
+                        for (TextSectionRealm textSectionRealm : pageSummaryRealm.getTextSections()) {
+                            textSection = null;
+                            if (textSectionRealm.getType() == TextSection.CATEGORY_TYPE) {
+                                textSection = new CategoriesTextSection(textSectionRealm.getCategoriesTitles());
+                            } else if (textSectionRealm.getType() == TextSection.TEXT_TYPE) {
+                                CharSequence htmlString = Html.fromHtml(textSectionRealm.getText(), null, new HtmlTagHandler());
+                                String[] splited = htmlString.toString().split("\n");
+
+                                for (String splitString : splited) {
+                                    textSection = null;
+
+                                    int start = htmlString.toString().indexOf(splitString);
+                                    int end = splitString.length() + start;
+                                    try {
+                                        textSection = new TextSection(TextSection.TEXT_TYPE, htmlString.subSequence(start, end));
+                                        textSection.setText(StringUtils.trimTrailingWhitespace(textSection.getText()));
+                                        textSections.add(textSection);
+                                    } catch (IndexOutOfBoundsException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                textSection = null;
+                            } else {
+                                textSection = new TextSection(textSectionRealm.getType(), textSectionRealm.getText());
+                            }
+
+                            if (textSection != null) {
+                                textSections.add(textSection);
+                            }
+                        }
+
+                        return Observable.from(textSections);
                     }
                 })
                 .subscribeOn(Schedulers.newThread())
@@ -950,6 +981,22 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                         AlphaAnimation animation = new AlphaAnimation(0f, 1f);
                         animation.setDuration(300);
+                        animation.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                getActivity().invalidateOptionsMenu();
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+
+                            }
+                        });
 
                         recyclerView.setAnimation(animation);
                         recyclerView.animate();
