@@ -37,11 +37,25 @@
         android:visibility="invisible"
         />
 
+    <io.codetail.widget.RevealFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/reveal_view"
+            android:visibility="invisible"
+            >
+
+        </RelativeLayout>
+
+    </io.codetail.widget.RevealFrameLayout>
+
     <com.randomname.mrakopedia.ui.views.selection.SelectableRecyclerView
         android:id="@+id/page_summary_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/listColor"
         />
 
     <LinearLayout

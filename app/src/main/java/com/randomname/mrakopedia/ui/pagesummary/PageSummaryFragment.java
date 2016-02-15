@@ -17,10 +17,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -63,6 +65,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import carbon.widget.ProgressBar;
+import io.codetail.animation.SupportAnimator;
+import io.codetail.animation.ViewAnimationUtils;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -116,8 +120,12 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     @Bind(R.id.color_scheme_recycler_view)
     RecyclerView colorSchemeRecyclerView;
 
+    @Bind(R.id.reveal_view)
+    RelativeLayout revealView;
+
     private ArrayList<ColorScheme> colorsList;
     private ColorSchemeAdapter colorSchemeAdapter;
+    private boolean animating = false;
 
     public PageSummaryFragment() {
     }
@@ -269,7 +277,6 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         });
 
         ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
-        recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
         view.setBackgroundColor(colorScheme.getBackgroundColor());
 
         float currentFontSize = SettingsWorker.getInstance(getActivity()).getCurrentFontSize();
@@ -314,11 +321,48 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             @Override
             public void onClick(View v) {
                 int position = colorSchemeRecyclerView.getChildAdapterPosition(v);
-                ColorScheme colorScheme = colorsList.get(position);
+                final ColorScheme colorScheme = colorsList.get(position);
                 SettingsWorker.getInstance(getActivity()).setCurrentColorScheme(colorScheme);
 
-                recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
-                view.setBackgroundColor(colorScheme.getBackgroundColor());
+                int cx = (revealView.getLeft() + revealView.getRight()) / 2;
+                int cy = (revealView.getTop() + revealView.getBottom()) / 2;
+
+                // get the final radius for the clipping circle
+                int dx = Math.max(cx, revealView.getWidth() - cx);
+                int dy = Math.max(cy, revealView.getHeight() - cy);
+                float finalRadius = (float) Math.hypot(dx, dy);
+
+                final SupportAnimator animator =
+                        ViewAnimationUtils.createCircularReveal(revealView, cx, cy, 0, finalRadius);
+                animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                animator.setDuration(300);
+                animator.addListener(new SupportAnimator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart() {
+                    }
+
+                    @Override
+                    public void onAnimationEnd() {
+                        view.setBackgroundColor(colorScheme.getBackgroundColor());
+                        revealView.setVisibility(View.GONE);
+                        animating = false;
+                    }
+
+                    @Override
+                    public void onAnimationCancel() {
+                        animating = false;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat() {
+
+                    }
+                });
+
+                revealView.setBackgroundColor(colorScheme.getBackgroundColor());
+                revealView.setVisibility(View.VISIBLE);
+
+                animator.start();
 
                 adapter.notifyColorSchemeChanged(colorScheme);
 
@@ -346,7 +390,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             loadColorSchemes();
 
             ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
-            recyclerView.setBackgroundColor(colorScheme.getBackgroundColor());
+            getView().setBackgroundColor(colorScheme.getBackgroundColor());
             adapter.notifyColorSchemeChanged(colorScheme);
 
             for (int i = 0; i < recyclerView.getChildCount(); i++) {
