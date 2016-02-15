@@ -32,7 +32,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import carbon.widget.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity implements ShowSubFragment {
+public class MainActivity extends AppCompatActivity {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
@@ -268,11 +268,6 @@ public class MainActivity extends AppCompatActivity implements ShowSubFragment {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame, fragment, tag);
         fragmentTransaction.commit();
-    }
-
-    @Override
-    public void showSubFragment(Fragment fragment) {
-        setDrawerFragment(fragment, fragment.getClass().getName());
     }
 
 }

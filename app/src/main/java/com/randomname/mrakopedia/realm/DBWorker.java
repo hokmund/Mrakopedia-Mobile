@@ -341,7 +341,7 @@ public class DBWorker {
         realm.beginTransaction();
 
         realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.iconsColor), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
-        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.listColor), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
+        realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), Color.BLACK, context.getResources().getColor(R.color.listColor), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
         realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.colorPrimaryLight), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
         realm.copyToRealmOrUpdate(new ColorScheme(getNextColorSchemeId(), context.getResources().getColor(R.color.colorPrimaryLight), context.getResources().getColor(R.color.iconsColor), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary)));
 

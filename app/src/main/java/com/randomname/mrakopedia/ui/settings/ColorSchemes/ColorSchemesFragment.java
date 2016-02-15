@@ -53,12 +53,16 @@ public class ColorSchemesFragment extends RxBaseFragment {
     FloatingActionButton addActionButton;
 
     @Bind(R.id.reveal_view)
-    View revealView;
+    RelativeLayout revealView;
+    @Bind(R.id.preview_reveal_text_view)
+    TextView revealTextView;
 
     @Bind(R.id.color_schemes_recycler_view)
     RecyclerView colorSchemesRecyclerView;
     ColorSchemeAdapter adapter;
     ArrayList<ColorScheme> colorSchemes = new ArrayList<>();
+
+    private boolean animating = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,12 +74,17 @@ public class ColorSchemesFragment extends RxBaseFragment {
         adapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (animating) {
+                    return;
+                }
+                animating = true;
+
                 int position = colorSchemesRecyclerView.getChildAdapterPosition(v);
                 final ColorScheme currentScheme = colorSchemes.get(position);
                 SettingsWorker.getInstance(getActivity()).setCurrentColorScheme(currentScheme);
 
-                previewTextView.setTextColor(currentScheme.getTextColor());
-                previewTextView.setLinkTextColor(currentScheme.getLinkColor());
+                revealTextView.setTextColor(currentScheme.getTextColor());
+                revealTextView.setLinkTextColor(currentScheme.getLinkColor());
 
                 int cx = (revealView.getLeft() + revealView.getRight()) / 2;
                 int cy = (revealView.getTop() + revealView.getBottom()) / 2;
@@ -85,10 +94,10 @@ public class ColorSchemesFragment extends RxBaseFragment {
                 int dy = Math.max(cy, revealView.getHeight() - cy);
                 float finalRadius = (float) Math.hypot(dx, dy);
 
-                SupportAnimator animator =
+                final SupportAnimator animator =
                         ViewAnimationUtils.createCircularReveal(revealView, cx, cy, 0, finalRadius);
                 animator.setInterpolator(new AccelerateDecelerateInterpolator());
-                animator.setDuration(1500);
+                animator.setDuration(300);
                 animator.addListener(new SupportAnimator.AnimatorListener() {
                     @Override
                     public void onAnimationStart() {
@@ -97,12 +106,15 @@ public class ColorSchemesFragment extends RxBaseFragment {
                     @Override
                     public void onAnimationEnd() {
                         previewLayout.setBackgroundColor(currentScheme.getBackgroundColor());
+                        previewTextView.setTextColor(currentScheme.getTextColor());
+                        previewTextView.setLinkTextColor(currentScheme.getLinkColor());
                         revealView.setVisibility(View.GONE);
+                        animating = false;
                     }
 
                     @Override
                     public void onAnimationCancel() {
-
+                        animating = false;
                     }
 
                     @Override
@@ -136,9 +148,14 @@ public class ColorSchemesFragment extends RxBaseFragment {
         ColorScheme currentScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
 
         previewTextView.setText(Html.fromHtml(PREVIEW_STRING));
+        revealTextView.setText(Html.fromHtml(PREVIEW_STRING));
+
         previewTextView.setTextColor(currentScheme.getTextColor());
         previewTextView.setLinkTextColor(currentScheme.getLinkColor());
         previewLayout.setBackgroundColor(currentScheme.getBackgroundColor());
+
+        revealTextView.setTextColor(currentScheme.getTextColor());
+        revealTextView.setLinkTextColor(currentScheme.getLinkColor());
 
         addActionButton.setOnClickListener(new View.OnClickListener() {
             @Override

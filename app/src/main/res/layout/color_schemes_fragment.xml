@@ -2,56 +2,72 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/color_schemes_recycler_view"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:layout_alignBottom="@+id/relativeLayout" />
+        android:orientation="vertical"
+        >
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="@drawable/material_drawer_shadow_bottom"
-        android:layout_above="@id/preview_layout"
-        android:id="@+id/relativeLayout" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:id="@+id/preview_layout"
-        android:background="@color/iconsColor"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
-
-        <io.codetail.widget.RevealFrameLayout
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/reveal_view"
-                android:visibility="invisible"
-                />
-
-        </io.codetail.widget.RevealFrameLayout>
-
-        <com.randomname.mrakopedia.ui.views.selection.SelectableTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/preview_text_view"
-            android:textColor="@color/textColorPrimary"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:layout_height="0dp"
+            android:id="@+id/color_schemes_recycler_view"
+            android:layout_weight="1"
             />
 
-    </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@drawable/material_drawer_shadow_bottom"
+            android:id="@+id/relativeLayout" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/preview_layout"
+            android:background="@color/iconsColor"
+            android:layout_weight="1"
+            >
+
+            <com.randomname.mrakopedia.ui.views.selection.SelectableTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/preview_text_view"
+                android:textColor="@color/textColorPrimary"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                />
+
+            <io.codetail.widget.RevealFrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/reveal_view"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/preview_reveal_text_view"
+                        android:textColor="@color/textColorPrimary"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        />
+
+                </RelativeLayout>
+
+            </io.codetail.widget.RevealFrameLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <com.melnykov.fab.FloatingActionButton
         android:id="@+id/add_action_button"

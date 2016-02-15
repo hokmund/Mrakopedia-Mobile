@@ -54,6 +54,10 @@
             android:name=".ui.settings.ColorSchemes.ColorSchemeEditorActivity"
             android:label="@string/title_activity_color_scheme_editor" >
         </activity>
+        <activity
+            android:name=".ui.settings.ColorSchemes.ColorSchemesActivity"
+            android:label="@string/title_activity_color_schemes" >
+        </activity>
     </application>
 
 </manifest>

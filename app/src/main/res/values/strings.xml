@@ -22,6 +22,7 @@
 
     <string name="font_size_text">Размер шрифта</string>
     <string name="color_scheme_text">Цветовая схема</string>
+    <string name="color_schemes_text">Цветовая схема</string>
     <string name="create_color_scheme">Создать цветовую схему</string>
     <string name="edit_color_scheme">Редактировать цветовую схему</string>
     <string name="background_color_scheme">Цвет фона</string>
@@ -63,4 +64,5 @@
     <string name="humor_description">В роли страшилки эта история Настолько Плоха, Что Даже Хороша. Хотя она и пытается казаться страшной, её истинная цель отнюдь не в запугивании.</string>
     <string name="so_bad_so_good_description">Эта история Настолько Плоха, Что Даже Хороша. Она претендует на серьёзность, но написана так плохо, что может вызвать лишь смех.</string>
     <string name="title_activity_color_scheme_editor">ColorSchemeEditorActivity</string>
+    <string name="title_activity_color_schemes">ColorSchemesActivity</string>
 </resources>

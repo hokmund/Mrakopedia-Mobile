@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
+import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesFragment;
 
 import butterknife.Bind;
@@ -113,6 +115,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     }
 
     private void showColorSchemes() {
-        ((MainActivity)getActivity()).showSubFragment(new ColorSchemesFragment());
+        Intent intent = new Intent(getActivity(), ColorSchemesActivity.class);
+        startActivity(intent);
     }
 }
