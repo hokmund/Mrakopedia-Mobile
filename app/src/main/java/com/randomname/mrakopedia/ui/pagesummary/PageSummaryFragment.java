@@ -977,6 +977,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                 .subscribe(new Subscriber<TextSection>() {
                     @Override
                     public void onCompleted() {
+                        adapter.notifyDataSetChanged();
                         recyclerView.setVisibility(View.VISIBLE);
 
                         AlphaAnimation animation = new AlphaAnimation(0f, 1f);
@@ -1014,7 +1015,6 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                     @Override
                     public void onNext(TextSection section) {
                         adapter.getDisplayedData().add(section);
-                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(section));
                     }
                 });
 
