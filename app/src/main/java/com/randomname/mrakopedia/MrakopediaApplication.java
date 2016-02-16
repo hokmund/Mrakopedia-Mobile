@@ -40,6 +40,7 @@ public class MrakopediaApplication extends Application {
     synchronized public Tracker getDefaultTracker() {
         if (mTracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            analytics.getLogger().setLogLevel(0);
             // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
             mTracker = analytics.newTracker(R.xml.global_tracker);
         }

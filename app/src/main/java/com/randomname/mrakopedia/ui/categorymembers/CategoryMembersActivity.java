@@ -8,6 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
@@ -30,6 +31,18 @@ public class CategoryMembersActivity extends AppCompatActivity {
     RelativeLayout toolbarContainer;
 
     private CategoryMembersFragment fragment;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

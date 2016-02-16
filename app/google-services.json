@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_id": "mrakopedia-3ee9a",
-    "project_number": "796593906832",
+    "project_id": "mrakopedia-1207",
+    "project_number": "309881183721",
     "name": "Mrakopedia"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:796593906832:android:d5753d68f75312b1",
+        "mobilesdk_app_id": "1:309881183721:android:d5753d68f75312b1",
         "client_id": "android:com.randomname.mrakopedia",
         "client_type": 1,
         "android_client_info": {
@@ -20,7 +20,7 @@
         "analytics_service": {
           "status": 2,
           "analytics_property": {
-            "tracking_id": "UA-73838153-1"
+            "tracking_id": "UA-73845716-1"
           }
         },
         "cloud_messaging_service": {

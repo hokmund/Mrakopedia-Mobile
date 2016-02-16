@@ -15,6 +15,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
@@ -42,6 +43,18 @@ public class PageSummaryActivity extends AppCompatActivity {
     RelativeLayout toolbarWrapper;
     @Bind(R.id.shadow_view_copy)
     View shadowViewCopy;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
