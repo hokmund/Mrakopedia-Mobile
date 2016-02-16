@@ -801,12 +801,13 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                         for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
                             if (textSection.getType() == TextSection.TEXT_TYPE) {
-
-                                String[] splited = textSection.getText().toString().split("\n");
+                                Pattern pattern = Pattern.compile("\n");
+                                String htmlString = textSection.getText().toString();
+                                String[] splited = pattern.split(htmlString);
 
                                 for (String splitString : splited) {
 
-                                    int start = textSection.getText().toString().indexOf(splitString);
+                                    int start = htmlString.indexOf(splitString);
                                     int end = splitString.length() + start;
                                     try {
                                         newSections.add(new TextSection(TextSection.TEXT_TYPE, textSection.getText().subSequence(start, end)));
@@ -942,16 +943,19 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                             if (textSectionRealm.getType() == TextSection.CATEGORY_TYPE) {
                                 textSection = new CategoriesTextSection(textSectionRealm.getCategoriesTitles());
                             } else if (textSectionRealm.getType() == TextSection.TEXT_TYPE) {
-                                CharSequence htmlString = Html.fromHtml(textSectionRealm.getText(), null, new HtmlTagHandler());
-                                String[] splited = htmlString.toString().split("\n");
+                                CharSequence htmlChars = Html.fromHtml(textSectionRealm.getText(), null, new HtmlTagHandler());
+                                Pattern pattern = Pattern.compile("\n");
+                                String htmlString = htmlChars.toString();
+
+                                String[] splited = pattern.split(htmlChars);
 
                                 for (String splitString : splited) {
                                     textSection = null;
 
-                                    int start = htmlString.toString().indexOf(splitString);
+                                    int start = htmlString.indexOf(splitString);
                                     int end = splitString.length() + start;
                                     try {
-                                        textSection = new TextSection(TextSection.TEXT_TYPE, htmlString.subSequence(start, end));
+                                        textSection = new TextSection(TextSection.TEXT_TYPE, htmlChars.subSequence(start, end));
                                         textSection.setText(StringUtils.trimTrailingWhitespace(textSection.getText()));
                                         textSections.add(textSection);
                                     } catch (IndexOutOfBoundsException e) {
