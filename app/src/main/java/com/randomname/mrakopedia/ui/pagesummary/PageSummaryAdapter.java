@@ -93,6 +93,11 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         switch (viewType) {

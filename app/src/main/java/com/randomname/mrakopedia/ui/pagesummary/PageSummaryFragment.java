@@ -218,6 +218,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             }
         });
 
+        adapter.setHasStableIds(true);
         SelectableLayoutManager manager = new SelectableLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
 
@@ -698,6 +699,16 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                             if (!editSections.isEmpty()) {
                                 editSections.remove();
+                            }
+                        }
+
+                        if (htmlText.contains("h2")) {
+                            Elements h2 = doc.select("h2");
+
+                            if (!h2.isEmpty()) {
+                                for (Element element : h2) {
+                                    element.html(element.html() + " ");
+                                }
                             }
                         }
 
