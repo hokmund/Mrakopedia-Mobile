@@ -25,7 +25,7 @@ public class MrakopediaApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
-        RealmConfiguration config = new RealmConfiguration.Builder(this).rxFactory(new RealmObservableFactory()).build();
+        RealmConfiguration config = new RealmConfiguration.Builder(this).deleteRealmIfMigrationNeeded().rxFactory(new RealmObservableFactory()).build();
         Realm.setDefaultConfiguration(config);
 
         ImageLoaderConfiguration imageConfig = new ImageLoaderConfiguration.Builder(this)
