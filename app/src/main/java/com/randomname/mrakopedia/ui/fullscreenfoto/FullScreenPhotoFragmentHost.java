@@ -107,7 +107,9 @@ public class FullScreenPhotoFragmentHost extends Fragment {
     private void setNewTitle(int position) {
         if (photosArrayList.size() > 1) {
             try {
-                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle((position + 1) + " фото из " + photosArrayList.size());
+                if(((AppCompatActivity)getActivity()).getSupportActionBar() != null) {
+                    ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(new StringBuilder().append(position + 1).append(" фото из ").append(photosArrayList.size()).toString());
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

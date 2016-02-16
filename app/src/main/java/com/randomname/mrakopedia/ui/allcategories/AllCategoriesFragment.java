@@ -251,7 +251,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
                         Allcategories category = new Allcategories();
                         category.setFiles("");
-                        category.setPages("" + categoryRealm.getCategoryMembersTitles().size());
+                        category.setPages(String.valueOf(categoryRealm.getCategoryMembersTitles().size()));
                         category.setTitle(categoryRealm.getTitle());
                         category.setSubcats("");
                         category.setSize("");
@@ -270,6 +270,8 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
         private final static int LIST_ITEM_TYPE = 0;
         private final static int SPACER_ITEM_TYPE = 1;
+
+        private String[] pages = {"страница", "страницы", "страниц"};
 
         ArrayList<Allcategories> categoriesArrayList;
         View.OnClickListener onClickListener;
@@ -314,12 +316,17 @@ public class AllCategoriesFragment extends RxBaseFragment {
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             if (position != 0) {
                 Allcategories category = categoriesArrayList.get(position - 1);
-                String[] pages = {"страница", "страницы", "страниц"};
 
-                ((ViewHolder)holder).titleTextView.setText(category.getTitle());
-                ((ViewHolder)holder).membersCountTextView.setText(category.getPages()
-                        + " " + StringUtils.declarationOfNum(Integer.parseInt(category.getPages()), pages)
-                        + " " + getString(R.string.in_this_category));
+                String categorySize = new StringBuilder()
+                        .append(category.getPages())
+                        .append(" ")
+                        .append(StringUtils.declarationOfNum(Integer.parseInt(category.getPages()), pages))
+                        .append(" ")
+                        .append(getString(R.string.in_this_category))
+                        .toString();
+
+                        ((ViewHolder) holder).titleTextView.setText(category.getTitle());
+                ((ViewHolder)holder).membersCountTextView.setText(categorySize);
             }
         }
 
