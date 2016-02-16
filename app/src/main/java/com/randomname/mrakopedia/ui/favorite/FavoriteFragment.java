@@ -13,7 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MainActivity;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
@@ -53,6 +56,8 @@ public class FavoriteFragment extends RxBaseFragment {
 
     private int selectedPosition = 0;
 
+    private Tracker mTracker;
+
     public FavoriteFragment() {
     }
 
@@ -69,6 +74,9 @@ public class FavoriteFragment extends RxBaseFragment {
         }
 
         favoritePages = new ArrayList<>();
+
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -124,6 +132,13 @@ public class FavoriteFragment extends RxBaseFragment {
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     private void checkForEmpty() {

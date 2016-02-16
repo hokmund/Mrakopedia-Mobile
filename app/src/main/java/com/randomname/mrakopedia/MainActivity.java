@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
-            setRecentChangesFragment();
+            setSettingsFragment();
         }
     }
 
@@ -165,8 +165,8 @@ public class MainActivity extends AppCompatActivity {
                         createDrawerItem(R.string.all_categories_drawer, DRAWER_ALL_CATEGORIES, R.drawable.ic_file_document_white_48dp, R.drawable.ic_document_selected),
                         createDrawerItem(R.string.favorite_drawer, DRAWER_FAVORITE, R.drawable.ic_star_outline_white_48dp, R.drawable.ic_star_outline_selected),
                         createDrawerItem(R.string.recent_changes_drawer, DRAWER_RECENT_CHANGES, R.drawable.ic_new_releases_white_48dp, R.drawable.ic_new_selected),
-                        createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT, R.drawable.ic_search_white_48dp, R.drawable.ic_search_selected)
-                        //createDrawerItem(R.string.settings_drawer, DRAWER_SETTINGS_FRAGMENT, R.drawable.ic_settings_white_24dp, R.drawable.ic_settings_selected)
+                        createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT, R.drawable.ic_search_white_48dp, R.drawable.ic_search_selected),
+                        createDrawerItem(R.string.settings_drawer, DRAWER_SETTINGS_FRAGMENT, R.drawable.ic_settings_white_24dp, R.drawable.ic_settings_selected)
                 )
                 .withSelectedItem(drawerSelection)
                 .build();

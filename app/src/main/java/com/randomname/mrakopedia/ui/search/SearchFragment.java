@@ -16,7 +16,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MainActivity;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.search.Search;
@@ -62,6 +65,8 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
     private EndlessRecyclerOnScrollListener endlessListener;
 
+    private Tracker mTracker;
+
     public SearchFragment() {
     }
 
@@ -78,6 +83,9 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
         }
 
         ((MainActivity)getActivity()).registerForSearchListener(this);
+
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -110,6 +118,13 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
         searchResultsRecyclerView.addOnScrollListener(endlessListener);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
@@ -242,6 +257,12 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
             continueSearchSubscription.unsubscribe();
         }
         searchString = search;
+
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Search")
+                .setLabel(searchString)
+                .build());
     }
 
     private class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsAdapter.SearchResultViewHolder> {

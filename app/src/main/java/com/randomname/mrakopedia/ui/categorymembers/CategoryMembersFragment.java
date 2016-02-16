@@ -24,11 +24,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
@@ -96,6 +99,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
     private String categoryTitle;
     private int selectedPosition = 0;
 
+    private Tracker mTracker;
+
     public CategoryMembersFragment() {}
 
     public static CategoryMembersFragment getInstance(String categoryTitle) {
@@ -128,6 +133,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 categoryTitle = title;
             }
         }
+
+        MrakopediaApplication application = (MrakopediaApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -222,6 +230,13 @@ public class CategoryMembersFragment extends RxBaseFragment {
         if (adapter.getDescriptionCount() <= 2) {
             getCategoryDescriptionByNetwork();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG + " " +categoryTitle);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     private void loadCategoryMembers() {

@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MainActivity;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
@@ -55,6 +58,8 @@ public class AllCategoriesFragment extends RxBaseFragment {
     private String continueString = "";
     private boolean isLoading = false;
 
+    private Tracker mTracker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +68,9 @@ public class AllCategoriesFragment extends RxBaseFragment {
         } else {
             resultArrayList = new ArrayList<>();
         }
+
+        MrakopediaApplication application = (MrakopediaApplication) getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -96,6 +104,13 @@ public class AllCategoriesFragment extends RxBaseFragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

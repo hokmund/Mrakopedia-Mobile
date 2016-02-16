@@ -11,6 +11,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 
 import java.util.ArrayList;
@@ -25,6 +28,8 @@ public class FullScreenPhotoFragmentHost extends Fragment {
     public final static String PHOTOS_ARRAY_KEY = "photos_array_key";
     public final static String POSITION_KEY = "position_key";
 
+    private static final String TAG = "FullScreenPhotoFragmentHost";
+
     private ArrayList<String> photosArrayList;
     private int position;
 
@@ -35,6 +40,8 @@ public class FullScreenPhotoFragmentHost extends Fragment {
 
     @Bind(R.id.main_layout)
     RelativeLayout mainLayout;
+
+    private Tracker mTracker;
 
     public FullScreenPhotoFragmentHost() {
     }
@@ -56,6 +63,9 @@ public class FullScreenPhotoFragmentHost extends Fragment {
         }
 
         position = getArguments().getInt(POSITION_KEY);
+
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -87,7 +97,12 @@ public class FullScreenPhotoFragmentHost extends Fragment {
         setNewTitle(position);
         return view;
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
 
     private void setNewTitle(int position) {
         if (photosArrayList.size() > 1) {

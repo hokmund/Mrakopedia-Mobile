@@ -13,11 +13,15 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MainActivity;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesFragment;
+import com.randomname.mrakopedia.utils.StringUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,6 +31,8 @@ import carbon.widget.RelativeLayout;
  * Created by vgrigoryev on 11.02.2016.
  */
 public class SettingsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+
+    private static final String TAG = "SettingsFragment";
 
     @Bind(R.id.caching_photo_switch)
     SwitchCompat cachingPhotoSwitch;
@@ -47,6 +53,15 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     @Bind(R.id.text_view)
     TextView colorSchemeTextView;
 
+    private Tracker mTracker;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.settings_fragment, null);
@@ -56,6 +71,14 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
 
     private void initUI() {
         cachingPagesSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isPagesCachingEnabled());
@@ -81,12 +104,31 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         switch (buttonView.getId()) {
             case R.id.caching_photo_switch:
                 SettingsWorker.getInstance(getActivity()).setIsPhotoCachingEnabled(isChecked);
+
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Caching photo switched")
+                        .setLabel(String.valueOf(isChecked))
+                        .build());
+
                 break;
             case R.id.caching_pages_switch:
                 SettingsWorker.getInstance(getActivity()).setIsPagesCachingEnabled(isChecked);
+
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("Caching pages switched")
+                        .setLabel(String.valueOf(isChecked))
+                        .build());
                 break;
             case R.id.keep_screen_on_switch:
                 SettingsWorker.getInstance(getActivity()).setKeepScreenOn(isChecked);
+
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("keep screen on switched")
+                        .setLabel(String.valueOf(isChecked))
+                        .build());
                 break;
             default:
                 break;

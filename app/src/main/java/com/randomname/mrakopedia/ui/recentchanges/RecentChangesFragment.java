@@ -13,7 +13,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MainActivity;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
@@ -62,6 +65,8 @@ public class RecentChangesFragment extends RxBaseFragment {
     @Bind(R.id.error_text_view)
     carbon.widget.TextView errorTextView;
 
+    private Tracker mTracker;
+
     public RecentChangesFragment () {
     }
 
@@ -80,6 +85,9 @@ public class RecentChangesFragment extends RxBaseFragment {
         } else {
             recentChangesArrayList = new ArrayList<>();
         }
+
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -119,6 +127,13 @@ public class RecentChangesFragment extends RxBaseFragment {
         }
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

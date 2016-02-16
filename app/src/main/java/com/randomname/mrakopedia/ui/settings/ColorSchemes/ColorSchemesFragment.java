@@ -17,7 +17,10 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.melnykov.fab.FloatingActionButton;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
@@ -41,6 +44,7 @@ import rx.functions.Func1;
  */
 public class ColorSchemesFragment extends RxBaseFragment {
 
+    private static final String TAG = "ColorSchemeFragment";
     private static final String PREVIEW_STRING = "<h1>Test header</h1> \n <p>test test </p> \n <a href=''>Link test</a>";
     private static final int COLOR_SCHEME_EDITOR_RESULT = 42;
 
@@ -62,7 +66,17 @@ public class ColorSchemesFragment extends RxBaseFragment {
     ColorSchemeAdapter adapter;
     ArrayList<ColorScheme> colorSchemes = new ArrayList<>();
 
+    private Tracker mTracker;
+
     private boolean animating = false;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -167,6 +181,13 @@ public class ColorSchemesFragment extends RxBaseFragment {
 
         loadColorSchemes();
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

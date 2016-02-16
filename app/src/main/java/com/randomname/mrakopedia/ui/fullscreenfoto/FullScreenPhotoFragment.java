@@ -14,9 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.TouchImageView;
@@ -33,12 +36,15 @@ import butterknife.OnClick;
 public class FullScreenPhotoFragment extends Fragment {
 
     public final static String IMAGE_URL_KEY = "imageUrlKey";
+    private final static String TAG = "FullScreenPhotoFragment";
 
     private String url = "";
     private long downloadId = -1;
 
     @Bind(R.id.full_screen_photo)
     TouchImageView imageView;
+
+    private Tracker mTracker;
 
     public FullScreenPhotoFragment() {
     }
@@ -54,6 +60,9 @@ public class FullScreenPhotoFragment extends Fragment {
         super.onCreate(savedInstanceState);
         url = getArguments().getString(IMAGE_URL_KEY);
         setHasOptionsMenu(true);
+
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -94,7 +103,20 @@ public class FullScreenPhotoFragment extends Fragment {
         return false;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG + " " + url);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
     private void savePhotoToDisc() {
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("Action")
+                .setAction("Save photo to disk")
+                .build());
+
+
         String title = System.currentTimeMillis() + ".jpg";
 
         File direct = new File(Environment.DIRECTORY_PICTURES

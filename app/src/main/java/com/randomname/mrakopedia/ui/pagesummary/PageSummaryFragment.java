@@ -30,6 +30,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
@@ -105,6 +108,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     private boolean isLoading = false;
     private boolean isOptionsShown = false;
 
+    private Tracker mTracker;
+
     @Bind(R.id.page_summary_recycler_view)
     SelectableRecyclerView recyclerView;
 
@@ -168,6 +173,9 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         pageIsFavorite = DBWorker.getPageIsFavorite(pageTitle);
         pageIsRead = DBWorker.getPageIsRead(pageTitle);
         setHasOptionsMenu(true);
+
+        MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
+        mTracker = application.getDefaultTracker();
     }
 
     @Override
@@ -388,6 +396,17 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         colorSchemeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (pageTitle != null) {
+            mTracker.setScreenName(TAG + " " + pageTitle);
+        } else {
+            mTracker.setScreenName(TAG);
+        }
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
