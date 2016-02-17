@@ -1,6 +1,7 @@
 package com.randomname.mrakopedia.ui.pagesummary;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -440,6 +441,11 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
     @Override
     public void onConnectedToInternet() {
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return pageTitle;
     }
 
     public void copySelectedText() {
@@ -1229,9 +1235,9 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     public boolean onBackPressed() {
         if (isOptionsShown) {
             closeOptions();
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

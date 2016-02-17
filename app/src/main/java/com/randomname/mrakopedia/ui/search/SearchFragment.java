@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.search;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -138,6 +139,16 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
     @Override
     public void onConnectedToInternet() {
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return context.getString(R.string.search_drawer);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 
     @Override

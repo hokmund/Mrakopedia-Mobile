@@ -1,9 +1,12 @@
 package com.randomname.mrakopedia;
 
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -11,12 +14,16 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.balysv.materialmenu.MaterialMenuDrawable;
+import com.balysv.materialmenu.extras.toolbar.MaterialMenuIconToolbar;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.nineoldandroids.animation.Animator;
+import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
 import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
@@ -33,7 +40,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import carbon.widget.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
@@ -42,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private final static String SETTINGS_FRAGMENT_TAG = "settingsFragmentTag";
 
     private final static String DRAWER_SELECTION_KEY = "drawerSelectionKey";
+    private final static String TITLE_KEY = "titleKey";
 
     private final int DRAWER_ALL_CATEGORIES = 0;
     private final int DRAWER_FAVORITE = 1;
@@ -67,17 +75,21 @@ public class MainActivity extends AppCompatActivity {
     View shadowView;
 
     private Drawer materialDrawer;
+    private MaterialMenuIconToolbar materialIcon;
+    private boolean isIconAnimating = false;
 
     @Override
     protected void onStart() {
         super.onStart();
         GoogleAnalytics.getInstance(this).reportActivityStart(this);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
 
     @Override
@@ -88,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             drawerSelection = savedInstanceState.getInt(DRAWER_SELECTION_KEY, 0);
+            setTitle(savedInstanceState.getString(TITLE_KEY));
         }
 
         initToolbar();
@@ -96,14 +109,22 @@ public class MainActivity extends AppCompatActivity {
         toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
-            setRecentChangesFragment();
+            setAllCategoriesFragment();
         }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(DRAWER_SELECTION_KEY, drawerSelection);
+        outState.putString(TITLE_KEY, getTitle().toString());
+        materialIcon.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        materialIcon.syncState(savedInstanceState);
     }
 
     @Override
@@ -112,6 +133,18 @@ public class MainActivity extends AppCompatActivity {
             materialDrawer.closeDrawer();
             return;
         }
+
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame);
+
+            if (fragment != null && fragment instanceof RxBaseFragment) {
+                if (!((RxBaseFragment) fragment).onBackPressed()) {
+                    super.onBackPressed();
+                }
+                return;
+            }
+        }
+
 
         if (mBackPressed + TIME_INTERVAL > System.currentTimeMillis()) {
             super.onBackPressed();
@@ -149,6 +182,50 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        materialIcon = new MaterialMenuIconToolbar(this, Color.WHITE, MaterialMenuDrawable.Stroke.THIN) {
+            @Override
+            public int getToolbarViewId() {
+                return R.id.toolbar;
+            }
+        };
+
+        materialIcon.setAnimationListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                isIconAnimating = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                isIconAnimating = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                isIconAnimating = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isIconAnimating) {
+                    return;
+                }
+
+                if (materialIcon.getState() == MaterialMenuDrawable.IconState.BURGER) {
+                    materialDrawer.openDrawer();
+                } else if (materialIcon.getState() == MaterialMenuDrawable.IconState.ARROW) {
+                    onBackPressed();
+                }
+            }
+        });
     }
 
     public void registerForSearchListener(SearchCallback searchCallback) {
@@ -171,7 +248,6 @@ public class MainActivity extends AppCompatActivity {
 
         materialDrawer = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
                 .withHeader(headerId)
                 .withSliderBackgroundColorRes(R.color.primary)
                 .addDrawerItems(
@@ -232,35 +308,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setAllCategoriesFragment() {
-        setTitle(R.string.all_categories_drawer);
         setDrawerFragment(new AllCategoriesFragment(), ALL_CATEGORIES_FRAGMENT_TAG);
     }
 
     private void setFavoriteFragment() {
-        setTitle(R.string.favorite_drawer);
         setDrawerFragment(new FavoriteFragment(), FAVORITE_FRAGMENT_TAG);
     }
 
     private void setRecentChangesFragment() {
-        setTitle(R.string.recent_changes_drawer);
         setDrawerFragment(new RecentChangesFragment(), RECENT_CHANGES_FRAGMENT_TAG);
     }
 
     private void setSearchFragment() {
-        setTitle(R.string.search_drawer);
         setDrawerFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG, true);
     }
 
     private void setSettingsFragment() {
-        setTitle(R.string.settings_drawer);
         setDrawerFragment(new SettingsFragment(), SETTINGS_FRAGMENT_TAG);
     }
 
-    private void setDrawerFragment(Fragment fragment, String tag) {
+    private void setDrawerFragment(RxBaseFragment fragment, String tag) {
         setDrawerFragment(fragment, tag, false);
     }
 
-    private void setDrawerFragment(Fragment fragment, String tag, Boolean isSearchViewOpen) {
+    private void setDrawerFragment(RxBaseFragment fragment, String tag, Boolean isSearchViewOpen) {
         Fragment frag = getSupportFragmentManager().findFragmentByTag(tag);
 
         toolbarContainer.setTranslationY(0);
@@ -278,9 +349,39 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        setTitle(fragment.getTitle(this));
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame, fragment, tag);
         fragmentTransaction.commit();
     }
 
+    public void addFragment(RxBaseFragment fragment) {
+        searchView.closeSearch();
+        toolbarContainer.setTranslationY(0);
+        toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
+
+        setTitle(fragment.getTitle(this));
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.main_frame, fragment, fragment.getClass().getName() + fragment.getTitle(this));
+        fragmentTransaction.addToBackStack(fragment.getClass().getName() + fragment.getTitle(this));
+        fragmentTransaction.commit();
+
+        materialIcon.animateState(MaterialMenuDrawable.IconState.ARROW);
+        materialDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame);
+
+        if (fragment instanceof RxBaseFragment) {
+            setTitle(((RxBaseFragment)fragment).getTitle(this));
+            fragment.onResume();
+        }
+
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            materialIcon.animateState(MaterialMenuDrawable.IconState.BURGER);
+            materialDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        }
+    }
 }

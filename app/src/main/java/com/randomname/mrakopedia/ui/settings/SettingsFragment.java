@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
+import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesFragment;
 import com.randomname.mrakopedia.utils.StringUtils;
@@ -31,7 +33,7 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by vgrigoryev on 11.02.2016.
  */
-public class SettingsFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
+public class SettingsFragment extends RxBaseFragment implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
 
     private static final String TAG = "SettingsFragment";
 
@@ -66,6 +68,21 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         super.onCreate(savedInstanceState);
         MrakopediaApplication application = (MrakopediaApplication)getActivity().getApplication();
         mTracker = application.getDefaultTracker();
+    }
+
+    @Override
+    public void onConnectedToInternet() {
+
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return context.getString(R.string.settings_drawer);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 
     @Override
@@ -187,7 +204,8 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     }
 
     private void showColorSchemes() {
-        Intent intent = new Intent(getActivity(), ColorSchemesActivity.class);
-        startActivity(intent);
+        /*Intent intent = new Intent(getActivity(), ColorSchemesActivity.class);
+        startActivity(intent);*/
+        ((MainActivity)getActivity()).addFragment(new ColorSchemesFragment());
     }
 }

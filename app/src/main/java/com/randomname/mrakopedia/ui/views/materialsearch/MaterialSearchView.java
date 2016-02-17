@@ -504,7 +504,6 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
         if (animate) {
             setVisibleWithAnimation();
-
         } else {
             mSearchLayout.setVisibility(VISIBLE);
             mSearchSrcTextView.requestFocus();

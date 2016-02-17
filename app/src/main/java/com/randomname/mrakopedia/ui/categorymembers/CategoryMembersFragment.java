@@ -31,6 +31,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
@@ -106,6 +107,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     public static CategoryMembersFragment getInstance(String categoryTitle) {
         CategoryMembersFragment fragment = new CategoryMembersFragment();
+        fragment.setCategoryTitle(categoryTitle);
+
         Bundle bundle = new Bundle();
         bundle.putString(CATEGORY_TITLE_KEY, categoryTitle);
         fragment.setArguments(bundle);
@@ -137,6 +140,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         MrakopediaApplication application = (MrakopediaApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
+    }
+
+    public void setCategoryTitle(String title) {
+        this.categoryTitle = title;
     }
 
     @Override
@@ -181,7 +188,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 loadCategoryMembers();
             }
         });
-        recyclerView.addOnScrollListener(((CategoryMembersActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
+        recyclerView.addOnScrollListener(((MainActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
 
         if (categorymembersArrayList.isEmpty()) {
             loadCategoryMembers();
@@ -240,6 +247,16 @@ public class CategoryMembersFragment extends RxBaseFragment {
         if (adapter.getDescriptionCount() <= 2) {
             getCategoryDescriptionByNetwork();
         }
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return categoryTitle;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 
     @Override

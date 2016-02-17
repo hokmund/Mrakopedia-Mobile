@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.recentchanges;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -258,6 +259,16 @@ public class RecentChangesFragment extends RxBaseFragment {
         if (adapter.getDisplayedData().isEmpty()) {
             getRecentChanges();
         }
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return context.getString(R.string.recent_changes_drawer);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 
     private void checkIfPageWasRead(final Recentchanges recentChange) {

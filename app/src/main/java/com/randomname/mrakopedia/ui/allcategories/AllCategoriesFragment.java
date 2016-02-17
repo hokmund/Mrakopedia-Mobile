@@ -1,5 +1,6 @@
 package com.randomname.mrakopedia.ui.allcategories;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,6 +25,7 @@ import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
+import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
@@ -84,9 +86,8 @@ public class AllCategoriesFragment extends RxBaseFragment {
             @Override
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v) - 1;
-                Intent intent = new Intent(getActivity(), CategoryMembersActivity.class);
-                intent.putExtra(CategoryMembersActivity.CATEGORY_NAME_EXTRA, adapter.getDisplayedData().get(position).getTitle());
-                startActivity(intent);
+                CategoryMembersFragment fragment = CategoryMembersFragment.getInstance(adapter.getDisplayedData().get(position).getTitle());
+                ((MainActivity)getActivity()).addFragment(fragment);
             }
         });
 
@@ -134,6 +135,16 @@ public class AllCategoriesFragment extends RxBaseFragment {
         if (adapter.getDisplayedData().size() <= 1) {
            loadCategoryMembersViaNetwork();
         }
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return context.getString(R.string.all_categories_drawer);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 
     private void loadCategoryMembersViaNetwork() {

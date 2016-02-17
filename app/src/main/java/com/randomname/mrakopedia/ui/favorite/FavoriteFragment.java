@@ -1,6 +1,7 @@
 package com.randomname.mrakopedia.ui.favorite;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -65,6 +66,16 @@ public class FavoriteFragment extends RxBaseFragment {
 
     @Override
     public void onConnectedToInternet() {
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        return context.getString(R.string.favorite_drawer);
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 
     @Override

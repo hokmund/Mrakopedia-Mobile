@@ -1,6 +1,7 @@
 package com.randomname.mrakopedia.ui.settings.ColorSchemes;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,9 +19,11 @@ import android.widget.RelativeLayout;
 import com.larswerkman.lobsterpicker.LobsterPicker;
 import com.larswerkman.lobsterpicker.sliders.LobsterOpacitySlider;
 import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
+import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 
 import butterknife.Bind;
@@ -31,7 +34,7 @@ import io.realm.Realm;
 /**
  * Created by vgrigoryev on 12.02.2016.
  */
-public class ColorSchemeEditorFragment extends Fragment {
+public class ColorSchemeEditorFragment extends RxBaseFragment {
 
     private static final String COLOR_SCHEME_ID_KEY = "colorSchemeIdKey";
 
@@ -99,6 +102,24 @@ public class ColorSchemeEditorFragment extends Fragment {
         }
 
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onConnectedToInternet() {
+    }
+
+    @Override
+    public String getTitle(Context context) {
+        if (colorScheme == null) {
+            return context.getString(R.string.create_color_scheme);
+        } else {
+            return context.getString(R.string.edit_color_scheme);
+        }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
     }
 
     @Override
@@ -174,8 +195,7 @@ public class ColorSchemeEditorFragment extends Fragment {
         realm.commitTransaction();
         realm.close();
 
-        getActivity().setResult(Activity.RESULT_OK);
-        getActivity().finish();
+        getActivity().onBackPressed();
     }
 
     @OnClick(R.id.background_color_scheme_layout)
