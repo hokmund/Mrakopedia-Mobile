@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
@@ -47,9 +49,11 @@ import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
+import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersFragment;
 import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeAdapter;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeEditorActivity;
+import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeEditorFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.StickySummaryDecoration;
@@ -144,6 +148,14 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
     public static PageSummaryFragment getInstance(String pageTitle, String pageId) {
         PageSummaryFragment fragment = new PageSummaryFragment();
+
+        if (pageTitle != null) {
+            pageTitle = pageTitle.replaceAll("_", " ");
+        }
+
+        fragment.setPageId(pageId);
+        fragment.setPageTitle(pageTitle);
+
         Bundle bundle = new Bundle();
         bundle.putString(PAGE_TITLE_KEY, pageTitle);
         bundle.putString(PAGE_ID_KEY, pageId);
@@ -179,6 +191,14 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         mTracker = application.getDefaultTracker();
     }
 
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
+    }
+
+    public void setPageTitle(String pageTitle) {
+        this.pageTitle = pageTitle;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.page_summary_fragment, null);
@@ -188,9 +208,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             @Override
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v);
-                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getText());
-                startActivity(intent);
+                ((MainActivity)getActivity()).addFragment(PageSummaryFragment.getInstance(adapter.getDisplayedData().get(position).getText().toString(), null));
             }
         }, new View.OnClickListener() {
             @Override
@@ -213,9 +231,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         }, new OnCategoryClickListener() {
             @Override
             public void OnCategoryClick(String categoryTitle) {
-                Intent intent = new Intent(getActivity(), CategoryMembersActivity.class);
-                intent.putExtra(CategoryMembersActivity.CATEGORY_NAME_EXTRA, categoryTitle);
-                startActivity(intent);
+                ((MainActivity)getActivity()).addFragment(CategoryMembersFragment.getInstance(categoryTitle));
             }
         });
 
@@ -228,12 +244,12 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         recyclerView.setSelectionCallback(new SelectionCallback() {
             @Override
             public void startSelection() {
-                ((PageSummaryActivity) getActivity()).startSelection();
+                ((MainActivity) getActivity()).startSelection();
             }
 
             @Override
             public void stopSelection() {
-                ((PageSummaryActivity) getActivity()).stopSelection();
+                ((MainActivity) getActivity()).stopSelection();
             }
         });
         recyclerView.setOnTouchListener(new View.OnTouchListener() {
@@ -250,7 +266,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         recyclerView.addItemDecoration(new StickySummaryDecoration(getActivity()));
 
 
-        recyclerView.addOnScrollListener(((PageSummaryActivity) getActivity()).toolbarHideListener);
+        recyclerView.addOnScrollListener(((MainActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
 
         if (adapter.getDisplayedData().size() <= 1) {
             if (DBWorker.isPageSummarySavedById(pageId) || DBWorker.isPageSummarySaved(pageTitle)) {
@@ -328,9 +344,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             @Override
             public boolean onLongClick(View v) {
                 int position = colorSchemeRecyclerView.getChildAdapterPosition(v);
-                Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
-                intent.putExtra(ColorSchemeEditorActivity.COLOR_SCHEME_ID, colorsList.get(position).getSchemeId());
-                startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
+                ((MainActivity)getActivity()).addFragment(ColorSchemeEditorFragment.getInstance(colorsList.get(position).getSchemeId()));
 
                 return true;
             }
@@ -413,30 +427,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             mTracker.setScreenName(TAG);
         }
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == COLOR_SCHEME_EDITOR_RESULT && resultCode == Activity.RESULT_OK) {
-            loadColorSchemes();
-
-            ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
-            getView().setBackgroundColor(colorScheme.getBackgroundColor());
-            adapter.notifyColorSchemeChanged(colorScheme);
-
-            for (int i = 0; i < recyclerView.getChildCount(); i++) {
-                View view = recyclerView.getChildAt(i);
-                View tv = view.findViewWithTag(getString(R.string.font_size_can_change_key));
-
-                if (tv != null) {
-                    ((TextView)tv).setTextColor(colorScheme.getTextColor());
-                    ((TextView)tv).setLinkTextColor(colorScheme.getLinkColor());
-                    ((SelectableTextView)tv).setColor(colorScheme.getSelectedColor());
-                }
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -463,6 +454,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (adapter.getDisplayedData().size() > 1) {
+            menu.clear();
             inflater.inflate(R.menu.menu_page_summary, menu);
 
             setMenuFavoriteStatus(menu.findItem(R.id.action_favorite_page));
@@ -503,8 +495,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
     @OnClick(R.id.add_color_scheme_button)
     public void addColorClick() {
-        Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
-        startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
+        ((MainActivity)getActivity()).addFragment(new ColorSchemeEditorFragment());
     }
 
     private void showOptions() {
@@ -1239,5 +1230,25 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         }
 
         return false;
+    }
+
+    @Override
+    public void onResumeFromBackStack() {
+        loadColorSchemes();
+
+        ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
+        getView().setBackgroundColor(colorScheme.getBackgroundColor());
+        adapter.notifyColorSchemeChanged(colorScheme);
+
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            View view = recyclerView.getChildAt(i);
+            View tv = view.findViewWithTag(getString(R.string.font_size_can_change_key));
+
+            if (tv != null) {
+                ((TextView)tv).setTextColor(colorScheme.getTextColor());
+                ((TextView)tv).setLinkTextColor(colorScheme.getLinkColor());
+                ((SelectableTextView)tv).setColor(colorScheme.getSelectedColor());
+            }
+        }
     }
 }

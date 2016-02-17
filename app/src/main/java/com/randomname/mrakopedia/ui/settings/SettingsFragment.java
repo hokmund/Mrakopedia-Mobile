@@ -86,6 +86,11 @@ public class SettingsFragment extends RxBaseFragment implements CompoundButton.O
     }
 
     @Override
+    public void onResumeFromBackStack() {
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.settings_fragment, null);
         ButterKnife.bind(this, view);

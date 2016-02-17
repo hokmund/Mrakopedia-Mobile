@@ -210,6 +210,11 @@ public class ColorSchemesFragment extends RxBaseFragment {
         return false;
     }
 
+    @Override
+    public void onResumeFromBackStack() {
+
+    }
+
     private void loadColorSchemes() {
         colorSchemes.clear();
         Subscription subscription =

@@ -24,6 +24,7 @@ import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 
 import java.util.ArrayList;
@@ -79,6 +80,11 @@ public class FavoriteFragment extends RxBaseFragment {
     }
 
     @Override
+    public void onResumeFromBackStack() {
+
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -106,11 +112,13 @@ public class FavoriteFragment extends RxBaseFragment {
                 int position = recyclerView.getChildAdapterPosition(v) - 1;
                 selectedPosition = position;
 
-                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getPageTitle());
-                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(position).getPageId());
+                PageSummaryFragment fragment = PageSummaryFragment
+                        .getInstance(
+                                adapter.getDisplayedData().get(position).getPageTitle(),
+                                adapter.getDisplayedData().get(position).getPageId()
+                        );
 
-                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
+                ((MainActivity)getActivity()).addFragment(fragment);
             }
         });
 
@@ -123,7 +131,7 @@ public class FavoriteFragment extends RxBaseFragment {
         }
 
         recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
+        recyclerView.addOnScrollListener(((MainActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
 
 
         new android.os.Handler().postDelayed(new Runnable() {
@@ -143,24 +151,18 @@ public class FavoriteFragment extends RxBaseFragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
-        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
+        if (adapter.getDisplayedData().size() > selectedPosition) {
             if (!adapter.getDisplayedData().get(selectedPosition).isFavorite()) {
                 adapter.getDisplayedData().remove(selectedPosition);
                 checkForEmpty();
             }
             adapter.notifyDataSetChanged();
         }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mTracker.setScreenName(TAG);
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     private void checkForEmpty() {

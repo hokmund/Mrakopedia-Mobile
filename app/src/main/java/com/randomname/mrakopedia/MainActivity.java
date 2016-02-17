@@ -11,6 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -26,21 +28,25 @@ import com.nineoldandroids.animation.Animator;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
 import com.randomname.mrakopedia.ui.favorite.FavoriteFragment;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
 import com.randomname.mrakopedia.ui.search.SearchCallback;
 import com.randomname.mrakopedia.ui.search.SearchFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsFragment;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
+import com.randomname.mrakopedia.ui.views.selection.SelectionCallback;
 import com.randomname.mrakopedia.utils.Utils;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import carbon.widget.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, SelectionCallback {
 
     private final static String ALL_CATEGORIES_FRAGMENT_TAG = "allCategoriesFragment";
     private final static String FAVORITE_FRAGMENT_TAG = "favoriteFragmentTag";
@@ -71,8 +77,12 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     RelativeLayout toolbarContainer;
     @Bind(R.id.search_view)
     MaterialSearchView searchView;
-    @Bind(R.id.shadow_view)
-    View shadowView;
+    @Bind(R.id.selection_container)
+    LinearLayout selectionContainer;
+    @Bind(R.id.selection_toolbar)
+    Toolbar selectionToolbar;
+
+    private boolean isSelectionMode = false;
 
     private Drawer materialDrawer;
     private MaterialMenuIconToolbar materialIcon;
@@ -111,6 +121,10 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         if (getSupportFragmentManager().getFragments() == null) {
             setAllCategoriesFragment();
         }
+
+        if (SettingsWorker.getInstance(this).isKeepScreenOn()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     @Override
@@ -131,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     public void onBackPressed() {
         if (materialDrawer.isDrawerOpen()) {
             materialDrawer.closeDrawer();
+            return;
+        }
+
+        if (isSelectionMode) {
+            stopSelection();
             return;
         }
 
@@ -226,6 +245,15 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                 }
             }
         });
+
+        selectionToolbar.setTitle("Копирование");
+        selectionToolbar.setNavigationIcon(R.drawable.ic_action_navigation_arrow_back_inverted);
+        selectionToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopSelection();
+            }
+        });
     }
 
     public void registerForSearchListener(SearchCallback searchCallback) {
@@ -258,6 +286,22 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
                         createDrawerItem(R.string.settings_drawer, DRAWER_SETTINGS_FRAGMENT, R.drawable.ic_settings_white_24dp, R.drawable.ic_settings_selected)
                 )
                 .withSelectedItem(drawerSelection)
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        searchView.clearFocus();
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+
+                    }
+
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                    }
+                })
                 .build();
 
         materialDrawer.setOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -338,11 +382,9 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
         toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
 
         if (isSearchViewOpen) {
-            searchView.showSearch(true);
-            shadowView.setVisibility(View.INVISIBLE);
+            searchView.showSearch(true, true);
         } else {
-            searchView.closeSearch();
-            shadowView.setVisibility(View.VISIBLE);
+            searchView.closeSearch(true);
         }
 
         if (frag != null) {
@@ -356,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
     }
 
     public void addFragment(RxBaseFragment fragment) {
-        searchView.closeSearch();
+        searchView.closeSearch(false);
         toolbarContainer.setTranslationY(0);
         toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
 
@@ -376,12 +418,49 @@ public class MainActivity extends AppCompatActivity implements FragmentManager.O
 
         if (fragment instanceof RxBaseFragment) {
             setTitle(((RxBaseFragment)fragment).getTitle(this));
-            fragment.onResume();
+            ((RxBaseFragment) fragment).onResumeFromBackStack();
         }
 
         if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             materialIcon.animateState(MaterialMenuDrawable.IconState.BURGER);
             materialDrawer.getDrawerLayout().setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
         }
+
+        toolbarContainer.setTranslationY(0);
+        toolbarHideRecyclerOnScrollListener.setVerticalOffset(0);
+    }
+
+    @Override
+    public void startSelection() {
+        Utils.setAlphaAnimation(selectionContainer, false);
+
+        isSelectionMode = true;
+    }
+
+    @Override
+    public void stopSelection() {
+        Utils.setAlphaAnimation(selectionContainer, true);
+
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame);
+
+        if (fragment instanceof PageSummaryFragment) {
+            ((PageSummaryFragment) fragment).cancelSelection();
+        }
+
+        isSelectionMode = false;
+    }
+
+    @OnClick(R.id.copy_btn)
+    public void copyBtnClick() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.main_frame);
+        if (fragment instanceof PageSummaryFragment) {
+            ((PageSummaryFragment) fragment).copySelectedText();
+        }
+
+        stopSelection();
+    }
+
+    public void showSearch(boolean clearText) {
+        searchView.showSearch(true, clearText);
     }
 }

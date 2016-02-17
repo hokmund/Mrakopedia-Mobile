@@ -38,11 +38,13 @@ import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
+import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
@@ -140,6 +142,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         MrakopediaApplication application = (MrakopediaApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
+
+        setHasOptionsMenu(true);
     }
 
     public void setCategoryTitle(String title) {
@@ -162,11 +166,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 }
 
                 selectedPosition = position;
-                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getTitle());
-                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(position).getPageid());
-
-                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
+                PageSummaryFragment fragment = PageSummaryFragment
+                        .getInstance(
+                                adapter.getDisplayedData().get(selectedPosition).getTitle(),
+                                adapter.getDisplayedData().get(selectedPosition).getPageid()
+                        );
+                ((MainActivity)getActivity()).addFragment(fragment);
             }
         });
 
@@ -206,22 +211,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_category_members, menu);
-
-        ((CategoryMembersActivity) getActivity()).setSearchMenuItem(menu.findItem(R.id.action_search));
-
+        menu.clear();
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE) {
-            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
-            adapter.notifyDataSetChanged();
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -260,10 +251,20 @@ public class CategoryMembersFragment extends RxBaseFragment {
     }
 
     @Override
+    public void onResumeFromBackStack() {
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mTracker.setScreenName(TAG + " " +categoryTitle);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        if (adapter.getDisplayedData().size() > selectedPosition) {
+            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
+            adapter.notifyDataSetChanged();
+        }
     }
 
     private void loadCategoryMembers() {

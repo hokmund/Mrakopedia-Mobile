@@ -26,6 +26,7 @@ import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.utils.NetworkUtils;
@@ -102,11 +103,13 @@ public class RecentChangesFragment extends RxBaseFragment {
             @Override
             public void onClick(View v) {
                 selectedPosition = recyclerView.getChildAdapterPosition(v) - 1;
-                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(selectedPosition).getTitle());
-                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(selectedPosition).getPageid());
+                ((MainActivity)getActivity())
+                        .addFragment(
+                                PageSummaryFragment.getInstance(
+                                        adapter.getDisplayedData().get(selectedPosition).getTitle(),
+                                        adapter.getDisplayedData().get(selectedPosition).getPageid()
+                                ));
 
-                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
 
@@ -146,6 +149,11 @@ public class RecentChangesFragment extends RxBaseFragment {
         super.onResume();
         mTracker.setScreenName(TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        if (adapter.getDisplayedData().size() > selectedPosition) {
+            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -154,16 +162,6 @@ public class RecentChangesFragment extends RxBaseFragment {
         outState.putString(CONTINUE_STRING_KEY, continueString);
         outState.putInt(SELECTED_POSITION_KEY, selectedPosition);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE) {
-            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
-            adapter.notifyDataSetChanged();
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void getRecentChanges() {
@@ -269,6 +267,11 @@ public class RecentChangesFragment extends RxBaseFragment {
     @Override
     public boolean onBackPressed() {
         return false;
+    }
+
+    @Override
+    public void onResumeFromBackStack() {
+
     }
 
     private void checkIfPageWasRead(final Recentchanges recentChange) {

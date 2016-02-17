@@ -222,7 +222,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
         public void onClick(View v) {
             if (v == mBackBtn) {
-                closeSearch();
+                closeSearch(true);
             } else if (v == mVoiceBtn) {
                 onVoiceClicked();
             } else if (v == mEmptyBtn) {
@@ -230,7 +230,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
             } else if (v == mSearchSrcTextView) {
                 showSuggestions();
             } else if (v == mTintView) {
-                closeSearch();
+                closeSearch(true);
             }
         }
     };
@@ -486,7 +486,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
      * Open Search View. This will animate the showing of the view.
      */
     public void showSearch() {
-        showSearch(true);
+        showSearch(true, true);
     }
 
     /**
@@ -494,19 +494,25 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
      *
      * @param animate
      */
-    public void showSearch(boolean animate) {
+    public void showSearch(boolean animate, boolean clearText) {
         if (isSearchOpen()) {
             return;
         }
 
-        //Request Focus
-        mSearchSrcTextView.setText(null);
+        if (clearText) {
+            //Request Focus
+            mSearchSrcTextView.setText(null);
+        }
 
         if (animate) {
             setVisibleWithAnimation();
         } else {
             mSearchLayout.setVisibility(VISIBLE);
-            mSearchSrcTextView.requestFocus();
+
+            if (clearText) {
+                mSearchSrcTextView.requestFocus();
+            }
+
             if (mSearchViewListener != null) {
                 mSearchViewListener.onSearchViewShown();
             }
@@ -549,10 +555,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         AnimationUtil.fadeInView(mSearchLayout, AnimationUtil.ANIMATION_DURATION_SHORT, animationListener);
     }
 
-    /**
-     * Close search view.
-     */
-    public void closeSearch() {
+    public void closeSearch(final boolean clearSearch) {
         if (!isSearchOpen()) {
             return;
         }
@@ -566,7 +569,9 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
             @Override
             public boolean onAnimationEnd(View view) {
-                mSearchSrcTextView.setText(null);
+                if (clearSearch) {
+                    mSearchSrcTextView.setText(null);
+                }
                 clearFocus();
                 return false;
             }
@@ -653,7 +658,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         mSavedState = (SavedState) state;
 
         if (mSavedState.isSearchOpen) {
-            showSearch(false);
+            showSearch(false, false);
             setQuery(mSavedState.query, false);
         }
 

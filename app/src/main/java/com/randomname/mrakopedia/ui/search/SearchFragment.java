@@ -28,6 +28,7 @@ import com.randomname.mrakopedia.models.api.search.SearchResult;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 
@@ -101,9 +102,12 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
             public void onClick(View v) {
                 int position = searchResultsRecyclerView.getChildAdapterPosition(v);
 
-                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, searchResultArrayList.get(position).getTitle());
-                startActivity(intent);
+                PageSummaryFragment fragment = PageSummaryFragment
+                        .getInstance(
+                            searchResultArrayList.get(position).getTitle(),
+                            null
+                        );
+                ((MainActivity)getActivity()).addFragment(fragment);
             }
         });
 
@@ -149,6 +153,11 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
     @Override
     public boolean onBackPressed() {
         return false;
+    }
+
+    @Override
+    public void onResumeFromBackStack() {
+        ((MainActivity)getActivity()).showSearch(false);
     }
 
     @Override

@@ -147,6 +147,11 @@ public class AllCategoriesFragment extends RxBaseFragment {
         return false;
     }
 
+    @Override
+    public void onResumeFromBackStack() {
+
+    }
+
     private void loadCategoryMembersViaNetwork() {
         if (continueString == null || isLoading) {
             return;

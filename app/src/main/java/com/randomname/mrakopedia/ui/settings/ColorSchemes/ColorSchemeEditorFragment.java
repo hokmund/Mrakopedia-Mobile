@@ -123,6 +123,11 @@ public class ColorSchemeEditorFragment extends RxBaseFragment {
     }
 
     @Override
+    public void onResumeFromBackStack() {
+
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.color_scheme_editor_fragment, null);
         ButterKnife.bind(this, view);
@@ -157,6 +162,7 @@ public class ColorSchemeEditorFragment extends RxBaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
         inflater.inflate(R.menu.menu_color_scheme_editor, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
