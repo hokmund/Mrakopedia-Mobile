@@ -18,10 +18,12 @@ import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 
 import java.util.ArrayList;
 
@@ -100,6 +102,15 @@ public class FavoriteFragment extends RxBaseFragment {
                 startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
+
+        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
+        if (settingsWorker.isUseSchemeOnAllScreens()) {
+            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
+            view.setBackgroundColor(colorScheme.getBackgroundColor());
+            adapter.setColorScheme(colorScheme);
+            errorTextView.setTextColor(colorScheme.getTextColor());
+        }
+
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
@@ -182,6 +193,7 @@ public class FavoriteFragment extends RxBaseFragment {
     private class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ArrayList<PageSummaryRealm> favoritePages;
         private View.OnClickListener onClickListener;
+        private ColorScheme colorScheme;
 
         private final static int LIST_ITEM_TYPE = 0;
         private final static int SPACER_ITEM_TYPE = 1;
@@ -193,6 +205,10 @@ public class FavoriteFragment extends RxBaseFragment {
 
         public ArrayList<PageSummaryRealm> getDisplayedData() {
             return favoritePages;
+        }
+
+        public void setColorScheme(ColorScheme colorScheme) {
+            this.colorScheme = colorScheme;
         }
 
         @Override
@@ -224,9 +240,11 @@ public class FavoriteFragment extends RxBaseFragment {
                 ((ViewHolder)holder).titleTextView.setText(favoritePages.get(position - 1).getPageTitle());
 
                 if (favoritePages.get(position - 1).isRead()) {
-                    ((ViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+                    int textColor = colorScheme == null ? getResources().getColor(R.color.colorPrimary) : colorScheme.getLinkColor();
+                    ((ViewHolder)holder).titleTextView.setTextColor(textColor);
                 } else {
-                    ((ViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
+                    int textColor = colorScheme == null ? getResources().getColor(R.color.textColorPrimary) : colorScheme.getTextColor();
+                    ((ViewHolder)holder).titleTextView.setTextColor(textColor);
                 }
             }
         }

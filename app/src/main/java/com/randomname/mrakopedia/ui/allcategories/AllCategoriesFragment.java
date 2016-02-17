@@ -20,9 +20,11 @@ import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.allcategories.AllCategoriesResult;
 import com.randomname.mrakopedia.models.api.allcategories.Allcategories;
 import com.randomname.mrakopedia.models.realm.CategoryRealm;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
@@ -87,6 +89,14 @@ public class AllCategoriesFragment extends RxBaseFragment {
                 startActivity(intent);
             }
         });
+
+        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
+        if (settingsWorker.isUseSchemeOnAllScreens()) {
+            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
+            view.setBackgroundColor(colorScheme.getBackgroundColor());
+            adapter.setColorScheme(colorScheme);
+            errorTextView.setTextColor(colorScheme.getTextColor());
+        }
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
@@ -272,6 +282,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
         private final static int SPACER_ITEM_TYPE = 1;
 
         private String[] pages = {"страница", "страницы", "страниц"};
+        private ColorScheme colorScheme;
 
         ArrayList<Allcategories> categoriesArrayList;
         View.OnClickListener onClickListener;
@@ -283,6 +294,9 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
         public ArrayList<Allcategories> getDisplayedData() {
             return categoriesArrayList;
+        }
+        public void setColorScheme(ColorScheme colorScheme) {
+            this.colorScheme = colorScheme;
         }
 
         @Override
@@ -325,8 +339,13 @@ public class AllCategoriesFragment extends RxBaseFragment {
                         .append(getString(R.string.in_this_category))
                         .toString();
 
-                        ((ViewHolder) holder).titleTextView.setText(category.getTitle());
+                ((ViewHolder) holder).titleTextView.setText(category.getTitle());
                 ((ViewHolder)holder).membersCountTextView.setText(categorySize);
+
+                if (colorScheme != null) {
+                    ((ViewHolder) holder).titleTextView.setTextColor(colorScheme.getTextColor());
+                    ((ViewHolder)holder).membersCountTextView.setTextColor(colorScheme.getTextColor());
+                }
             }
         }
 

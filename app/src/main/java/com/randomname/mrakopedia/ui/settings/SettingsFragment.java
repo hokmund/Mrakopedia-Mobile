@@ -26,6 +26,7 @@ import com.randomname.mrakopedia.utils.StringUtils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carbon.widget.RelativeLayout;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by vgrigoryev on 11.02.2016.
@@ -52,6 +53,11 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     View colorSchemeBackgroundColor;
     @Bind(R.id.text_view)
     TextView colorSchemeTextView;
+    @Bind(R.id.use_scheme_on_all_screens_layout)
+    RelativeLayout useSchemeOnAllScreensLayout;
+    @Bind(R.id.use_scheme_on_all_screens_switch)
+    SwitchCompat useSchemeOnAllScreensSwitch;
+
 
     private Tracker mTracker;
 
@@ -77,6 +83,8 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         super.onResume();
         mTracker.setScreenName(TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+        updateUi();
     }
 
 
@@ -84,16 +92,26 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         cachingPagesSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isPagesCachingEnabled());
         cachingPhotoSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isPhotoCachingEnabled());
         keepScreenOnSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isKeepScreenOn());
+        useSchemeOnAllScreensSwitch.setChecked(SettingsWorker.getInstance(getActivity()).isUseSchemeOnAllScreens());
 
         cachingPagesSwitch.setOnCheckedChangeListener(this);
         cachingPhotoSwitch.setOnCheckedChangeListener(this);
         keepScreenOnSwitch.setOnCheckedChangeListener(this);
+        useSchemeOnAllScreensSwitch.setOnCheckedChangeListener(this);
 
         cachingPagesLayout.setOnClickListener(this);
         cachingPhotoLayout.setOnClickListener(this);
         keepScreenOnLayout.setOnClickListener(this);
         currentColorSchemeLayout.setOnClickListener(this);
+        useSchemeOnAllScreensLayout.setOnClickListener(this);
 
+        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
+        ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
+        colorSchemeBackgroundColor.setBackgroundColor(colorScheme.getBackgroundColor());
+        colorSchemeTextView.setTextColor(colorScheme.getTextColor());
+    }
+
+    private void updateUi() {
         ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
         colorSchemeBackgroundColor.setBackgroundColor(colorScheme.getBackgroundColor());
         colorSchemeTextView.setTextColor(colorScheme.getTextColor());
@@ -130,6 +148,16 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
                         .setLabel(String.valueOf(isChecked))
                         .build());
                 break;
+            case R.id.use_scheme_on_all_screens_switch:
+                SettingsWorker.getInstance(getActivity()).setUseSchemeOnAllScreens(isChecked);
+
+                mTracker.send(new HitBuilders.EventBuilder()
+                        .setCategory("Action")
+                        .setAction("use scheme on all screens switched")
+                        .setLabel(String.valueOf(isChecked))
+                        .build());
+
+                break;
             default:
                 break;
         }
@@ -151,6 +179,8 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             case R.id.current_color_scheme_layout:
                 showColorSchemes();
                 break;
+            case R.id.use_scheme_on_all_screens_layout:
+                useSchemeOnAllScreensSwitch.setChecked(!useSchemeOnAllScreensSwitch.isChecked());
             default:
                 break;
         }

@@ -24,8 +24,10 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.search.Search;
 import com.randomname.mrakopedia.models.api.search.SearchResult;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 
 import java.util.ArrayList;
@@ -103,6 +105,13 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
                 startActivity(intent);
             }
         });
+
+        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
+        if (settingsWorker.isUseSchemeOnAllScreens()) {
+            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
+            view.setBackgroundColor(colorScheme.getBackgroundColor());
+            adapter.setColorScheme(colorScheme);
+        }
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
 
@@ -269,10 +278,15 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
         private ArrayList<Search> searchArrayList;
         private View.OnClickListener onClickListener;
+        private ColorScheme colorScheme;
 
         public SearchResultsAdapter(ArrayList<Search> searchArrayList, View.OnClickListener onClickListener) {
             this.searchArrayList = searchArrayList;
             this.onClickListener = onClickListener;
+        }
+
+        public void setColorScheme(ColorScheme colorScheme) {
+            this.colorScheme = colorScheme;
         }
 
         @Override
@@ -286,6 +300,10 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
         public void onBindViewHolder(SearchResultViewHolder holder, int position) {
             Search search = searchArrayList.get(position);
             holder.titleTextView.setText(search.getTitle());
+
+            if (colorScheme != null) {
+                holder.titleTextView.setTextColor(colorScheme.getTextColor());
+            }
         }
 
         @Override

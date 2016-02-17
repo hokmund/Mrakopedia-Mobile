@@ -293,6 +293,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
         ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
         view.setBackgroundColor(colorScheme.getBackgroundColor());
+        errorTextView.setTextColor(colorScheme.getTextColor());
+        loadingProgressBar.setTint(colorScheme.getLinkColor());
 
         float currentFontSize = SettingsWorker.getInstance(getActivity()).getCurrentFontSize();
 
@@ -376,6 +378,8 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                 revealView.setBackgroundColor(colorScheme.getBackgroundColor());
                 revealView.setVisibility(View.VISIBLE);
+                errorTextView.setTextColor(colorScheme.getTextColor());
+                loadingProgressBar.setTint(colorScheme.getLinkColor());
 
                 animator.start();
 

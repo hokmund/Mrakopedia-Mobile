@@ -21,9 +21,11 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
 import com.randomname.mrakopedia.models.api.recentchanges.Recentchanges;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
+import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.Utils;
@@ -106,6 +108,15 @@ public class RecentChangesFragment extends RxBaseFragment {
                 startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
+
+        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
+        if (settingsWorker.isUseSchemeOnAllScreens()) {
+            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
+            view.setBackgroundColor(colorScheme.getBackgroundColor());
+            adapter.setColorScheme(colorScheme);
+            errorTextView.setTextColor(colorScheme.getTextColor());
+        }
+
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
@@ -301,6 +312,7 @@ public class RecentChangesFragment extends RxBaseFragment {
         private SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM");
 
         private ArrayList<Recentchanges> recentChangesArrayList;
+        private ColorScheme colorScheme;
 
         private View.OnClickListener onClickListener;
 
@@ -316,6 +328,10 @@ public class RecentChangesFragment extends RxBaseFragment {
 
         public ArrayList<Recentchanges> getDisplayedData() {
             return recentChangesArrayList;
+        }
+
+        public void setColorScheme(ColorScheme colorScheme) {
+            this.colorScheme = colorScheme;
         }
 
         @Override
@@ -363,9 +379,11 @@ public class RecentChangesFragment extends RxBaseFragment {
             }
 
             if (recentChangesArrayList.get(position - 1).isViewed()) {
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+                int textColor = colorScheme == null ? getResources().getColor(R.color.colorPrimary) : colorScheme.getLinkColor();
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
             } else {
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
+                int textColor = colorScheme == null ? getResources().getColor(R.color.textColorPrimary) : colorScheme.getTextColor();
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
             }
         }
 

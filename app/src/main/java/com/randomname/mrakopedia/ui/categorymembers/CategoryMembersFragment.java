@@ -38,6 +38,7 @@ import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescript
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
@@ -161,6 +162,15 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
+
+        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
+        if (settingsWorker.isUseSchemeOnAllScreens()) {
+            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
+            view.setBackgroundColor(colorScheme.getBackgroundColor());
+            adapter.setColorScheme(colorScheme);
+            errorTextView.setTextColor(colorScheme.getTextColor());
+            loadingProgressBar.setTint(colorScheme.getLinkColor());
+        }
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
@@ -676,6 +686,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private ArrayList<TextSection> descriptionSections;
 
         private DisplayImageOptions options;
+        private ColorScheme colorScheme;
 
         public void setFilter(String filter) {
             this.filter = filter;
@@ -713,6 +724,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
             notifyDataSetChanged();
             recyclerView.scrollToPosition(0);
+        }
+
+        public void setColorScheme(ColorScheme colorScheme) {
+            this.colorScheme = colorScheme;
         }
 
         public void addDescriptionSection(TextSection textSection) {
@@ -784,9 +799,11 @@ public class CategoryMembersFragment extends RxBaseFragment {
             ((ListItemViewHolder)holder).titleTextView.setText(categorymembersArrayList.get(position).getTitle());
 
             if (categorymembersArrayList.get(position).getIsViewed()) {
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+                int textColor = colorScheme == null ? getResources().getColor(R.color.colorPrimary) : colorScheme.getLinkColor();
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
             } else {
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
+                int textColor = colorScheme == null ? getResources().getColor(R.color.textColorPrimary) : colorScheme.getTextColor();
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
             }
         }
 
