@@ -143,6 +143,8 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
         mSearchTopBar = (RelativeLayout) mSearchLayout.findViewById(R.id.search_top_bar);
 
+        mSearchTopBar.setBackgroundResource(android.R.drawable.dialog_holo_light_frame);
+
         mSuggestionsListView = (ListView) mSearchLayout.findViewById(R.id.suggestion_list);
         mSearchSrcTextView = (EditText) mSearchLayout.findViewById(R.id.searchTextView);
         mBackBtn = (ImageButton) mSearchLayout.findViewById(R.id.action_up_btn);
@@ -222,7 +224,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
         public void onClick(View v) {
             if (v == mBackBtn) {
-                closeSearch(true);
+                closeSearch();
             } else if (v == mVoiceBtn) {
                 onVoiceClicked();
             } else if (v == mEmptyBtn) {
@@ -230,7 +232,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
             } else if (v == mSearchSrcTextView) {
                 showSuggestions();
             } else if (v == mTintView) {
-                closeSearch(true);
+                closeSearch();
             }
         }
     };
@@ -486,7 +488,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
      * Open Search View. This will animate the showing of the view.
      */
     public void showSearch() {
-        showSearch(true, true);
+        showSearch(true);
     }
 
     /**
@@ -494,25 +496,20 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
      *
      * @param animate
      */
-    public void showSearch(boolean animate, boolean clearText) {
+    public void showSearch(boolean animate) {
         if (isSearchOpen()) {
             return;
         }
 
-        if (clearText) {
-            //Request Focus
-            mSearchSrcTextView.setText(null);
-        }
+        //Request Focus
+        mSearchSrcTextView.setText(null);
 
         if (animate) {
             setVisibleWithAnimation();
+
         } else {
             mSearchLayout.setVisibility(VISIBLE);
-
-            if (clearText) {
-                mSearchSrcTextView.requestFocus();
-            }
-
+            mSearchSrcTextView.requestFocus();
             if (mSearchViewListener != null) {
                 mSearchViewListener.onSearchViewShown();
             }
@@ -555,7 +552,10 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         AnimationUtil.fadeInView(mSearchLayout, AnimationUtil.ANIMATION_DURATION_SHORT, animationListener);
     }
 
-    public void closeSearch(final boolean clearSearch) {
+    /**
+     * Close search view.
+     */
+    public void closeSearch() {
         if (!isSearchOpen()) {
             return;
         }
@@ -569,9 +569,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
             @Override
             public boolean onAnimationEnd(View view) {
-                if (clearSearch) {
-                    mSearchSrcTextView.setText(null);
-                }
+                mSearchSrcTextView.setText(null);
                 clearFocus();
                 return false;
             }
@@ -658,7 +656,7 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         mSavedState = (SavedState) state;
 
         if (mSavedState.isSearchOpen) {
-            showSearch(false, false);
+            showSearch(false);
             setQuery(mSavedState.query, false);
         }
 

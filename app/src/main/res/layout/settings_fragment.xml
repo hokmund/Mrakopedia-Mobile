@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/listColor"
     >
 
     <LinearLayout
@@ -35,7 +34,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
-                android:id="@+id/caching_photo_text_view"
                 />
 
             <android.support.v7.widget.SwitchCompat
@@ -71,7 +69,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
-                android:id="@+id/caching_pages_text_view"
                 />
 
             <android.support.v7.widget.SwitchCompat
@@ -107,7 +104,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
-                android:id="@+id/keep_screen_on_text_view"
                 />
 
             <android.support.v7.widget.SwitchCompat
@@ -143,7 +139,6 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_centerVertical="true"
-                android:id="@+id/current_color_scheme_text_view"
                 />
 
             <FrameLayout
@@ -157,46 +152,6 @@
                 >
                 <include layout="@layout/color_scheme_view_holder"/>
             </FrameLayout>
-
-        </carbon.widget.RelativeLayout>
-
-        <carbon.widget.RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:clickable="true"
-            app:carbon_rippleColor="#333333"
-            android:id="@+id/use_scheme_on_all_screens_layout"
-            >
-
-            <carbon.widget.TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:carbon_fontPath="carbon/Roboto-Regular.ttf"
-                android:textSize="14sp"
-                android:textColor="#D9000000"
-                android:text="@string/use_scheme_on_all_screens_option"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="16dp"
-                android:layout_marginStart="16dp"
-                android:layout_toLeftOf="@+id/use_scheme_on_all_screens_switch"
-                android:layout_toStartOf="@+id/use_scheme_on_all_screens_switch"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:id="@+id/use_scheme_on_all_screens_text_view"
-                />
-
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/use_scheme_on_all_screens_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="16dp"
-                android:layout_marginEnd="16dp"
-                />
 
         </carbon.widget.RelativeLayout>
 

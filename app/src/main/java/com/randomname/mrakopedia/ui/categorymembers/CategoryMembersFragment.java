@@ -31,20 +31,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.categorymembers.CategoryMembersResult;
 import com.randomname.mrakopedia.models.api.categorymembers.Categorymembers;
-import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
-import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
-import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
@@ -109,8 +105,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     public static CategoryMembersFragment getInstance(String categoryTitle) {
         CategoryMembersFragment fragment = new CategoryMembersFragment();
-        fragment.setCategoryTitle(categoryTitle);
-
         Bundle bundle = new Bundle();
         bundle.putString(CATEGORY_TITLE_KEY, categoryTitle);
         fragment.setArguments(bundle);
@@ -142,12 +136,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
         MrakopediaApplication application = (MrakopediaApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
-
-        setHasOptionsMenu(true);
-    }
-
-    public void setCategoryTitle(String title) {
-        this.categoryTitle = title;
     }
 
     @Override
@@ -166,23 +154,13 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 }
 
                 selectedPosition = position;
-                PageSummaryFragment fragment = PageSummaryFragment
-                        .getInstance(
-                                adapter.getDisplayedData().get(selectedPosition).getTitle(),
-                                adapter.getDisplayedData().get(selectedPosition).getPageid()
-                        );
-                ((MainActivity)getActivity()).addFragment(fragment);
+                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getTitle());
+                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(position).getPageid());
+
+                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
-
-        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
-        if (settingsWorker.isUseSchemeOnAllScreens()) {
-            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
-            view.setBackgroundColor(colorScheme.getBackgroundColor());
-            adapter.setColorScheme(colorScheme);
-            errorTextView.setTextColor(colorScheme.getTextColor());
-            loadingProgressBar.setTint(colorScheme.getLinkColor());
-        }
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
@@ -193,7 +171,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                 loadCategoryMembers();
             }
         });
-        recyclerView.addOnScrollListener(((MainActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
+        recyclerView.addOnScrollListener(((CategoryMembersActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
 
         if (categorymembersArrayList.isEmpty()) {
             loadCategoryMembers();
@@ -211,8 +189,22 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
+        inflater.inflate(R.menu.menu_category_members, menu);
+
+        ((CategoryMembersActivity) getActivity()).setSearchMenuItem(menu.findItem(R.id.action_search));
+
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE) {
+            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
+            adapter.notifyDataSetChanged();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -241,30 +233,10 @@ public class CategoryMembersFragment extends RxBaseFragment {
     }
 
     @Override
-    public String getTitle(Context context) {
-        return categoryTitle;
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public void onResumeFromBackStack() {
-
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         mTracker.setScreenName(TAG + " " +categoryTitle);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
-        if (adapter.getDisplayedData().size() > selectedPosition) {
-            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
-            adapter.notifyDataSetChanged();
-        }
     }
 
     private void loadCategoryMembers() {
@@ -704,7 +676,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
         private ArrayList<TextSection> descriptionSections;
 
         private DisplayImageOptions options;
-        private ColorScheme colorScheme;
 
         public void setFilter(String filter) {
             this.filter = filter;
@@ -742,10 +713,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
             notifyDataSetChanged();
             recyclerView.scrollToPosition(0);
-        }
-
-        public void setColorScheme(ColorScheme colorScheme) {
-            this.colorScheme = colorScheme;
         }
 
         public void addDescriptionSection(TextSection textSection) {
@@ -817,11 +784,9 @@ public class CategoryMembersFragment extends RxBaseFragment {
             ((ListItemViewHolder)holder).titleTextView.setText(categorymembersArrayList.get(position).getTitle());
 
             if (categorymembersArrayList.get(position).getIsViewed()) {
-                int textColor = colorScheme == null ? getResources().getColor(R.color.colorPrimary) : colorScheme.getLinkColor();
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
             } else {
-                int textColor = colorScheme == null ? getResources().getColor(R.color.textColorPrimary) : colorScheme.getTextColor();
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
             }
         }
 

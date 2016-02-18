@@ -1,7 +1,6 @@
 package com.randomname.mrakopedia.ui.settings.ColorSchemes;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -21,7 +20,6 @@ import android.widget.TextView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.melnykov.fab.FloatingActionButton;
-import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
@@ -150,7 +148,9 @@ public class ColorSchemesFragment extends RxBaseFragment {
             @Override
             public boolean onLongClick(View v) {
                 int position = colorSchemesRecyclerView.getChildAdapterPosition(v);
-                ((MainActivity)getActivity()).addFragment(ColorSchemeEditorFragment.getInstance(colorSchemes.get(position).getSchemeId()));
+                Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
+                intent.putExtra(ColorSchemeEditorActivity.COLOR_SCHEME_ID, colorSchemes.get(position).getSchemeId());
+                startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
                 return true;
             }
         });
@@ -174,7 +174,8 @@ public class ColorSchemesFragment extends RxBaseFragment {
         addActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity)getActivity()).addFragment(new ColorSchemeEditorFragment());
+                Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
+                startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
             }
         });
 
@@ -187,32 +188,24 @@ public class ColorSchemesFragment extends RxBaseFragment {
         super.onResume();
         mTracker.setScreenName(TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
 
-        loadColorSchemes();
-        ColorScheme currentScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == COLOR_SCHEME_EDITOR_RESULT && resultCode == Activity.RESULT_OK) {
+            loadColorSchemes();
+            ColorScheme currentScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
 
-        previewTextView.setTextColor(currentScheme.getTextColor());
-        previewTextView.setLinkTextColor(currentScheme.getLinkColor());
-        previewLayout.setBackgroundColor(currentScheme.getBackgroundColor());
+            previewTextView.setTextColor(currentScheme.getTextColor());
+            previewTextView.setLinkTextColor(currentScheme.getLinkColor());
+            previewLayout.setBackgroundColor(currentScheme.getBackgroundColor());
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onConnectedToInternet() {
-    }
-
-    @Override
-    public String getTitle(Context context) {
-        return context.getString(R.string.color_schemes_text);
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public void onResumeFromBackStack() {
-
     }
 
     private void loadColorSchemes() {

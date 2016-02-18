@@ -86,7 +86,7 @@ public class CategoryMembersActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (searchView.isSearchOpen()) {
-            searchView.closeSearch(true);
+            searchView.closeSearch();
         } else {
             super.onBackPressed();
         }

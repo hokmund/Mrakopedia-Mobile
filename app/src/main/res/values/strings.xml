@@ -19,7 +19,6 @@
     <string name="caching_pages_option">Кэшировать страницы</string>
     <string name="keep_screen_on_option">Не выключать экран при чтении</string>
     <string name="current_color_scheme">Текущая цветовая схема</string>
-    <string name="use_scheme_on_all_screens_option">Применять цветовую схему ко всем экранам</string>
 
     <string name="font_size_text">Размер шрифта</string>
     <string name="color_scheme_text">Цветовая схема</string>

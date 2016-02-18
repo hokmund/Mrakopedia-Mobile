@@ -21,7 +21,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
+        </activity>
+        <activity android:name=".ui.categorymembers.CategoryMembersActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -30,7 +31,8 @@
 
                 <data android:scheme="mrakopediaCategory" />
             </intent-filter>
-
+        </activity>
+        <activity android:name=".ui.pagesummary.PageSummaryActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -39,10 +41,6 @@
 
                 <data android:scheme="mrakopediaPage" />
             </intent-filter>
-        </activity>
-        <activity android:name=".ui.categorymembers.CategoryMembersActivity" >
-        </activity>
-        <activity android:name=".ui.pagesummary.PageSummaryActivity" >
         </activity>
         <activity android:name=".ui.fullscreenfoto.FullScreentFotoActivity" />
 

@@ -1,6 +1,5 @@
 package com.randomname.mrakopedia.ui.recentchanges;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,12 +21,9 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
 import com.randomname.mrakopedia.models.api.recentchanges.Recentchanges;
-import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
-import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
-import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.Utils;
@@ -103,24 +99,13 @@ public class RecentChangesFragment extends RxBaseFragment {
             @Override
             public void onClick(View v) {
                 selectedPosition = recyclerView.getChildAdapterPosition(v) - 1;
-                ((MainActivity)getActivity())
-                        .addFragment(
-                                PageSummaryFragment.getInstance(
-                                        adapter.getDisplayedData().get(selectedPosition).getTitle(),
-                                        adapter.getDisplayedData().get(selectedPosition).getPageid()
-                                ));
+                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(selectedPosition).getTitle());
+                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(selectedPosition).getPageid());
 
+                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
-
-        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
-        if (settingsWorker.isUseSchemeOnAllScreens()) {
-            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
-            view.setBackgroundColor(colorScheme.getBackgroundColor());
-            adapter.setColorScheme(colorScheme);
-            errorTextView.setTextColor(colorScheme.getTextColor());
-        }
-
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
@@ -149,11 +134,6 @@ public class RecentChangesFragment extends RxBaseFragment {
         super.onResume();
         mTracker.setScreenName(TAG);
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
-        if (adapter.getDisplayedData().size() > selectedPosition) {
-            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
-            adapter.notifyDataSetChanged();
-        }
     }
 
     @Override
@@ -162,6 +142,16 @@ public class RecentChangesFragment extends RxBaseFragment {
         outState.putString(CONTINUE_STRING_KEY, continueString);
         outState.putInt(SELECTED_POSITION_KEY, selectedPosition);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE) {
+            adapter.getDisplayedData().get(selectedPosition).setIsViewed(DBWorker.getPageIsRead(adapter.getDisplayedData().get(selectedPosition).getTitle()));
+            adapter.notifyDataSetChanged();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void getRecentChanges() {
@@ -259,21 +249,6 @@ public class RecentChangesFragment extends RxBaseFragment {
         }
     }
 
-    @Override
-    public String getTitle(Context context) {
-        return context.getString(R.string.recent_changes_drawer);
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public void onResumeFromBackStack() {
-
-    }
-
     private void checkIfPageWasRead(final Recentchanges recentChange) {
         Subscription subscription =
                 Observable.
@@ -326,7 +301,6 @@ public class RecentChangesFragment extends RxBaseFragment {
         private SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMMM");
 
         private ArrayList<Recentchanges> recentChangesArrayList;
-        private ColorScheme colorScheme;
 
         private View.OnClickListener onClickListener;
 
@@ -342,10 +316,6 @@ public class RecentChangesFragment extends RxBaseFragment {
 
         public ArrayList<Recentchanges> getDisplayedData() {
             return recentChangesArrayList;
-        }
-
-        public void setColorScheme(ColorScheme colorScheme) {
-            this.colorScheme = colorScheme;
         }
 
         @Override
@@ -393,11 +363,9 @@ public class RecentChangesFragment extends RxBaseFragment {
             }
 
             if (recentChangesArrayList.get(position - 1).isViewed()) {
-                int textColor = colorScheme == null ? getResources().getColor(R.color.colorPrimary) : colorScheme.getLinkColor();
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
             } else {
-                int textColor = colorScheme == null ? getResources().getColor(R.color.textColorPrimary) : colorScheme.getTextColor();
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(textColor);
+                ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
             }
         }
 

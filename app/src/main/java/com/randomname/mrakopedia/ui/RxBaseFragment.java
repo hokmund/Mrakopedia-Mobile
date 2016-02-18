@@ -1,6 +1,5 @@
 package com.randomname.mrakopedia.ui;
 
-import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -43,9 +42,6 @@ public abstract class RxBaseFragment extends Fragment {
     }
 
     public abstract void onConnectedToInternet();
-    public abstract String getTitle(Context context);
-    public abstract boolean onBackPressed();
-    public abstract void onResumeFromBackStack();
 
     @Override
     public void onDestroyView() {

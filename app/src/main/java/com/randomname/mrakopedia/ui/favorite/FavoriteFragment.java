@@ -1,7 +1,6 @@
 package com.randomname.mrakopedia.ui.favorite;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,13 +18,10 @@ import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
-import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
-import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 
 import java.util.ArrayList;
 
@@ -70,21 +66,6 @@ public class FavoriteFragment extends RxBaseFragment {
     }
 
     @Override
-    public String getTitle(Context context) {
-        return context.getString(R.string.favorite_drawer);
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public void onResumeFromBackStack() {
-
-    }
-
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -112,26 +93,15 @@ public class FavoriteFragment extends RxBaseFragment {
                 int position = recyclerView.getChildAdapterPosition(v) - 1;
                 selectedPosition = position;
 
-                PageSummaryFragment fragment = PageSummaryFragment
-                        .getInstance(
-                                adapter.getDisplayedData().get(position).getPageTitle(),
-                                adapter.getDisplayedData().get(position).getPageId()
-                        );
+                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getPageTitle());
+                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(position).getPageId());
 
-                ((MainActivity)getActivity()).addFragment(fragment);
+                startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
-
-        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
-        if (settingsWorker.isUseSchemeOnAllScreens()) {
-            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
-            view.setBackgroundColor(colorScheme.getBackgroundColor());
-            adapter.setColorScheme(colorScheme);
-            errorTextView.setTextColor(colorScheme.getTextColor());
-        }
-
         recyclerView.setAdapter(adapter);
-        recyclerView.addOnScrollListener(((MainActivity) getActivity()).toolbarHideRecyclerOnScrollListener);
+        recyclerView.addOnScrollListener(((MainActivity)getActivity()).toolbarHideRecyclerOnScrollListener);
 
 
         new android.os.Handler().postDelayed(new Runnable() {
@@ -151,18 +121,24 @@ public class FavoriteFragment extends RxBaseFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mTracker.setScreenName(TAG);
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (adapter.getDisplayedData().size() > selectedPosition) {
+        if (requestCode == PAGE_SUMMARY_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
             if (!adapter.getDisplayedData().get(selectedPosition).isFavorite()) {
                 adapter.getDisplayedData().remove(selectedPosition);
                 checkForEmpty();
             }
             adapter.notifyDataSetChanged();
         }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mTracker.setScreenName(TAG);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     private void checkForEmpty() {
@@ -206,7 +182,6 @@ public class FavoriteFragment extends RxBaseFragment {
     private class FavoriteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private ArrayList<PageSummaryRealm> favoritePages;
         private View.OnClickListener onClickListener;
-        private ColorScheme colorScheme;
 
         private final static int LIST_ITEM_TYPE = 0;
         private final static int SPACER_ITEM_TYPE = 1;
@@ -218,10 +193,6 @@ public class FavoriteFragment extends RxBaseFragment {
 
         public ArrayList<PageSummaryRealm> getDisplayedData() {
             return favoritePages;
-        }
-
-        public void setColorScheme(ColorScheme colorScheme) {
-            this.colorScheme = colorScheme;
         }
 
         @Override
@@ -253,11 +224,9 @@ public class FavoriteFragment extends RxBaseFragment {
                 ((ViewHolder)holder).titleTextView.setText(favoritePages.get(position - 1).getPageTitle());
 
                 if (favoritePages.get(position - 1).isRead()) {
-                    int textColor = colorScheme == null ? getResources().getColor(R.color.colorPrimary) : colorScheme.getLinkColor();
-                    ((ViewHolder)holder).titleTextView.setTextColor(textColor);
+                    ((ViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
                 } else {
-                    int textColor = colorScheme == null ? getResources().getColor(R.color.textColorPrimary) : colorScheme.getTextColor();
-                    ((ViewHolder)holder).titleTextView.setTextColor(textColor);
+                    ((ViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
                 }
             }
         }

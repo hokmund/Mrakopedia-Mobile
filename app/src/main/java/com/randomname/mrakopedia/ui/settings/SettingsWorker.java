@@ -11,8 +11,6 @@ import com.randomname.mrakopedia.realm.DBWorker;
 
 import java.util.prefs.Preferences;
 
-import retrofit2.http.PUT;
-
 /**
  * Created by vgrigoryev on 11.02.2016.
  */
@@ -21,7 +19,6 @@ public class SettingsWorker {
     private static final String CACHING_PHOTO_ENABLED = "cachingPhotoEnabled";
     private static final String CACHING_PAGES_ENABLED = "cachingPagesEnabled";
     private static final String KEEP_SCREEN_ON = "keepScreenOn";
-    private static final String USE_SCHEME_ON_ALL_SCREENS = "useSchemeOnAllScreens";
     private static final String CURRENT_FONT_SIZE = "currentFontSize";
     private static final String CURRENT_COLOR_SCHEME = "currentColorScheme";
 
@@ -108,14 +105,6 @@ public class SettingsWorker {
 
     public boolean isKeepScreenOn() {
         return getBoolean(KEEP_SCREEN_ON);
-    }
-
-    public void setUseSchemeOnAllScreens(boolean useSchemeOnAllScreens) {
-        putBoolean(USE_SCHEME_ON_ALL_SCREENS, useSchemeOnAllScreens);
-    }
-
-    public boolean isUseSchemeOnAllScreens() {
-        return getBoolean(USE_SCHEME_ON_ALL_SCREENS);
     }
 
     public void setCurrentColorScheme(ColorScheme colorScheme) {

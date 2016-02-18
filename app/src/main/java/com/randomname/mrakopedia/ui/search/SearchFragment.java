@@ -1,6 +1,5 @@
 package com.randomname.mrakopedia.ui.search;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,11 +24,8 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
 import com.randomname.mrakopedia.models.api.search.Search;
 import com.randomname.mrakopedia.models.api.search.SearchResult;
-import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
-import com.randomname.mrakopedia.ui.pagesummary.PageSummaryFragment;
-import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 
 import java.util.ArrayList;
@@ -102,21 +98,11 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
             public void onClick(View v) {
                 int position = searchResultsRecyclerView.getChildAdapterPosition(v);
 
-                PageSummaryFragment fragment = PageSummaryFragment
-                        .getInstance(
-                            searchResultArrayList.get(position).getTitle(),
-                            null
-                        );
-                ((MainActivity)getActivity()).addFragment(fragment);
+                Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, searchResultArrayList.get(position).getTitle());
+                startActivity(intent);
             }
         });
-
-        SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
-        if (settingsWorker.isUseSchemeOnAllScreens()) {
-            ColorScheme colorScheme = settingsWorker.getCurrentColorScheme();
-            view.setBackgroundColor(colorScheme.getBackgroundColor());
-            adapter.setColorScheme(colorScheme);
-        }
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
 
@@ -143,21 +129,6 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
     @Override
     public void onConnectedToInternet() {
-    }
-
-    @Override
-    public String getTitle(Context context) {
-        return context.getString(R.string.search_drawer);
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public void onResumeFromBackStack() {
-        ((MainActivity)getActivity()).showSearch(false);
     }
 
     @Override
@@ -298,15 +269,10 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
         private ArrayList<Search> searchArrayList;
         private View.OnClickListener onClickListener;
-        private ColorScheme colorScheme;
 
         public SearchResultsAdapter(ArrayList<Search> searchArrayList, View.OnClickListener onClickListener) {
             this.searchArrayList = searchArrayList;
             this.onClickListener = onClickListener;
-        }
-
-        public void setColorScheme(ColorScheme colorScheme) {
-            this.colorScheme = colorScheme;
         }
 
         @Override
@@ -320,10 +286,6 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
         public void onBindViewHolder(SearchResultViewHolder holder, int position) {
             Search search = searchArrayList.get(position);
             holder.titleTextView.setText(search.getTitle());
-
-            if (colorScheme != null) {
-                holder.titleTextView.setTextColor(colorScheme.getTextColor());
-            }
         }
 
         @Override
