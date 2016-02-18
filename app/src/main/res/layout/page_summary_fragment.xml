@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/listColor"
+    android:background="@color/iconsColor"
     >
 
     <carbon.widget.TextView
@@ -159,7 +159,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:background="@drawable/material_drawer_shadow_bottom"
+            android:background="@drawable/sm_bottomshadow"
             />
     </LinearLayout>
 

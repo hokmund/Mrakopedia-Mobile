@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout toolbarContainer;
     @Bind(R.id.search_view)
     MaterialSearchView searchView;
-    @Bind(R.id.shadow_view)
-    View shadowView;
 
     private Drawer materialDrawer;
 
@@ -184,6 +182,22 @@ public class MainActivity extends AppCompatActivity {
                         createDrawerItem(R.string.search_drawer, DRAWER_SEARCH_FRAGMENT, R.drawable.ic_search_white_48dp, R.drawable.ic_search_selected),
                         createDrawerItem(R.string.settings_drawer, DRAWER_SETTINGS_FRAGMENT, R.drawable.ic_settings_white_24dp, R.drawable.ic_settings_selected)
                 )
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View view) {
+                        searchView.clearFocus();
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View view) {
+
+                    }
+
+                    @Override
+                    public void onDrawerSlide(View view, float v) {
+
+                    }
+                })
                 .withSelectedItem(drawerSelection)
                 .build();
 
@@ -271,10 +285,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (isSearchViewOpen) {
             searchView.showSearch(true);
-            shadowView.setVisibility(View.INVISIBLE);
         } else {
             searchView.closeSearch();
-            shadowView.setVisibility(View.VISIBLE);
         }
 
         if (frag != null) {

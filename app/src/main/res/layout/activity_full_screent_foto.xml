@@ -16,7 +16,6 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
         style="@style/Widget.MyApp.ActionBar"
-        android:transitionName="actionBar"
         android:background="#80000000"
         />
 

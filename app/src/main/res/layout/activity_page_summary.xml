@@ -23,13 +23,12 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
             style="@style/Widget.MyApp.ActionBar"
-            android:transitionName="actionBar"
             />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:background="@drawable/material_drawer_shadow_bottom"
+            android:background="@drawable/sm_bottomshadow"
             android:layout_below="@id/toolbar"
             android:id="@+id/shadow_view"
             />
@@ -41,8 +40,6 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
         style="@style/Widget.MyApp.ActionBar"
-        android:elevation="4dp"
-        android:transitionName="actionBar"
         android:visibility="gone">
 
         <ImageButton
@@ -58,7 +55,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="3dp"
-        android:background="@drawable/material_drawer_shadow_bottom"
+        android:background="@drawable/sm_bottomshadow"
         android:layout_below="@id/copy_toolbar"
         android:id="@+id/shadow_view_copy"
         android:visibility="gone"
