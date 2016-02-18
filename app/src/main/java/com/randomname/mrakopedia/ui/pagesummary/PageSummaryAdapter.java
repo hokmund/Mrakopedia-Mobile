@@ -43,6 +43,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private View.OnClickListener imageClickListener;
     private OnCategoryClickListener categoryClickListener;
     private DisplayImageOptions options;
+    private DisplayImageOptions youtubeOptions;
     private ColorScheme colorScheme;
     private float fontSize = 14.0f;
 
@@ -63,6 +64,9 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         options = builder.build();
+
+        builder.showImageOnFail(R.drawable.youtube_stub_bg);
+        youtubeOptions = builder.build();
 
         if (sections.isEmpty()) {
             sections.add(new TextSection(TextSection.SPACER_TYPE, ""));
@@ -178,7 +182,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.YOUTUBE_TYPE:
                 ((YoutubeViewHolder)holder).thumbnailView.setImageResource(android.R.color.transparent);
                 String urlString = "http://img.youtube.com/vi/" + sections.get(position).getText()  + "/mqdefault.jpg";
-                ImageLoader.getInstance().displayImage(urlString, ((YoutubeViewHolder)holder).thumbnailView, options);
+                ImageLoader.getInstance().displayImage(urlString, ((YoutubeViewHolder)holder).thumbnailView, youtubeOptions);
 
                 ((YoutubeViewHolder)holder).thumbnailView.setOnClickListener(new View.OnClickListener() {
                     @Override

@@ -227,12 +227,12 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         recyclerView.setSelectionCallback(new SelectionCallback() {
             @Override
             public void startSelection() {
-                ((PageSummaryActivity) getActivity()).startSelection();
+                ((PageSummaryInterface) getActivity()).startSelection();
             }
 
             @Override
             public void stopSelection() {
-                ((PageSummaryActivity) getActivity()).stopSelection();
+                ((PageSummaryInterface) getActivity()).stopSelection();
             }
         });
         recyclerView.setOnTouchListener(new View.OnTouchListener() {
@@ -249,7 +249,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         recyclerView.addItemDecoration(new StickySummaryDecoration(getActivity()));
 
 
-        recyclerView.addOnScrollListener(((PageSummaryActivity) getActivity()).toolbarHideListener);
+        recyclerView.addOnScrollListener(((PageSummaryInterface) getActivity()).getToolbarHideListener());
 
         if (adapter.getDisplayedData().size() <= 1) {
             if (DBWorker.isPageSummarySavedById(pageId) || DBWorker.isPageSummarySaved(pageTitle)) {

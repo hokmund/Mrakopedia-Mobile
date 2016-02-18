@@ -24,7 +24,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class PageSummaryActivity extends AppCompatActivity {
+public class PageSummaryActivity extends AppCompatActivity implements  PageSummaryInterface{
 
     public static final String PAGE_NAME_EXTRA = "pageNameExtra";
     public static final String PAGE_ID_EXTRA = "pageIdExtra";
@@ -87,6 +87,7 @@ public class PageSummaryActivity extends AppCompatActivity {
         return ((ToolbarHideRecyclerOnScrollListener)toolbarHideListener).isHidden();
     }
 
+    @Override
     public void startSelection() {
         setAlphaAnimation(copyToolbar, false);
         setAlphaAnimation(shadowViewCopy, false);
@@ -94,12 +95,18 @@ public class PageSummaryActivity extends AppCompatActivity {
         isSelectedMode = true;
     }
 
+    @Override
     public void stopSelection() {
         setAlphaAnimation(copyToolbar, true);
         setAlphaAnimation(shadowViewCopy, true);
 
         fragment.cancelSelection();
         isSelectedMode = false;
+    }
+
+    @Override
+    public RecyclerView.OnScrollListener getToolbarHideListener() {
+        return toolbarHideListener;
     }
 
     private void setAlphaAnimation(final View view, final boolean hide) {
