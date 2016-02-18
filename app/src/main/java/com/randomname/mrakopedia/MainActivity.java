@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private final static String SETTINGS_FRAGMENT_TAG = "settingsFragmentTag";
 
     private final static String DRAWER_SELECTION_KEY = "drawerSelectionKey";
+    private final static String TITLE_KEY = "titleKey";
 
     private final int DRAWER_ALL_CATEGORIES = 0;
     private final int DRAWER_FAVORITE = 1;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             drawerSelection = savedInstanceState.getInt(DRAWER_SELECTION_KEY, 0);
+            setTitle(savedInstanceState.getString(TITLE_KEY, getString(R.string.app_name)));
         }
 
         initToolbar();
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(DRAWER_SELECTION_KEY, drawerSelection);
+        outState.putString(TITLE_KEY, getTitle().toString());
         super.onSaveInstanceState(outState);
     }
 
