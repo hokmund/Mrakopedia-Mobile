@@ -33,9 +33,11 @@ import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -75,7 +77,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.all_categories_fragment, null);
+        View view = inflater.inflate(R.layout.all_categories_fragment, container, false);
         ButterKnife.bind(this, view);
 
         adapter = new AllCategoriesAdapter(resultArrayList, new View.OnClickListener() {
@@ -137,24 +139,47 @@ public class AllCategoriesFragment extends RxBaseFragment {
                 MrakopediaApiWorker
                         .getInstance()
                         .getAllCategories(continueString)
-                        .map(new Func1<AllCategoriesResult, AllCategoriesResult>() {
+                        .doOnNext(new Action1<AllCategoriesResult>() {
                             @Override
-                            public AllCategoriesResult call(AllCategoriesResult allCategoriesResult) {
-                                ArrayList<Allcategories> allCategories = new ArrayList<>(Arrays.asList(allCategoriesResult.getQuery().getAllcategories()));
-
-                                for (Iterator<Allcategories> iterator = allCategories.iterator(); iterator.hasNext();) {
-                                    Allcategories category = iterator.next();
+                            public void call(AllCategoriesResult allCategoriesResult) {
+                                if (allCategoriesResult.getAccContinue() != null) {
+                                    continueString = allCategoriesResult.getAccContinue().getAccontinue();
+                                } else {
+                                    continueString = null;
                                 }
-                                allCategoriesResult.getQuery().setAllcategories(allCategories.toArray(new Allcategories[allCategories.size()]));
-                                return allCategoriesResult;
+                            }
+                        })
+                        .flatMap(new Func1<AllCategoriesResult, Observable<Allcategories>>() {
+                            @Override
+                            public Observable<Allcategories> call(AllCategoriesResult allCategoriesResult) {
+                                return Observable.from(allCategoriesResult.getQuery().getAllcategories());
+                            }
+                        })
+                        .filter(new Func1<Allcategories, Boolean>() {
+                            @Override
+                            public Boolean call(Allcategories allcategories) {
+                                for (String banString : Utils.categoriesBanList) {
+                                    if (allcategories.getTitle().toLowerCase().contains(banString.toLowerCase())) {
+                                        return false;
+                                    }
+                                }
+
+                                return true;
                             }
                         })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<AllCategoriesResult>() {
+                        .subscribe(new Subscriber<Allcategories>() {
                             @Override
                             public void onCompleted() {
+                                isLoading = false;
 
+                                loadCategoryMembersViaNetwork();
+
+                                if (recyclerView.getVisibility() != View.VISIBLE) {
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    errorTextView.setVisibility(View.GONE);
+                                }
                             }
 
                             @Override
@@ -172,37 +197,9 @@ public class AllCategoriesFragment extends RxBaseFragment {
                             }
 
                             @Override
-                            public void onNext(AllCategoriesResult allCategoriesResult) {
-                                if (allCategoriesResult.getAccContinue() != null) {
-                                    continueString = allCategoriesResult.getAccContinue().getAccontinue();
-                                } else {
-                                    continueString = null;
-                                }
-
-                                for (Allcategories category : allCategoriesResult.getQuery().getAllcategories()) {
-                                    boolean toSkip = false;
-
-                                    for (String banString : Utils.categoriesBanList) {
-                                        if (category.getTitle().contains(banString)) {
-                                            toSkip = true;
-                                            break;
-                                        }
-                                    }
-
-                                    if (!toSkip) {
-                                        adapter.getDisplayedData().add(category);
-                                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
-                                    }
-                                }
-
-                                isLoading = false;
-
-                                loadCategoryMembersViaNetwork();
-
-                                if (recyclerView.getVisibility() != View.VISIBLE) {
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    errorTextView.setVisibility(View.GONE);
-                                }
+                            public void onNext(Allcategories category) {
+                                adapter.getDisplayedData().add(category);
+                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
                             }
                         });
 
