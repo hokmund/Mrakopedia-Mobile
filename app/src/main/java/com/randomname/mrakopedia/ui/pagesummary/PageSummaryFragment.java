@@ -248,7 +248,6 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         });
         recyclerView.addItemDecoration(new StickySummaryDecoration(getActivity()));
 
-
         recyclerView.addOnScrollListener(((PageSummaryInterface) getActivity()).getToolbarHideListener());
 
         if (adapter.getDisplayedData().size() <= 1) {

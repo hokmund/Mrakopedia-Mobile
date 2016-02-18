@@ -32,6 +32,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
 import rx.Observable;
@@ -52,9 +53,6 @@ public class ColorSchemesFragment extends RxBaseFragment {
     RelativeLayout previewLayout;
     @Bind(R.id.preview_text_view)
     SelectableTextView previewTextView;
-
-    @Bind(R.id.add_action_button)
-    FloatingActionButton addActionButton;
 
     @Bind(R.id.reveal_view)
     RelativeLayout revealView;
@@ -171,14 +169,6 @@ public class ColorSchemesFragment extends RxBaseFragment {
         revealTextView.setTextColor(currentScheme.getTextColor());
         revealTextView.setLinkTextColor(currentScheme.getLinkColor());
 
-        addActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
-                startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
-            }
-        });
-
         loadColorSchemes();
         return view;
     }
@@ -237,5 +227,11 @@ public class ColorSchemesFragment extends RxBaseFragment {
 
         bindToLifecycle(subscription);
 
+    }
+
+    @OnClick(R.id.add_action_button)
+    public void onAddColorSchemeButtonClick() {
+        Intent intent = new Intent(getActivity(), ColorSchemeEditorActivity.class);
+        startActivityForResult(intent, COLOR_SCHEME_EDITOR_RESULT);
     }
 }
