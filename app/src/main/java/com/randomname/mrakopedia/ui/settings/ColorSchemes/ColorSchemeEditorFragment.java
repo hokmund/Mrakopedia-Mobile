@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import com.larswerkman.lobsterpicker.LobsterPicker;
 import com.larswerkman.lobsterpicker.sliders.LobsterOpacitySlider;
 import com.larswerkman.lobsterpicker.sliders.LobsterShadeSlider;
+import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
@@ -137,20 +138,23 @@ public class ColorSchemeEditorFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_color_scheme_editor, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save_scheme:
-                saveColorScheme();
-                return true;
-            default:
-                break;
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            if (item.getItemId() == R.id.action_save_scheme) {
+                View searchIcon = item.getActionView();
+                if (searchIcon != null) {
+                    searchIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            saveColorScheme();
+                        }
+                    });
+                }
+            }
         }
 
-        return super.onOptionsItemSelected(item);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void saveColorScheme() {

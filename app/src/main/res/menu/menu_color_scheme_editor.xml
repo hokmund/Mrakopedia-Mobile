@@ -7,5 +7,6 @@
         android:id="@+id/action_save_scheme"
         android:icon="@drawable/ic_save_white_24dp"
         app:showAsAction="ifRoom"
+        app:actionLayout="@layout/save_icon_action_layout"
         android:title="@string/action_save_scheme"/>
 </menu>

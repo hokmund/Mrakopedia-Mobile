@@ -138,14 +138,17 @@
                         android:layout_toLeftOf="@+id/add_color_scheme_button"
                         android:layout_toStartOf="@+id/add_color_scheme_button" />
 
-                    <ImageButton
+                    <carbon.widget.ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_add_white_24dp"
-                        android:background="@android:color/transparent"
+                        android:clickable="true"
+                        app:carbon_rippleColor="@color/ripple_color_alpha"
+                        app:carbon_cornerRadius="100dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentEnd="true"
+                        android:padding="10dp"
                         android:layout_marginRight="8dp"
                         android:layout_marginEnd="8dp"
                         android:id="@+id/add_color_scheme_button" />
