@@ -453,7 +453,6 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (adapter.getDisplayedData().size() > 1) {
             inflater.inflate(R.menu.menu_page_summary, menu);
-
             setMenuFavoriteStatus(menu.findItem(R.id.action_favorite_page));
             setMenuReadStatus(menu.findItem(R.id.action_read_page));
         }

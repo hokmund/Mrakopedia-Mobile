@@ -36,7 +36,7 @@ public class ColorSchemeEditorFragment extends Fragment {
 
     private static final String COLOR_SCHEME_ID_KEY = "colorSchemeIdKey";
 
-    private static final String PREVIEW_STRING = "<h1>Test header</h1> \n <p>test test </p> \n <a href=''>Link test</a>";
+    private static final String PREVIEW_STRING = "<h1>Заголовок</h1> \n <p>текст</p> \n <a href=''>ссылка</a>";
 
     private static final String BACKGROUND_COLOR_KEY = "backgroundColorKey";
     private static final String TEXT_COLOR_KEY = "textColorKey";

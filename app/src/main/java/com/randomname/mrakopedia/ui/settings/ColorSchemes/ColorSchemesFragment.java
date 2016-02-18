@@ -46,7 +46,7 @@ import rx.functions.Func1;
 public class ColorSchemesFragment extends RxBaseFragment {
 
     private static final String TAG = "ColorSchemeFragment";
-    private static final String PREVIEW_STRING = "<h1>Test header</h1> \n <p>test test </p> \n <a href=''>Link test</a>";
+    private static final String PREVIEW_STRING = "<h1>Заголовок</h1> \n <p>текст</p> \n <a href=''>ссылка</a>";
     private static final int COLOR_SCHEME_EDITOR_RESULT = 42;
 
     @Bind(R.id.preview_layout)
