@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final static String DRAWER_SELECTION_KEY = "drawerSelectionKey";
     private final static String TITLE_KEY = "titleKey";
+    private final static String SEARCH_VIEW_SHOULD_CLOSE_KEY = "searchViewShouldCloseKey";
 
     private final int DRAWER_ALL_CATEGORIES = 0;
     private final int DRAWER_FAVORITE = 1;
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout toolbarContainer;
     @Bind(R.id.search_view)
     MaterialSearchView searchView;
+
+    private boolean isSearchViewShouldClose = false;
 
     private Drawer materialDrawer;
 
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             drawerSelection = savedInstanceState.getInt(DRAWER_SELECTION_KEY, 0);
             setTitle(savedInstanceState.getString(TITLE_KEY, getString(R.string.app_name)));
+            isSearchViewShouldClose = savedInstanceState.getBoolean(SEARCH_VIEW_SHOULD_CLOSE_KEY);
         }
 
         initToolbar();
@@ -96,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
-            setRecentChangesFragment();
+            setAllCategoriesFragment();
         }
     }
 
@@ -104,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putInt(DRAWER_SELECTION_KEY, drawerSelection);
         outState.putString(TITLE_KEY, getTitle().toString());
+        outState.putBoolean(SEARCH_VIEW_SHOULD_CLOSE_KEY, isSearchViewShouldClose);
         super.onSaveInstanceState(outState);
     }
 
@@ -111,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (materialDrawer.isDrawerOpen()) {
             materialDrawer.closeDrawer();
+            return;
+        }
+
+        if (isSearchViewShouldClose && searchView.isSearchOpen()) {
+            searchView.closeSearch();
             return;
         }
 
@@ -126,12 +137,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
-        searchView.setUpButtonIcon(R.drawable.ic_menu_black_24dp);
         searchView.setUpButtonListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!materialDrawer.isDrawerOpen()) {
-                    materialDrawer.openDrawer();
+                if (isSearchViewShouldClose) {
+                    searchView.closeSearch();
+                } else {
+                    materialDrawer.closeDrawer();
                 }
             }
         });
@@ -250,6 +262,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setAllCategoriesFragment() {
         setTitle(R.string.all_categories_drawer);
+        searchView.setUpButtonIcon(R.drawable.ic_action_navigation_arrow_back);
+        isSearchViewShouldClose = true;
         setDrawerFragment(new AllCategoriesFragment(), ALL_CATEGORIES_FRAGMENT_TAG);
     }
 
@@ -265,6 +279,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setSearchFragment() {
         setTitle(R.string.search_drawer);
+        searchView.setUpButtonIcon(R.drawable.ic_menu_black_24dp);
+        isSearchViewShouldClose = false;
         setDrawerFragment(new SearchFragment(), SEARCH_FRAGMENT_TAG, true);
     }
 
@@ -296,6 +312,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.main_frame, fragment, tag);
         fragmentTransaction.commit();
+        invalidateOptionsMenu();
+    }
+
+    public void setSearchViewMenuItem(MenuItem menuItem) {
+        searchView.setMenuItem(menuItem);
     }
 
 }

@@ -6,6 +6,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -23,6 +25,7 @@ import com.randomname.mrakopedia.models.realm.CategoryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.categorymembers.CategoryMembersActivity;
+import com.randomname.mrakopedia.ui.search.SearchCallback;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
@@ -44,7 +47,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by vgrigoryev on 20.01.2016.
  */
-public class AllCategoriesFragment extends RxBaseFragment {
+public class AllCategoriesFragment extends RxBaseFragment implements SearchCallback {
 
     private static final String TAG = "AllCategoriesFragment";
     private static final String RESULT_ARRAY_LIST_KEY = "resultArrayListKey";
@@ -56,6 +59,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
     private AllCategoriesAdapter adapter;
     private ArrayList<Allcategories> resultArrayList;
+    private ArrayList<Allcategories> copiedArrayList;
 
     private String continueString = "";
     private boolean isLoading = false;
@@ -67,12 +71,17 @@ public class AllCategoriesFragment extends RxBaseFragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             resultArrayList = savedInstanceState.getParcelableArrayList(RESULT_ARRAY_LIST_KEY);
+            copiedArrayList = new ArrayList<>(resultArrayList);
         } else {
             resultArrayList = new ArrayList<>();
+            copiedArrayList = new ArrayList<>();
         }
 
         MrakopediaApplication application = (MrakopediaApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
+
+        setHasOptionsMenu(true);
+        ((MainActivity)getActivity()).registerForSearchListener(this);
     }
 
     @Override
@@ -109,6 +118,21 @@ public class AllCategoriesFragment extends RxBaseFragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ((MainActivity)getActivity()).unregisterForSearchListener(this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_category_members, menu);
+
+        ((MainActivity) getActivity()).setSearchViewMenuItem(menu.findItem(R.id.action_search));
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mTracker.setScreenName(TAG);
@@ -117,13 +141,13 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(RESULT_ARRAY_LIST_KEY, resultArrayList);
+        outState.putParcelableArrayList(RESULT_ARRAY_LIST_KEY, copiedArrayList);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onConnectedToInternet() {
-        if (adapter.getDisplayedData().size() <= 1) {
+        if (resultArrayList.size() <= 1) {
            loadCategoryMembersViaNetwork();
         }
     }
@@ -199,6 +223,7 @@ public class AllCategoriesFragment extends RxBaseFragment {
                             @Override
                             public void onNext(Allcategories category) {
                                 adapter.getDisplayedData().add(category);
+                                copiedArrayList.add(category);
                                 adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
                             }
                         });
@@ -211,56 +236,90 @@ public class AllCategoriesFragment extends RxBaseFragment {
 
         Subscription getAllCategoriesSubscription =
                 DBWorker.getAllCategories()
-                .subscribe(new Subscriber<CategoryRealm>() {
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<CategoryRealm>() {
+                            @Override
+                            public void onCompleted() {
+                                if (adapter.getDisplayedData().size() <= 1) {
+                                    errorTextView.setVisibility(View.VISIBLE);
+
+                                    if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                        errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
+                                    }
+                                    recyclerView.setVisibility(View.GONE);
+                                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, e.toString());
+                                e.printStackTrace();
+
+
+                                if (adapter.getDisplayedData().size() <= 1) {
+                                    errorTextView.setVisibility(View.VISIBLE);
+
+                                    if (!NetworkUtils.isInternetAvailable(getActivity())) {
+                                        errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
+                                    }
+                                    recyclerView.setVisibility(View.GONE);
+                                }
+                            }
+
+                            @Override
+                            public void onNext(CategoryRealm categoryRealm) {
+                                if (categoryRealm.getCategoryMembersTitles().isEmpty()) {
+                                    return;
+                                }
+
+                                Allcategories category = new Allcategories();
+                                category.setFiles("");
+                                category.setPages(String.valueOf(categoryRealm.getCategoryMembersTitles().size()));
+                                category.setTitle(categoryRealm.getTitle());
+                                category.setSubcats("");
+                                category.setSize("");
+
+
+                                adapter.getDisplayedData().add(category);
+                                copiedArrayList.add(category);
+                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
+                            }
+                        });
+
+
+        bindToLifecycle(getAllCategoriesSubscription);
+    }
+
+    @Override
+    public void onSearchChanged(final String search) {
+        resultArrayList.clear();
+        Subscription subscription =
+                Observable.from(copiedArrayList)
+                .filter(new Func1<Allcategories, Boolean>() {
+                    @Override
+                    public Boolean call(Allcategories allcategories) {
+                        return allcategories.getTitle().toLowerCase().contains(search.toLowerCase());
+                    }
+                })
+                .subscribe(new Subscriber<Allcategories>() {
                     @Override
                     public void onCompleted() {
-                        if (adapter.getDisplayedData().size() <= 1) {
-                            errorTextView.setVisibility(View.VISIBLE);
-
-                            if (!NetworkUtils.isInternetAvailable(getActivity())) {
-                                errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
-                            }
-                            recyclerView.setVisibility(View.GONE);
-                        }
+                        adapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, e.toString());
-                        e.printStackTrace();
 
-
-                        if (adapter.getDisplayedData().size() <= 1) {
-                            errorTextView.setVisibility(View.VISIBLE);
-
-                            if (!NetworkUtils.isInternetAvailable(getActivity())) {
-                                errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
-                            }
-                            recyclerView.setVisibility(View.GONE);
-                        }
                     }
 
                     @Override
-                    public void onNext(CategoryRealm categoryRealm) {
-                        if (categoryRealm.getCategoryMembersTitles().isEmpty()) {
-                            return;
-                        }
-
-                        Allcategories category = new Allcategories();
-                        category.setFiles("");
-                        category.setPages(String.valueOf(categoryRealm.getCategoryMembersTitles().size()));
-                        category.setTitle(categoryRealm.getTitle());
-                        category.setSubcats("");
-                        category.setSize("");
-
-
-                        adapter.getDisplayedData().add(category);
-                        adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
+                    public void onNext(Allcategories allcategories) {
+                        resultArrayList.add(allcategories);
                     }
                 });
 
-
-        bindToLifecycle(getAllCategoriesSubscription);
+        bindToLifecycle(subscription);
     }
 
     private class AllCategoriesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
