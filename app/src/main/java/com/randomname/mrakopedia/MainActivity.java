@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
-            setRecentChangesFragment();
+            setAllCategoriesFragment();
         }
     }
 
@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 if (isSearchViewShouldClose) {
                     searchView.closeSearch();
                 } else {
-                    materialDrawer.closeDrawer();
+                    materialDrawer.openDrawer();
                 }
             }
         });

@@ -20,5 +20,8 @@
 -keep class io.realm.internal.Keep
 -keep @io.realm.internal.Keep class * { *; }
 -dontwarn javax.**
+-dontwarn rx**
+-dontwarn carbon**
+-dontwarn butterknife**
 -dontwarn io.realm.**
 -dontwarn com.squareup.okhttp.**

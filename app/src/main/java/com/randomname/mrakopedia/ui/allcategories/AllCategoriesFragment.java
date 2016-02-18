@@ -128,27 +128,19 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_category_members, menu);
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            if (item.getItemId() == R.id.action_search) {
-                View searchIcon = item.getActionView();
-                if (searchIcon != null) {
-                    searchIcon.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            ((MainActivity)getActivity()).openSearchView();
-                        }
-                    });
-                }
-            }
-        }
-
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                ((MainActivity)getActivity()).openSearchView();
+                return true;
+            default:
+                break;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

@@ -6,7 +6,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:clickable="true"
-    app:carbon_rippleColor="@color/ripple_color_alpha"
+    app:carbon_rippleColor="#333333"
     app:carbon_cornerRadius="100dp"
     >
 

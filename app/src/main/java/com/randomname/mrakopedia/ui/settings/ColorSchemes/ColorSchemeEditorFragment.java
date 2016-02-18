@@ -138,23 +138,20 @@ public class ColorSchemeEditorFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_color_scheme_editor, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            if (item.getItemId() == R.id.action_save_scheme) {
-                View searchIcon = item.getActionView();
-                if (searchIcon != null) {
-                    searchIcon.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            saveColorScheme();
-                        }
-                    });
-                }
-            }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save_scheme:
+                saveColorScheme();
+                return true;
+            default:
+                break;
         }
 
-        super.onCreateOptionsMenu(menu, inflater);
+        return super.onOptionsItemSelected(item);
     }
 
     private void saveColorScheme() {
