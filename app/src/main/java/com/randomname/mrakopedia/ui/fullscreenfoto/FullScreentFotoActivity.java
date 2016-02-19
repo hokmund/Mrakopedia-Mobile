@@ -7,18 +7,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.TextView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.utils.Utils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -119,31 +116,13 @@ public class FullScreentFotoActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
+        Utils.setRippleToToolbarIcon(toolbar, this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
         if (Utils.checkForLollipop()) {
             getWindow().setStatusBarColor(Color.BLACK);
-        }
-
-        TextView titleTextView = null;
-
-        try {
-            Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
-            f.setAccessible(true);
-            titleTextView = (TextView) f.get(toolbar);
-
-            titleTextView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-            titleTextView.setFocusable(true);
-            titleTextView.setFocusableInTouchMode(true);
-            titleTextView.requestFocus();
-            titleTextView.setSingleLine(true);
-            titleTextView.setSelected(true);
-            titleTextView.setMarqueeRepeatLimit(-1);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

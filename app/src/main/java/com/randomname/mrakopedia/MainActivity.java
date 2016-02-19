@@ -4,24 +4,16 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.randomname.mrakopedia.ui.allcategories.AllCategoriesFragment;
@@ -30,20 +22,14 @@ import com.randomname.mrakopedia.ui.recentchanges.RecentChangesFragment;
 import com.randomname.mrakopedia.ui.search.SearchCallback;
 import com.randomname.mrakopedia.ui.search.SearchFragment;
 import com.randomname.mrakopedia.ui.settings.SettingsFragment;
-import com.randomname.mrakopedia.ui.views.RippleImageButton;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
 import com.randomname.mrakopedia.utils.Utils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import carbon.drawable.RippleDrawable;
-import carbon.drawable.RippleDrawableCompat;
-import carbon.drawable.RippleDrawableLollipop;
-import carbon.widget.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -174,46 +160,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        TextView titleTextView = null;
-
-        try {
-            Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
-            f.setAccessible(true);
-            titleTextView = (TextView) f.get(toolbar);
-
-            titleTextView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-            titleTextView.setFocusable(true);
-            titleTextView.setFocusableInTouchMode(true);
-            titleTextView.requestFocus();
-            titleTextView.setSingleLine(true);
-            titleTextView.setSelected(true);
-            titleTextView.setMarqueeRepeatLimit(-1);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if(Build.VERSION.SDK_INT < 21) {
-
-            RippleImageButton rippleImageButton = null;
-
-            try {
-                Field f = toolbar.getClass().getDeclaredField("mNavButtonView");
-                f.setAccessible(true);
-
-                rippleImageButton = new RippleImageButton(this, null,
-                        android.support.v7.appcompat.R.attr.toolbarNavigationButtonStyle);
-                final Toolbar.LayoutParams lp = new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
-                lp.gravity = GravityCompat.START | (Gravity.TOP & Gravity.VERTICAL_GRAVITY_MASK);
-                rippleImageButton.setLayoutParams(lp);
-                rippleImageButton.setCornerRadius(100);
-                rippleImageButton.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                f.set(toolbar, rippleImageButton);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        Utils.setRippleToToolbarIcon(toolbar, this);
 
     }
 

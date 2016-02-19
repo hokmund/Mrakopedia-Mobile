@@ -5,17 +5,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
-
-import java.lang.reflect.Field;
+import com.randomname.mrakopedia.utils.Utils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -108,31 +105,13 @@ public class CategoryMembersActivity extends AppCompatActivity {
     }
 
     private void initToolbar(String categoryTitle) {
+        Utils.setRippleToToolbarIcon(toolbar, this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (categoryTitle != null) {
             getSupportActionBar().setTitle(categoryTitle);
         } else {
             getSupportActionBar().setTitle("");
-        }
-
-        TextView titleTextView = null;
-
-        try {
-            Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
-            f.setAccessible(true);
-            titleTextView = (TextView) f.get(toolbar);
-
-            titleTextView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
-            titleTextView.setFocusable(true);
-            titleTextView.setFocusableInTouchMode(true);
-            titleTextView.requestFocus();
-            titleTextView.setSingleLine(true);
-            titleTextView.setSelected(true);
-            titleTextView.setMarqueeRepeatLimit(-1);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,6 +19,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
+import com.randomname.mrakopedia.utils.Utils;
 
 import java.lang.reflect.Field;
 
@@ -178,6 +177,7 @@ public class PageSummaryActivity extends AppCompatActivity implements  PageSumma
     }
 
     private void initToolbar(String categoryTitle) {
+        Utils.setRippleToToolbarIcon(toolbar, this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (categoryTitle != null) {
