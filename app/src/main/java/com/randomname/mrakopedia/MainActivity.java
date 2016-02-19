@@ -6,10 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -28,6 +30,7 @@ import com.randomname.mrakopedia.ui.views.ToolbarHideRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.materialsearch.MaterialSearchView;
 import com.randomname.mrakopedia.utils.Utils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -162,6 +165,25 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        TextView titleTextView = null;
+
+        try {
+            Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
+            f.setAccessible(true);
+            titleTextView = (TextView) f.get(toolbar);
+
+            titleTextView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+            titleTextView.setFocusable(true);
+            titleTextView.setFocusableInTouchMode(true);
+            titleTextView.requestFocus();
+            titleTextView.setSingleLine(true);
+            titleTextView.setSelected(true);
+            titleTextView.setMarqueeRepeatLimit(-1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void registerForSearchListener(SearchCallback searchCallback) {
