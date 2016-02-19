@@ -399,6 +399,14 @@ public class CategoryMembersFragment extends RxBaseFragment {
     }
 
     private void getCategoryDescriptionByNetwork() {
+
+        for (int i = 0; i < Utils.redirectCategoriesDescriptions.length; i++) {
+            if (Utils.redirectCategoriesDescriptions[i].equals(categoryTitle)) {
+                categoryTitle = Utils.redirectCategoriesDescriptionsTitles[i];
+                break;
+            }
+        }
+
         loadingProgressBar.setVisibility(View.VISIBLE);
         errorTextView.setVisibility(View.GONE);
         Subscription getCategoryDescriptionSubscription =
@@ -408,6 +416,14 @@ public class CategoryMembersFragment extends RxBaseFragment {
                         .map(new Func1<CategoryDescription, CategoryDescription>() {
                             @Override
                             public CategoryDescription call(CategoryDescription categoryDescription) {
+                                for (int i = 0; i < Utils.categoriesDescriptionsTitles.length; i++) {
+                                    if (Utils.categoriesDescriptionsTitles[i].equals(categoryTitle)) {
+                                        categoryDescription.getParse().getText().setText(Utils.categoryDescriptions[i]);
+                                        return categoryDescription;
+                                    }
+                                }
+
+
                                 if (categoryDescription.getParse() != null && categoryDescription.getParse().getText() != null && categoryDescription.getParse().getText().getText() != null) {
                                     Document doc = Jsoup.parse(categoryDescription.getParse().getText().getText());
 
@@ -479,7 +495,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             @Override
                             public CategoryDescription call(CategoryDescription categoryDescription) {
                                 splitTextAndImages(categoryDescription);
-
                                 return categoryDescription;
                             }
                         })
@@ -748,7 +763,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                     view.setOnClickListener(onClickListener);
                     return new ListItemViewHolder(view);
                 case TEXT_TYPE:
-                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_text_view, parent, false);
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.category_member_text_view, parent, false);
                     return new TextViewHolder(view);
                 case IMAGE_TYPE:
                     view = LayoutInflater.from(parent.getContext()).inflate(R.layout.page_summary_image_view, parent, false);

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    >
+
+    <com.randomname.mrakopedia.ui.views.selection.SelectableTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_view"
+        android:tag="@string/font_size_can_change_key"
+        android:textColor="#D9000000"
+        app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+        android:textSize="14sp"
+        android:layout_marginTop="8dp"
+        />
+
+</LinearLayout>
