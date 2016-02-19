@@ -8,6 +8,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="search_hint">Поиск</string>
+    <string name="nothing_found">Ничего не найдено</string>
 
     <string name="all_categories_drawer">Категории</string>
     <string name="favorite_drawer">Избранное</string>

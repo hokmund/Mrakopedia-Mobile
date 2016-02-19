@@ -27,6 +27,7 @@ import com.randomname.mrakopedia.models.api.search.SearchResult;
 import com.randomname.mrakopedia.ui.RxBaseFragment;
 import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
+import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 
 import java.util.ArrayList;
 
@@ -56,6 +57,8 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
     @Bind(R.id.search_recycler_view)
     RecyclerView searchResultsRecyclerView;
+    @Bind(R.id.nothing_found_text_view)
+    SelectableTextView nothingFoundTextView;
 
     ArrayList<Search> searchResultArrayList;
     SearchResultsAdapter adapter;
@@ -182,7 +185,9 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
                 .subscribe(new Subscriber<Search>() {
                     @Override
                     public void onCompleted() {
-
+                        if (searchResultArrayList.isEmpty()) {
+                            nothingFoundTextView.setVisibility(View.VISIBLE);
+                        }
                     }
 
                     @Override
@@ -193,6 +198,7 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
                     @Override
                     public void onNext(Search search) {
+                        nothingFoundTextView.setVisibility(View.GONE);
                         searchResultArrayList.add(search);
                         adapter.notifyItemInserted(searchResultArrayList.indexOf(search));
                     }

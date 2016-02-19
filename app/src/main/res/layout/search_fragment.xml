@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,4 +14,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-</LinearLayout>
+
+    <com.randomname.mrakopedia.ui.views.selection.SelectableTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nothing_found_text_view"
+        android:tag="@string/font_size_can_change_key"
+        android:textColor="#D9000000"
+        app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+        android:text="@string/nothing_found"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:gravity="center_horizontal"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>
