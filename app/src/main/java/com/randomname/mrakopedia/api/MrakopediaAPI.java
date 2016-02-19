@@ -51,9 +51,10 @@ public interface MrakopediaAPI {
     Observable<RecentChangesResult> getRecentChanges(
     );
 
-    @GET("api.php?action=query&format=json&continue=&list=search&srwhat=text&srlimit=50")
+    @GET("api.php?action=query&format=json&continue=&list=search&srlimit=50")
     Observable<SearchResult> search(
         @Query("srsearch") String searchString,
-        @Query("sroffset") String offset
+        @Query("sroffset") String offset,
+        @Query("srwhat") String whatToSearch
     );
 }

@@ -82,7 +82,11 @@ public class MrakopediaApiWorker {
         }
     }
 
-    public Observable<SearchResult> search(String searchString, String offset) {
-        return getMrakopediaAPI().search(searchString, offset);
+    public Observable<SearchResult> searchInText(String searchString, String offset) {
+        return getMrakopediaAPI().search(searchString, offset, "text");
+    }
+
+    public Observable<SearchResult> searchInTitle(String searchString, String offset) {
+        return getMrakopediaAPI().search(searchString, offset, "nearmatch");
     }
 }

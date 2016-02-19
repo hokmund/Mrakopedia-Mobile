@@ -155,7 +155,7 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
         subscription = MrakopediaApiWorker
                 .getInstance()
-                .search(searchString, "")
+                .searchInText(searchString, "")
                 .doOnNext(new Action1<SearchResult>() {
                     @Override
                     public void call(SearchResult searchResult) {
@@ -166,6 +166,7 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
                         }
                     }
                 })
+                .mergeWith(MrakopediaApiWorker.getInstance().searchInTitle(searchString, ""))
                 .flatMap(new Func1<SearchResult, Observable<Search>>() {
                     @Override
                     public Observable<Search> call(SearchResult searchResult) {
@@ -208,7 +209,7 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
         continueSearchSubscription = MrakopediaApiWorker
                 .getInstance()
-                .search(searchString, continueString)
+                .searchInText(searchString, continueString)
                 .doOnNext(new Action1<SearchResult>() {
                     @Override
                     public void call(SearchResult searchResult) {
