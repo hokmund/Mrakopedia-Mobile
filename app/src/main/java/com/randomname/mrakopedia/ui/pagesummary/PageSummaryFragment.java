@@ -455,6 +455,39 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             inflater.inflate(R.menu.menu_page_summary, menu);
             setMenuFavoriteStatus(menu.findItem(R.id.action_favorite_page));
             setMenuReadStatus(menu.findItem(R.id.action_read_page));
+
+
+
+            if(Build.VERSION.SDK_INT < 21) {
+                final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        View favoriteMenu = getActivity().findViewById(R.id.action_favorite_page);
+                        View readPage = getActivity().findViewById(R.id.action_read_page);
+                        View settingsAction = getActivity().findViewById(R.id.action_settings);
+
+                        if (favoriteMenu != null) {
+                            Utils.setRippleToMenuItem(favoriteMenu, getActivity());
+                        }
+
+                        if (readPage != null) {
+                            Utils.setRippleToMenuItem(readPage, getActivity());
+                        }
+
+                        if (settingsAction != null) {
+                            Utils.setRippleToMenuItem(settingsAction, getActivity());
+                        }
+
+
+                        if (Build.VERSION.SDK_INT < 16) {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                    }
+                });
+            }
         }
 
         super.onCreateOptionsMenu(menu, inflater);

@@ -2,6 +2,7 @@ package com.randomname.mrakopedia.ui.settings.ColorSchemes;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.RelativeLayout;
 
 import com.larswerkman.lobsterpicker.LobsterPicker;
@@ -23,6 +25,7 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
+import com.randomname.mrakopedia.utils.Utils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -138,6 +141,28 @@ public class ColorSchemeEditorFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_color_scheme_editor, menu);
+
+        if(Build.VERSION.SDK_INT < 21) {
+            final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    View menuButton = getActivity().findViewById(R.id.action_save_scheme);
+                    // This could be called when the button is not there yet, so we must test for null
+                    if (menuButton != null) {
+
+                        Utils.setRippleToMenuItem(menuButton, getActivity());
+
+                        if (Build.VERSION.SDK_INT < 16) {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                    }
+                }
+            });
+        }
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 

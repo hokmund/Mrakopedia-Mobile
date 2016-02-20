@@ -164,10 +164,14 @@ public class Utils {
                 }
         }
 
-        public static void setRippleToMenuItem(View menuButton, Context context) {
-                menuButton.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(context.getResources(), R.drawable.ripple, context.getTheme()));
-                ActionMenuView.LayoutParams params = (ActionMenuView.LayoutParams) menuButton.getLayoutParams();
-                params.width = menuButton.getHeight();
-                menuButton.setLayoutParams(params);
+    public static void setRippleToMenuItem(View menuButton, Context context) {
+        try {
+            menuButton.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(context.getResources(), R.drawable.ripple, context.getTheme()));
+            ActionMenuView.LayoutParams params = (ActionMenuView.LayoutParams) menuButton.getLayoutParams();
+            params.width = menuButton.getHeight();
+            menuButton.setLayoutParams(params);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 }
