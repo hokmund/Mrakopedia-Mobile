@@ -12,6 +12,7 @@ import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -172,6 +173,7 @@ public class Utils {
             menuButton.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("bla", "error");
         }
     }
 }
