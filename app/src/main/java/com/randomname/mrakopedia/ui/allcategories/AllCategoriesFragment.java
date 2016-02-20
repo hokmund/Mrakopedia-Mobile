@@ -1,7 +1,10 @@
 package com.randomname.mrakopedia.ui.allcategories;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.view.menu.ActionMenuItemView;
+import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,6 +15,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +42,10 @@ import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import carbon.drawable.RippleDrawable;
+import carbon.drawable.RippleDrawableCompat;
+import carbon.drawable.RippleDrawableLollipop;
+import codetail.graphics.drawables.LollipopDrawablesCompat;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -128,6 +136,28 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_category_members, menu);
+
+        if(Build.VERSION.SDK_INT < 21) {
+            final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    View menuButton = getActivity().findViewById(R.id.action_search);
+                    // This could be called when the button is not there yet, so we must test for null
+                    if (menuButton != null) {
+
+                        Utils.setRippleToMenuItem(menuButton, getActivity());
+
+                        if (Build.VERSION.SDK_INT < 16) {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+                    }
+                }
+            });
+        }
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
