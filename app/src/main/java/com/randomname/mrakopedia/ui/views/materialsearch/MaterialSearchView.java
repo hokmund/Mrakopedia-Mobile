@@ -34,10 +34,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.ui.views.RippleImageButton;
 import com.randomname.mrakopedia.ui.views.materialsearch.utils.AnimationUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
+
+import carbon.widget.ImageView;
 
 /**
  * Created by vgrigoryev on 26.01.2016.
@@ -55,9 +58,9 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
     private View mTintView;
     private ListView mSuggestionsListView;
     private EditText mSearchSrcTextView;
-    private ImageButton mBackBtn;
+    private RippleImageButton mBackBtn;
     private ImageButton mVoiceBtn;
-    private ImageButton mEmptyBtn;
+    private RippleImageButton mEmptyBtn;
     private RelativeLayout mSearchTopBar;
 
     private CharSequence mOldQueryText;
@@ -145,9 +148,9 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
         mSuggestionsListView = (ListView) mSearchLayout.findViewById(R.id.suggestion_list);
         mSearchSrcTextView = (EditText) mSearchLayout.findViewById(R.id.searchTextView);
-        mBackBtn = (ImageButton) mSearchLayout.findViewById(R.id.action_up_btn);
+        mBackBtn = (RippleImageButton) mSearchLayout.findViewById(R.id.action_up_btn);
         mVoiceBtn = (ImageButton) mSearchLayout.findViewById(R.id.action_voice_btn);
-        mEmptyBtn = (ImageButton) mSearchLayout.findViewById(R.id.action_empty_btn);
+        mEmptyBtn = (RippleImageButton) mSearchLayout.findViewById(R.id.action_empty_btn);
         mTintView = mSearchLayout.findViewById(R.id.transparent_view);
 
         mSearchSrcTextView.setOnClickListener(mOnClickListener);

@@ -46,12 +46,18 @@
                     android:textColorHint="#727272"
                     android:textSize="16sp" />
 
-                <ImageButton
+                <com.randomname.mrakopedia.ui.views.RippleImageButton
                     android:id="@+id/action_up_btn"
-                    style="@style/MSV_ImageButton"
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_action_navigation_arrow_back"
-                    android:background="@drawable/clear_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    app:carbon_rippleColor="@color/ripple_color_alpha"
+                    app:carbon_cornerRadius="100dp"
+                    android:background="@android:color/transparent"
+                    android:paddingLeft="@dimen/search_icon_padding"
+                    android:paddingRight="@dimen/search_icon_padding"
                     />
 
                 <ImageButton
@@ -60,12 +66,20 @@
                     android:layout_alignParentRight="true"
                     android:src="@drawable/ic_action_voice_search" />
 
-                <ImageButton
+                <com.randomname.mrakopedia.ui.views.RippleImageButton
                     android:id="@+id/action_empty_btn"
-                    style="@style/MSV_ImageButton"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/ic_action_navigation_close"
-                    android:visibility="gone" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:clickable="true"
+                    android:background="@android:color/transparent"
+                    app:carbon_rippleColor="@color/ripple_color_alpha"
+                    app:carbon_cornerRadius="100dp"
+                    android:visibility="gone"
+                    android:paddingLeft="@dimen/search_icon_padding"
+                    android:paddingRight="@dimen/search_icon_padding"
+                    />
 
                 <View
                     android:layout_width="match_parent"

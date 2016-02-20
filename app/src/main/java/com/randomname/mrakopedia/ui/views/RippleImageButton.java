@@ -108,20 +108,21 @@ public class RippleImageButton extends android.widget.ImageButton implements Sha
 
         this.setEnabled(a.getBoolean(carbon.R.styleable.ImageView_android_enabled, true));
         this.setCornerRadius((int)a.getDimension(carbon.R.styleable.ImageView_carbon_cornerRadius, 0.0F));
-        initRippleDrawable(this);
+        initRippleDrawable(this, attrs, defStyleAttr);
         Carbon.initAnimations(this, attrs, defStyleAttr);
         Carbon.initTouchMargin(this, attrs, defStyleAttr);
         Carbon.initTint(this, attrs, defStyleAttr);
         a.recycle();
     }
 
-    private void initRippleDrawable(RippleView rippleView) {
+    private void initRippleDrawable(RippleView rippleView, AttributeSet attrs, int defStyleAttr) {
         View view = (View)rippleView;
         if(!view.isInEditMode()) {
-            int color = getResources().getColor(android.support.v7.appcompat.R.color.ripple_material_dark);
+            TypedArray a = view.getContext().obtainStyledAttributes(attrs, carbon.R.styleable.Carbon, defStyleAttr, 0);
+            int color = a.getColor(carbon.R.styleable.Carbon_carbon_rippleColor, getResources().getColor(android.support.v7.appcompat.R.color.ripple_material_dark));
             if(color != 0) {
                 RippleDrawable.Style style = RippleDrawable.Style.Over;
-                boolean useHotspot = true;
+                boolean useHotspot = a.getBoolean(carbon.R.styleable.Carbon_carbon_rippleHotspot, true);
                 Object rippleDrawable;
                 if(Build.VERSION.SDK_INT >= 21) {
                     rippleDrawable = new RippleDrawableLollipop(color, style == RippleDrawable.Style.Background?view.getBackground():null, style);
@@ -133,6 +134,8 @@ public class RippleImageButton extends android.widget.ImageButton implements Sha
                 ((RippleDrawable)rippleDrawable).setHotspotEnabled(useHotspot);
                 rippleView.setRippleDrawable((RippleDrawable)rippleDrawable);
             }
+
+            a.recycle();
         }
     }
 
@@ -153,6 +156,46 @@ public class RippleImageButton extends android.widget.ImageButton implements Sha
         this.cornerRadius = cornerRadius;
         this.invalidateShadow();
         this.initCorners();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        Drawable d = getDrawable();
+        if (d == null) {
+            super.setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
+            return;
+        }
+
+        int imageHeight = d.getIntrinsicHeight();
+        int imageWidth = d.getIntrinsicWidth();
+
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+        float imageRatio = 0.0F;
+        if (imageHeight > 0) {
+            imageRatio = imageWidth / imageHeight;
+        }
+        float sizeRatio = 0.0F;
+        if (heightSize > 0) {
+            sizeRatio = widthSize / heightSize;
+        }
+
+        int width;
+        int height;
+        if (imageRatio >= sizeRatio) {
+            // set width to maximum allowed
+            width = widthSize;
+            // scale height
+            height = width * imageHeight / imageWidth;
+        } else {
+            // set height to maximum allowed
+            height = heightSize;
+            // scale width
+            width = height * imageWidth / imageHeight;
+        }
+
+        setMeasuredDimension(width, height);
     }
 
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
