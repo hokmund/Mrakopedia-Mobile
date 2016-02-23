@@ -32,7 +32,8 @@ public class CategoriesTextSection extends TextSection implements Parcelable {
 
     public CategoriesTextSection(Parcel in) {
         super(in);
-        categoriesArrayList = in.readArrayList(String.class.getClassLoader());
+        categoriesArrayList = new ArrayList<>();
+        in.readStringList(categoriesArrayList);
     }
 
     public ArrayList<String> getCategoriesArrayList() {
@@ -56,7 +57,7 @@ public class CategoriesTextSection extends TextSection implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeSerializable(categoriesArrayList);
+        dest.writeStringList(categoriesArrayList);
     }
 
     public static final Parcelable.Creator<CategoriesTextSection> CREATOR = new Parcelable.Creator<CategoriesTextSection>() {

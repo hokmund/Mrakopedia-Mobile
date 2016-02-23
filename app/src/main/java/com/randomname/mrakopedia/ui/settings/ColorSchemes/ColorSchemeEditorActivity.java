@@ -63,7 +63,6 @@ public class ColorSchemeEditorActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
-        Utils.setRippleToToolbarIcon(toolbar, this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -72,6 +71,8 @@ public class ColorSchemeEditorActivity extends AppCompatActivity {
         } else {
             setTitle(R.string.edit_color_scheme);
         }
+
+        Utils.setRippleToToolbarIcon(toolbar, this);
     }
 
     private void setColorSchemeEditorFragment(int colorSchemeId) {

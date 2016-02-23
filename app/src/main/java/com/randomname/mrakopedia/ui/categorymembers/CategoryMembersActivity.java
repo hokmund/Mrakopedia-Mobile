@@ -105,7 +105,6 @@ public class CategoryMembersActivity extends AppCompatActivity {
     }
 
     private void initToolbar(String categoryTitle) {
-        Utils.setRippleToToolbarIcon(toolbar, this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (categoryTitle != null) {
@@ -113,6 +112,8 @@ public class CategoryMembersActivity extends AppCompatActivity {
         } else {
             getSupportActionBar().setTitle("");
         }
+
+        Utils.setRippleToToolbarIcon(toolbar, this);
     }
 
     private void setCategoryMembersFragment(String categoryTitle) {

@@ -15,7 +15,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
@@ -143,22 +145,28 @@ public class Utils {
 
         public static void setRippleToToolbarIcon(Toolbar toolbar, Context context) {
                 if(Build.VERSION.SDK_INT < 21) {
-
-                        RippleImageButton rippleImageButton = null;
-
                         try {
                                 Field f = toolbar.getClass().getDeclaredField("mNavButtonView");
                                 f.setAccessible(true);
+                                final View navigationIcon = (View) f.get(toolbar);
+                                navigationIcon.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(context.getResources(), R.drawable.ripple, context.getTheme()));
 
-                                rippleImageButton = new RippleImageButton(context, null,
-                                        android.support.v7.appcompat.R.attr.toolbarNavigationButtonStyle);
-                                final Toolbar.LayoutParams lp = new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
-                                lp.gravity = GravityCompat.START | (Gravity.TOP & Gravity.VERTICAL_GRAVITY_MASK);
-                                rippleImageButton.setLayoutParams(lp);
-                                rippleImageButton.setCornerRadius(100);
-                                rippleImageButton.setBackgroundColor(context.getResources().getColor(android.R.color.transparent));
-                                f.set(toolbar, rippleImageButton);
+                                final ViewTreeObserver viewTreeObserver = navigationIcon.getViewTreeObserver();
+                                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                        @Override
+                                        public void onGlobalLayout() {
+                                                Toolbar.LayoutParams params = (Toolbar.LayoutParams) navigationIcon.getLayoutParams();
+                                                params.width = navigationIcon.getHeight();
+                                                navigationIcon.setLayoutParams(params);
 
+                                                if (Build.VERSION.SDK_INT < 16) {
+                                                        navigationIcon.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                                                } else {
+                                                        navigationIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                                }
+
+                                }
+                        });
                         } catch (Exception e) {
                                 e.printStackTrace();
                         }

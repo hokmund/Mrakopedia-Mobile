@@ -52,10 +52,11 @@ public class ColorSchemesActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
-        Utils.setRippleToToolbarIcon(toolbar, this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle(R.string.color_schemes_text);
+
+        Utils.setRippleToToolbarIcon(toolbar, this);
     }
 
     private void setColorSchemesFragment() {

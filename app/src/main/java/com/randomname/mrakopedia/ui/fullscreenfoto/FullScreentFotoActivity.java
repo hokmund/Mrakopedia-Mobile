@@ -116,7 +116,6 @@ public class FullScreentFotoActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
-        Utils.setRippleToToolbarIcon(toolbar, this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
@@ -124,6 +123,8 @@ public class FullScreentFotoActivity extends AppCompatActivity {
         if (Utils.checkForLollipop()) {
             getWindow().setStatusBarColor(Color.BLACK);
         }
+
+        Utils.setRippleToToolbarIcon(toolbar, this);
     }
 
     public void showHideToolbar() {

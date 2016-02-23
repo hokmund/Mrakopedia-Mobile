@@ -138,15 +138,13 @@
 
 
 
-                    <com.randomname.mrakopedia.ui.views.RippleImageButton
+                    <ImageView
                         android:id="@+id/add_color_scheme_button"
-                        android:src="@drawable/ic_add_white_24dp"
+                        android:src="@drawable/ic_plus_white_48dp"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:clickable="true"
                         android:background="@android:color/transparent"
-                        app:carbon_rippleColor="@color/ripple_color_alpha"
-                        app:carbon_cornerRadius="100dp"
                         android:paddingLeft="@dimen/search_icon_padding"
                         android:paddingRight="@dimen/search_icon_padding"
                         android:layout_centerVertical="true"

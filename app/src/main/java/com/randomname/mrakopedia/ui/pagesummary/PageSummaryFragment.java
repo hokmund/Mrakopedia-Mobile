@@ -25,6 +25,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -75,6 +76,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import carbon.widget.ProgressBar;
+import codetail.graphics.drawables.LollipopDrawablesCompat;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
 import rx.Observable;
@@ -134,6 +136,9 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
     @Bind(R.id.reveal_view)
     RelativeLayout revealView;
+
+    @Bind(R.id.add_color_scheme_button)
+    ImageView addColorSchemeButton;
 
     private ArrayList<ColorScheme> colorsList;
     private ColorSchemeAdapter colorSchemeAdapter;
@@ -386,15 +391,17 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                     View tv = view.findViewWithTag(getString(R.string.font_size_can_change_key));
 
                     if (tv != null) {
-                        ((TextView)tv).setTextColor(colorScheme.getTextColor());
-                        ((TextView)tv).setLinkTextColor(colorScheme.getLinkColor());
-                        ((SelectableTextView)tv).setColor(colorScheme.getSelectedColor());
+                        ((TextView) tv).setTextColor(colorScheme.getTextColor());
+                        ((TextView) tv).setLinkTextColor(colorScheme.getLinkColor());
+                        ((SelectableTextView) tv).setColor(colorScheme.getSelectedColor());
                     }
                 }
             }
         });
         colorSchemeRecyclerView.setAdapter(colorSchemeAdapter);
         colorSchemeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
+        addColorSchemeButton.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getActivity().getResources(), R.drawable.ripple, getActivity().getTheme()));
 
         return view;
     }
