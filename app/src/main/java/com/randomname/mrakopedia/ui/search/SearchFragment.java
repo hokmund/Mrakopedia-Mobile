@@ -192,7 +192,6 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -242,7 +241,6 @@ public class SearchFragment extends RxBaseFragment implements SearchCallback {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, e.getMessage());
                         e.printStackTrace();
                     }
 

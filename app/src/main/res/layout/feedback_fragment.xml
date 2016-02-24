@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <carbon.widget.TextView
+        android:id="@+id/txtYourNameFeedbackFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="12dp"
+        android:text="@string/feedback_name"
+        app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+        android:textSize="14sp"
+        android:textColor="#D9000000"/>
+
+    <EditText
+        android:id="@+id/editTxtYourNameFeedbackFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/txtYourNameFeedbackFragment"
+        android:layout_marginTop="2dp"
+        android:inputType="text"
+        android:lineSpacingExtra="7dp"
+        android:lines="1"
+        android:singleLine="true"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="14sp">
+
+        <requestFocus/>
+    </EditText>
+
+
+    <carbon.widget.TextView
+        android:id="@+id/txtYourMessageFeedbackFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/editTxtYourNameFeedbackFragment"
+        android:layout_marginTop="15dp"
+        android:text="@string/feedback_message"
+        app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+        android:textSize="14sp"
+        android:textColor="#D9000000"/>
+
+    <EditText
+        android:id="@+id/editTxtYourMessageFeedbackFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/txtYourMessageFeedbackFragment"
+        android:layout_marginTop="2dp"
+        android:inputType="text"
+        android:lineSpacingExtra="7dp"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/txtMessageCounterFeedbackFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/editTxtYourMessageFeedbackFragment"
+        android:layout_alignLeft="@+id/txtYourMessageFeedbackFragment"
+        android:layout_alignRight="@+id/editTxtYourMessageFeedbackFragment"
+        android:layout_alignStart="@+id/txtYourMessageFeedbackFragment"
+        android:layout_below="@+id/editTxtYourMessageFeedbackFragment"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="2dp"
+        android:gravity="end"
+        android:textColor="@color/textColorPrimary"
+        android:textSize="12sp"/>
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/btnSendMessageFeedbackFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_email_open_outline_white_24dp"
+        fab:fab_colorNormal="@color/primary"
+        fab:fab_colorPressed="@color/primary"
+        fab:fab_colorRipple="@color/ripple_color"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="8dp"
+        />
+
+
+</RelativeLayout>

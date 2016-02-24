@@ -56,6 +56,10 @@
             android:name=".ui.settings.ColorSchemes.ColorSchemesActivity"
             android:label="@string/title_activity_color_schemes" >
         </activity>
+        <activity
+            android:name=".ui.settings.Feedback.FeedbackActivity"
+            android:label="@string/title_activity_feedback" >
+        </activity>
     </application>
 
 </manifest>

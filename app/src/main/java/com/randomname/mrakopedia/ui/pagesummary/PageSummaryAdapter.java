@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -161,7 +162,10 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                         .with(context)
                         .load(sections.get(position).getText())
                         .asGif()
-                        .into(((ImageViewHolder)holder).imageView);
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .thumbnail(0.5f)
+                        .fitCenter()
+                        .into(((ImageViewHolder) holder).imageView);
 
                 break;
             case TextSection.TEMPLATE_TYPE:
