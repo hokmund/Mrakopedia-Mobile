@@ -8,7 +8,6 @@
     android:padding="16dp">
 
     <carbon.widget.TextView
-        android:id="@+id/txtYourNameFeedbackFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -17,10 +16,24 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="12dp"
+        android:text="@string/feedback_description"
+        app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+        android:textSize="14sp"
+        android:textColor="#D9000000"
+        android:id="@+id/view" />
+
+    <carbon.widget.TextView
+        android:layout_marginTop="12dp"
+        android:id="@+id/txtYourNameFeedbackFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/feedback_name"
         app:carbon_fontPath="carbon/Roboto-Regular.ttf"
         android:textSize="14sp"
-        android:textColor="#D9000000"/>
+        android:textColor="#D9000000"
+        android:layout_below="@+id/view"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:id="@+id/editTxtYourNameFeedbackFragment"
@@ -68,7 +81,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/txtYourMessageFeedbackFragment"
         android:layout_marginTop="2dp"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:lineSpacingExtra="7dp"
         android:textColor="@color/textColorPrimary"
         android:textSize="14sp"/>

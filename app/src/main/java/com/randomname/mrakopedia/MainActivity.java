@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         toolbarHideRecyclerOnScrollListener = new ToolbarHideRecyclerOnScrollListener(toolbarContainer);
 
         if (getSupportFragmentManager().getFragments() == null) {
-            setRecentChangesFragment();
+            setAllCategoriesFragment();
         }
     }
 

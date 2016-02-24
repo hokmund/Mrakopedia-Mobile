@@ -295,7 +295,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
 
                                 isLoading = false;
@@ -329,7 +328,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, e.getMessage());
                         e.printStackTrace();
                     }
 
@@ -384,7 +382,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.e(TAG, e.getMessage());
                         e.printStackTrace();
                         getCategoryDescriptionByNetwork();
                     }
@@ -624,7 +621,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
                             }
 

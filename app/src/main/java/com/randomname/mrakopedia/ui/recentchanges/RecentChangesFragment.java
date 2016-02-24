@@ -216,7 +216,6 @@ public class RecentChangesFragment extends RxBaseFragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
                                 isLoading = false;
                                 if (adapter.getDisplayedData().size() <= 1) {
@@ -275,7 +274,6 @@ public class RecentChangesFragment extends RxBaseFragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.e(TAG, e.getMessage());
                                 e.printStackTrace();
                             }
 

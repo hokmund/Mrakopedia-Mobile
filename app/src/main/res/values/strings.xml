@@ -38,6 +38,7 @@
     <string name="feedback_message_must_be_not_empty">Сообщение не может быть пустым</string>
     <string name="feedback_message_is_sending">Отправка сообщения</string>
     <string name="email_client_not_installed">Никаких почтовых клиентов не установлено</string>
+    <string name="feedback_description">Вы столкнулись с падением приложения? У Вас есть идеи или предложения? Вы можете написать, и всегда получите ответ.</string>
     <string name="feedback_name">Введите Ваше имя</string>
     <string name="feedback_message">Введите Ваше сообщение</string>
     <string name="send">Отправить</string>
