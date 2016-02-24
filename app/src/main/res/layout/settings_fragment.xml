@@ -156,6 +156,30 @@
 
         </carbon.widget.RelativeLayout>
 
+        <carbon.widget.RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:clickable="true"
+            app:carbon_rippleColor="#333333"
+            android:id="@+id/feedback_layout"
+            >
+
+            <carbon.widget.TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                android:textSize="14sp"
+                android:textColor="#D9000000"
+                android:text="@string/feedback_to_developer"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_centerVertical="true"
+                />
+
+        </carbon.widget.RelativeLayout>
+
     </LinearLayout>
 
 </ScrollView>

@@ -21,6 +21,7 @@ import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesFragment;
+import com.randomname.mrakopedia.ui.settings.Feedback.FeedbackActivity;
 import com.randomname.mrakopedia.utils.StringUtils;
 
 import butterknife.Bind;
@@ -52,6 +53,8 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
     View colorSchemeBackgroundColor;
     @Bind(R.id.text_view)
     TextView colorSchemeTextView;
+    @Bind(R.id.feedback_layout)
+    RelativeLayout feedbackLayout;
 
     private Tracker mTracker;
 
@@ -93,6 +96,7 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
         cachingPhotoLayout.setOnClickListener(this);
         keepScreenOnLayout.setOnClickListener(this);
         currentColorSchemeLayout.setOnClickListener(this);
+        feedbackLayout.setOnClickListener(this);
 
         ColorScheme colorScheme = SettingsWorker.getInstance(getActivity()).getCurrentColorScheme();
         colorSchemeBackgroundColor.setBackgroundColor(colorScheme.getBackgroundColor());
@@ -151,6 +155,9 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
             case R.id.current_color_scheme_layout:
                 showColorSchemes();
                 break;
+            case R.id.feedback_layout:
+                showFeedback();
+                break;
             default:
                 break;
         }
@@ -158,6 +165,11 @@ public class SettingsFragment extends Fragment implements CompoundButton.OnCheck
 
     private void showColorSchemes() {
         Intent intent = new Intent(getActivity(), ColorSchemesActivity.class);
+        startActivity(intent);
+    }
+
+    private void showFeedback() {
+        Intent intent = new Intent(getActivity(), FeedbackActivity.class);
         startActivity(intent);
     }
 }

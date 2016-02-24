@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -153,15 +154,30 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
-                ImageLoader.getInstance().displayImage(sections.get(position).getText().toString(), ((ImageViewHolder)holder).imageView, options);
+
+                try {
+                    ImageLoader.getInstance().displayImage(sections.get(position).getText().toString(), ((ImageViewHolder)holder).imageView, options);
+                } catch (Exception e) {
+                    System.gc();
+                }
+
                 break;
             case TextSection.GIF_TYPE:
 
-                Glide
-                        .with(context)
-                        .load(sections.get(position).getText())
-                        .asGif()
-                        .into(((ImageViewHolder)holder).imageView);
+                try {
+                    Glide
+                            .with(context)
+                            .load(sections.get(position).getText())
+                            .asGif()
+                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                            .skipMemoryCache(true)
+                            .thumbnail(0.5f)
+                            .fitCenter()
+                            .into(((ImageViewHolder) holder).imageView);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.gc();
 
                 break;
             case TextSection.TEMPLATE_TYPE:

@@ -33,6 +33,15 @@
 
     <string name="text_was_copied_to_clipboard">Текст скопирован в буфер</string>
 
+    <string name="feedback">Обратная связь</string>
+    <string name="feedback_to_developer">Обратная связь с разработчиком</string>
+    <string name="feedback_message_must_be_not_empty">Сообщение не может быть пустым</string>
+    <string name="feedback_message_is_sending">Отправка сообщения</string>
+    <string name="email_client_not_installed">Никаких почтовых клиентов не установлено</string>
+    <string name="feedback_name">Введите Ваше имя</string>
+    <string name="feedback_message">Введите Ваше сообщение</string>
+    <string name="send">Отправить</string>
+
     <string name="recent_changes_added">Добавлено</string>
 
     <string name="in_this_category">в этой категории</string>
@@ -66,4 +75,5 @@
     <string name="so_bad_so_good_description">Эта история Настолько Плоха, Что Даже Хороша. Она претендует на серьёзность, но написана так плохо, что может вызвать лишь смех.</string>
     <string name="title_activity_color_scheme_editor">ColorSchemeEditorActivity</string>
     <string name="title_activity_color_schemes">ColorSchemesActivity</string>
+    <string name="title_activity_feedback">FeedbackActivity</string>
 </resources>
