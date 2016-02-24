@@ -131,7 +131,15 @@ public class FeedbackFragment extends RxBaseFragment {
             appVersion += "@null\n";
         }
 
-        return sdkVersion + screenSize + appVersion;
+        String model = "Device model: ";
+        try {
+            model += android.os.Build.MODEL + "\n";
+        } catch (Exception e) {
+            e.printStackTrace();
+            appVersion += "@null\n";
+        }
+
+        return sdkVersion + screenSize + appVersion + model;
     }
 
     @Override

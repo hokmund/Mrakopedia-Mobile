@@ -32,6 +32,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MrakopediaApplication;
@@ -401,7 +402,12 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         colorSchemeRecyclerView.setAdapter(colorSchemeAdapter);
         colorSchemeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
-        addColorSchemeButton.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getActivity().getResources(), R.drawable.ripple, getActivity().getTheme()));
+        try {
+            addColorSchemeButton.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getActivity().getResources(), R.drawable.ripple, getActivity().getTheme()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Crashlytics.logException(e);
+        }
 
         return view;
     }

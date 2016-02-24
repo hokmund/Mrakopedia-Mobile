@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.ui.views.RippleImageButton;
 
@@ -137,40 +138,40 @@ public class Utils {
         };
 
         public static int convertDpToPixel(float dp, Context context){
-                Resources resources = context.getResources();
-                DisplayMetrics metrics = resources.getDisplayMetrics();
-                float px = dp * (metrics.densityDpi / 160f);
-                return Math.round(px);
+            Resources resources = context.getResources();
+            DisplayMetrics metrics = resources.getDisplayMetrics();
+            float px = dp * (metrics.densityDpi / 160f);
+            return Math.round(px);
         }
 
         public static void setRippleToToolbarIcon(Toolbar toolbar, Context context) {
-                if(Build.VERSION.SDK_INT < 21) {
-                        try {
-                                Field f = toolbar.getClass().getDeclaredField("mNavButtonView");
-                                f.setAccessible(true);
-                                final View navigationIcon = (View) f.get(toolbar);
-                                navigationIcon.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(context.getResources(), R.drawable.ripple, context.getTheme()));
+            if(Build.VERSION.SDK_INT < 21) {
+                try {
+                    Field f = toolbar.getClass().getDeclaredField("mNavButtonView");
+                    f.setAccessible(true);
+                    final View navigationIcon = (View) f.get(toolbar);
+                    navigationIcon.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(context.getResources(), R.drawable.ripple, context.getTheme()));
 
-                                final ViewTreeObserver viewTreeObserver = navigationIcon.getViewTreeObserver();
-                                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                        @Override
-                                        public void onGlobalLayout() {
-                                                Toolbar.LayoutParams params = (Toolbar.LayoutParams) navigationIcon.getLayoutParams();
-                                                params.width = navigationIcon.getHeight();
-                                                navigationIcon.setLayoutParams(params);
+                    final ViewTreeObserver viewTreeObserver = navigationIcon.getViewTreeObserver();
+                    viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            Toolbar.LayoutParams params = (Toolbar.LayoutParams) navigationIcon.getLayoutParams();
+                            params.width = navigationIcon.getHeight();
+                            navigationIcon.setLayoutParams(params);
 
-                                                if (Build.VERSION.SDK_INT < 16) {
-                                                        navigationIcon.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                                                } else {
-                                                        navigationIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                                                }
-
-                                }
-                        });
-                        } catch (Exception e) {
-                                e.printStackTrace();
+                            if (Build.VERSION.SDK_INT < 16) {
+                                navigationIcon.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                            } else {
+                                navigationIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            }
                         }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Crashlytics.logException(e);
                 }
+            }
         }
 
     public static void setRippleToMenuItem(View menuButton, Context context) {
@@ -181,7 +182,7 @@ public class Utils {
             menuButton.setLayoutParams(params);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("bla", "error");
+            Crashlytics.logException(e);
         }
     }
 }
