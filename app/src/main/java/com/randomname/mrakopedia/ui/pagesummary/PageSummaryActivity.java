@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import codetail.graphics.drawables.LollipopDrawablesCompat;
 
 public class PageSummaryActivity extends AppCompatActivity implements  PageSummaryInterface{
 
@@ -209,6 +210,12 @@ public class PageSummaryActivity extends AppCompatActivity implements  PageSumma
             titleTextView.setSelected(true);
             titleTextView.setMarqueeRepeatLimit(-1);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            findViewById(R.id.copy_btn).setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getResources(), R.drawable.ripple, getTheme()));
         } catch (Exception e) {
             e.printStackTrace();
         }

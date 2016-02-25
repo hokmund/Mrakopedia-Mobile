@@ -2,27 +2,16 @@ package com.randomname.mrakopedia.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.ui.views.RippleImageButton;
 
 import java.lang.reflect.Field;
 

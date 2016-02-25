@@ -34,13 +34,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.ui.views.RippleImageButton;
+import com.randomname.mrakopedia.ui.views.ProportionalImageView;
 import com.randomname.mrakopedia.ui.views.materialsearch.utils.AnimationUtil;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
-import carbon.widget.ImageView;
+import codetail.graphics.drawables.LollipopDrawablesCompat;
+
 
 /**
  * Created by vgrigoryev on 26.01.2016.
@@ -58,9 +59,9 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
     private View mTintView;
     private ListView mSuggestionsListView;
     private EditText mSearchSrcTextView;
-    private RippleImageButton mBackBtn;
+    private ProportionalImageView mBackBtn;
     private ImageButton mVoiceBtn;
-    private RippleImageButton mEmptyBtn;
+    private ProportionalImageView mEmptyBtn;
     private RelativeLayout mSearchTopBar;
 
     private CharSequence mOldQueryText;
@@ -148,10 +149,17 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
 
         mSuggestionsListView = (ListView) mSearchLayout.findViewById(R.id.suggestion_list);
         mSearchSrcTextView = (EditText) mSearchLayout.findViewById(R.id.searchTextView);
-        mBackBtn = (RippleImageButton) mSearchLayout.findViewById(R.id.action_up_btn);
+        mBackBtn = (ProportionalImageView) mSearchLayout.findViewById(R.id.action_up_btn);
         mVoiceBtn = (ImageButton) mSearchLayout.findViewById(R.id.action_voice_btn);
-        mEmptyBtn = (RippleImageButton) mSearchLayout.findViewById(R.id.action_empty_btn);
+        mEmptyBtn = (ProportionalImageView) mSearchLayout.findViewById(R.id.action_empty_btn);
         mTintView = mSearchLayout.findViewById(R.id.transparent_view);
+
+        try {
+            mBackBtn.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getResources(), R.drawable.ripple, getContext().getTheme()));
+            mEmptyBtn.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getResources(), R.drawable.ripple, getContext().getTheme()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         mSearchSrcTextView.setOnClickListener(mOnClickListener);
         mBackBtn.setOnClickListener(mOnClickListener);

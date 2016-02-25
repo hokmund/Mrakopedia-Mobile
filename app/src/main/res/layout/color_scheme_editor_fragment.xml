@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/iconsColor"
+    android:id="@+id/preview_layout"
     >
 
     <ScrollView
@@ -26,6 +27,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:id="@+id/background_color_scheme_layout"
+                android:background="@color/iconsColor"
                 >
 
                 <carbon.widget.TextView
@@ -71,6 +73,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:id="@+id/text_color_scheme_layout"
+                android:background="@color/iconsColor"
                 >
 
                 <carbon.widget.TextView
@@ -116,6 +119,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:id="@+id/selected_color_scheme_layout"
+                android:background="@color/iconsColor"
                 >
 
                 <carbon.widget.TextView
@@ -161,6 +165,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:id="@+id/link_color_scheme_layout"
+                android:background="@color/iconsColor"
                 >
 
                 <carbon.widget.TextView
@@ -205,9 +210,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:id="@+id/preview_layout"
-                android:background="@color/iconsColor"
+                android:layout_height="10dp"
                 android:paddingRight="16dp"
                 android:paddingLeft="16dp"
                 >

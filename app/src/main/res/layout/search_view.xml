@@ -46,15 +46,14 @@
                     android:textColorHint="#727272"
                     android:textSize="16sp" />
 
-                <com.randomname.mrakopedia.ui.views.RippleImageButton
+                <com.randomname.mrakopedia.ui.views.ProportionalImageView
                     android:id="@+id/action_up_btn"
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_action_navigation_arrow_back"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:clickable="true"
-                    app:carbon_rippleColor="@color/ripple_color_alpha"
-                    app:carbon_cornerRadius="100dp"
+                    android:scaleType="center"
                     android:background="@android:color/transparent"
                     android:paddingLeft="@dimen/search_icon_padding"
                     android:paddingRight="@dimen/search_icon_padding"
@@ -66,16 +65,15 @@
                     android:layout_alignParentRight="true"
                     android:src="@drawable/ic_action_voice_search" />
 
-                <com.randomname.mrakopedia.ui.views.RippleImageButton
+                <com.randomname.mrakopedia.ui.views.ProportionalImageView
                     android:id="@+id/action_empty_btn"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/ic_action_navigation_close"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:clickable="true"
+                    android:scaleType="center"
                     android:background="@android:color/transparent"
-                    app:carbon_rippleColor="@color/ripple_color_alpha"
-                    app:carbon_cornerRadius="100dp"
                     android:visibility="gone"
                     android:paddingLeft="@dimen/search_icon_padding"
                     android:paddingRight="@dimen/search_icon_padding"
