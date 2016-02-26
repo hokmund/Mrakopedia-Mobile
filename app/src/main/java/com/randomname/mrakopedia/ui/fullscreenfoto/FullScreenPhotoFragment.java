@@ -1,18 +1,25 @@
 package com.randomname.mrakopedia.ui.fullscreenfoto;
 
+import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -110,7 +117,27 @@ public class FullScreenPhotoFragment extends Fragment {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+    private boolean loadPermissions(String perm) {
+        if (ContextCompat.checkSelfPermission(getActivity(), perm) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), perm)) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{perm}, 0);
+            }
+            return false;
+        }
+
+        return true;
+    }
+
     private void savePhotoToDisc() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (!loadPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+            !loadPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                Toast.makeText(getActivity(), R.string.access_storage_permission_not_granted, Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Action")
                 .setAction("Save photo to disk")
