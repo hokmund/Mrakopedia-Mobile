@@ -16,6 +16,8 @@
     <string name="search_drawer">Поиск</string>
     <string name="settings_drawer">Настройки</string>
 
+    <string name="access_storage_permission_not_granted">Разрешение на сохранение фото не предоставленно. Включите его в настройках.</string>
+
     <string name="caching_photo_option">Кэшировать фото</string>
     <string name="caching_pages_option">Кэшировать страницы</string>
     <string name="keep_screen_on_option">Не выключать экран при чтении</string>
