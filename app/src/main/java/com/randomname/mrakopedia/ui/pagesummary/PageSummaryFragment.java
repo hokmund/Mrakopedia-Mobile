@@ -431,14 +431,29 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         fontTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Typeface typeface = null;
+
                 try {
-                    Typeface typeface = TypefaceUtils.getTypeface(getContext(), FontTypeConstants.FONT_PATHS_ARRAY[position]);
+                    typeface = TypefaceUtils.getTypeface(getContext(), FontTypeConstants.FONT_PATHS_ARRAY[position]);
                     fontTypeSpinner.setTypeface(typeface);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 SettingsWorker.getInstance(getActivity()).setFontType(position);
+
+                if (typeface != null) {
+                    adapter.notifyFontTypeChanged(typeface);
+
+                    for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                        View recyclerViewChildAt = recyclerView.getChildAt(i);
+                        View tv = recyclerViewChildAt.findViewWithTag(getString(R.string.font_size_can_change_key));
+
+                        if (tv != null) {
+                            ((TextView) tv).setTypeface(typeface);
+                        }
+                    }
+                }
             }
 
             @Override

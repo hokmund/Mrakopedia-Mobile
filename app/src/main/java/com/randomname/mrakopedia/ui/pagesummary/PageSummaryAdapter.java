@@ -3,6 +3,7 @@ package com.randomname.mrakopedia.ui.pagesummary;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +34,8 @@ import com.randomname.mrakopedia.utils.StringUtils;
 
 import java.util.ArrayList;
 
+import carbon.internal.TypefaceUtils;
+
 /**
  * Created by vgrigoryev on 22.01.2016.
  */
@@ -47,6 +50,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private DisplayImageOptions youtubeOptions;
     private ColorScheme colorScheme;
     private float fontSize = 14.0f;
+    private Typeface typeface;
 
     public PageSummaryAdapter(final ArrayList<TextSection> sections, final Context context, View.OnClickListener linkClickListener, View.OnClickListener imageClickListener, OnCategoryClickListener categoryClickListener) {
         this.sections = sections;
@@ -74,6 +78,16 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         colorScheme = SettingsWorker.getInstance(context).getCurrentColorScheme();
+
+        try {
+            typeface = TypefaceUtils.getTypeface(context, FontTypeConstants.FONT_PATHS_ARRAY[SettingsWorker.getInstance(context).getFontType()]);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void notifyFontTypeChanged(Typeface typeface) {
+        this.typeface = typeface;
     }
 
     public void notifyColorSchemeChanged() {
@@ -151,6 +165,11 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((TextViewHolder) holder).textView.setTextSize(fontSize);
                 ((TextViewHolder) holder).textView.setLinkTextColor(colorScheme.getLinkColor());
                 ((TextViewHolder) holder).textView.setColor(colorScheme.getSelectedColor());
+
+                if (typeface != null) {
+                    ((TextViewHolder) holder).textView.setTypeface(typeface);
+                }
+
                 break;
             case TextSection.IMAGE_TYPE:
                 ((ImageViewHolder)holder).imageView.setImageResource(android.R.color.transparent);
