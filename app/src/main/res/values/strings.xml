@@ -24,6 +24,7 @@
     <string name="current_color_scheme">Текущая цветовая схема</string>
 
     <string name="font_size_text">Размер шрифта</string>
+    <string name="font_type_text">Тип шрифта</string>
     <string name="color_scheme_text">Цветовая схема</string>
     <string name="color_schemes_text">Цветовая схема</string>
     <string name="create_color_scheme">Создать цветовую схему</string>

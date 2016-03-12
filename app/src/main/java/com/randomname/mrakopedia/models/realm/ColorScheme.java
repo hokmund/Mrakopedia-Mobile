@@ -27,7 +27,7 @@ public class ColorScheme extends RealmObject{
     }
 
     public ColorScheme(ColorScheme colorScheme) {
-        this.schemeId = schemeId;
+        this.schemeId = colorScheme.schemeId;
         this.backgroundColor = colorScheme.getBackgroundColor();
         this.textColor = colorScheme.getTextColor();
         this.selectedColor = colorScheme.getSelectedColor();
