@@ -275,12 +275,36 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
     }
 
     private void loadCategoriesViaRealm() {
-
         Subscription getAllCategoriesSubscription =
-                DBWorker.getAllCategories()
+                        Observable.just("")
+                        .flatMap(new Func1<String, Observable<CategoryRealm>>() {
+                            @Override
+                            public Observable<CategoryRealm> call(String s) {
+                                return DBWorker.getAllCategories();
+                            }
+                        })
+                        .filter(new Func1<CategoryRealm, Boolean>() {
+                            @Override
+                            public Boolean call(CategoryRealm categoryRealm) {
+                                return !categoryRealm.getCategoryMembersTitles().isEmpty();
+                            }
+                        })
+                        .map(new Func1<CategoryRealm, Allcategories>() {
+                            @Override
+                            public Allcategories call(CategoryRealm categoryRealm) {
+                                Allcategories category = new Allcategories();
+                                category.setFiles("");
+                                category.setPages(String.valueOf(categoryRealm.getCategoryMembersTitles().size()));
+                                category.setTitle(categoryRealm.getTitle());
+                                category.setSubcats("");
+                                category.setSize("");
+
+                                return category;
+                            }
+                        })
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<CategoryRealm>() {
+                        .subscribe(new Subscriber<Allcategories>() {
                             @Override
                             public void onCompleted() {
                                 if (adapter.getDisplayedData().size() <= 1) {
@@ -310,22 +334,10 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
                             }
 
                             @Override
-                            public void onNext(CategoryRealm categoryRealm) {
-                                if (categoryRealm.getCategoryMembersTitles().isEmpty()) {
-                                    return;
-                                }
-
-                                Allcategories category = new Allcategories();
-                                category.setFiles("");
-                                category.setPages(String.valueOf(categoryRealm.getCategoryMembersTitles().size()));
-                                category.setTitle(categoryRealm.getTitle());
-                                category.setSubcats("");
-                                category.setSize("");
-
-
-                                adapter.getDisplayedData().add(category);
-                                copiedArrayList.add(category);
-                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
+                            public void onNext(Allcategories allcategories) {
+                                adapter.getDisplayedData().add(allcategories);
+                                copiedArrayList.add(allcategories);
+                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(allcategories) + 1);
                             }
                         });
 

@@ -2,6 +2,7 @@ package com.randomname.mrakopedia.realm;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.api.categorymembers.Continue;
@@ -324,6 +325,7 @@ public class DBWorker {
             return Observable.empty();
         }
 
+        Log.e("bla", categoryRealm.size() + "");
         return Observable.from(categoryRealm);
     }
 
