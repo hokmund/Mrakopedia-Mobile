@@ -138,24 +138,28 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
         inflater.inflate(R.menu.menu_category_members, menu);
 
         if(Build.VERSION.SDK_INT < 21) {
-            final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    View menuButton = getActivity().findViewById(R.id.action_search);
-                    // This could be called when the button is not there yet, so we must test for null
-                    if (menuButton != null) {
+            try {
+                final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        View menuButton = getActivity().findViewById(R.id.action_search);
+                        // This could be called when the button is not there yet, so we must test for null
+                        if (menuButton != null) {
 
-                        Utils.setRippleToMenuItem(menuButton, getActivity());
+                            Utils.setRippleToMenuItem(menuButton, getActivity());
 
-                        if (Build.VERSION.SDK_INT < 16) {
-                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        } else {
-                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            if (Build.VERSION.SDK_INT < 16) {
+                                getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                            } else {
+                                getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            }
                         }
                     }
-                }
-            });
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         super.onCreateOptionsMenu(menu, inflater);

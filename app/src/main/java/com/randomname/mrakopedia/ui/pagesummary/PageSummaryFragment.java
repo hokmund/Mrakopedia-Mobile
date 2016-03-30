@@ -236,6 +236,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         adapter.setHasStableIds(true);
         SelectableLayoutManager manager = new SelectableLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
+        manager.setSmoothScrollbarEnabled(true);
 
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
@@ -548,34 +549,38 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             setMenuReadStatus(menu.findItem(R.id.action_read_page));
 
             if(Build.VERSION.SDK_INT < 21) {
-                final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
-                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        View favoriteMenu = getActivity().findViewById(R.id.action_favorite_page);
-                        View readPage = getActivity().findViewById(R.id.action_read_page);
-                        View settingsAction = getActivity().findViewById(R.id.action_settings);
+                try {
+                    final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+                    viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            View favoriteMenu = getActivity().findViewById(R.id.action_favorite_page);
+                            View readPage = getActivity().findViewById(R.id.action_read_page);
+                            View settingsAction = getActivity().findViewById(R.id.action_settings);
 
-                        if (favoriteMenu != null) {
-                            Utils.setRippleToMenuItem(favoriteMenu, getActivity());
+                            if (favoriteMenu != null) {
+                                Utils.setRippleToMenuItem(favoriteMenu, getActivity());
+                            }
+
+                            if (readPage != null) {
+                                Utils.setRippleToMenuItem(readPage, getActivity());
+                            }
+
+                            if (settingsAction != null) {
+                                Utils.setRippleToMenuItem(settingsAction, getActivity());
+                            }
+
+
+                            if (Build.VERSION.SDK_INT < 16) {
+                                getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                            } else {
+                                getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            }
                         }
-
-                        if (readPage != null) {
-                            Utils.setRippleToMenuItem(readPage, getActivity());
-                        }
-
-                        if (settingsAction != null) {
-                            Utils.setRippleToMenuItem(settingsAction, getActivity());
-                        }
-
-
-                        if (Build.VERSION.SDK_INT < 16) {
-                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        } else {
-                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-                    }
-                });
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -1156,7 +1161,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                         recyclerView.setAnimation(animation);
                         recyclerView.animate();
 
-                        loadingProgressBar.setVisibility(View.GONE);
+                        loadingProgressBar.setVisibilityImmediate(View.GONE);
                     }
 
                     @Override
