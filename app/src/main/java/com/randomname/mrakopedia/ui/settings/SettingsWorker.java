@@ -22,6 +22,7 @@ public class SettingsWorker {
     private static final String CURRENT_FONT_SIZE = "currentFontSize";
     private static final String CURRENT_COLOR_SCHEME = "currentColorScheme";
     private static final String SHOW_BY_RATING = "showByRating";
+	private static final String FONT_TYPE = "fontType";
 
     private static final String PREFERENCES_FILE = "mrak_prefs";
 
@@ -124,11 +125,19 @@ public class SettingsWorker {
         return new ColorScheme(DBWorker.getNextColorSchemeId(), context.getResources().getColor(R.color.iconsColor), context.getResources().getColor(R.color.textColorPrimary), context.getResources().getColor(R.color.primary), context.getResources().getColor(R.color.primary));
     }
 
-    public void setShowByRating(boolean showByRating) {
+	public void setShowByRating(boolean showByRating) {
         putBoolean(SHOW_BY_RATING, showByRating);
     }
 
     public boolean showByRating() {
         return getBoolean(SHOW_BY_RATING, false);
+    }
+
+	public void setFontType(int fontType) {
+        putInt(FONT_TYPE, fontType);
+    }
+
+    public int getFontType() {
+        return getInt(FONT_TYPE);
     }
 }

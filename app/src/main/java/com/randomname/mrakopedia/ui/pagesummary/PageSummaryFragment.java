@@ -2,6 +2,7 @@ package com.randomname.mrakopedia.ui.pagesummary;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +27,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,6 +57,7 @@ import com.randomname.mrakopedia.ui.fullscreenfoto.FullScreentFotoActivity;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeAdapter;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeEditorActivity;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
+import com.randomname.mrakopedia.ui.views.CarbonSpinner;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.StickySummaryDecoration;
 import com.randomname.mrakopedia.ui.views.selection.SelectableLayoutManager;
@@ -78,7 +81,9 @@ import java.util.regex.Pattern;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import carbon.internal.TypefaceUtils;
 import carbon.widget.ProgressBar;
+import carbon.widget.Spinner;
 import codetail.graphics.drawables.LollipopDrawablesCompat;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
@@ -146,6 +151,9 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
     @Bind(R.id.add_color_scheme_button)
     ImageView addColorSchemeButton;
+
+    @Bind(R.id.font_type_spinner)
+    CarbonSpinner fontTypeSpinner;
 
     private ArrayList<ColorScheme> colorsList;
     private ColorSchemeAdapter colorSchemeAdapter;
@@ -416,6 +424,51 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             e.printStackTrace();
             Crashlytics.logException(e);
         }
+
+        fontTypeSpinner.setItems(FontTypeConstants.FONT_TYPES_ARRAY);
+        fontTypeSpinner.setText(FontTypeConstants.FONT_TYPES_ARRAY[SettingsWorker.getInstance(getActivity()).getFontType()]);
+
+        try {
+            Typeface typeface = TypefaceUtils.getTypeface(getContext(), FontTypeConstants.FONT_PATHS_ARRAY[SettingsWorker.getInstance(getActivity()).getFontType()]);
+            fontTypeSpinner.setTypeface(typeface);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        fontTypeSpinner.setDropDownColor(getResources().getColor(R.color.save_color));
+        fontTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Typeface typeface = null;
+
+                try {
+                    typeface = TypefaceUtils.getTypeface(getContext(), FontTypeConstants.FONT_PATHS_ARRAY[position]);
+                    fontTypeSpinner.setTypeface(typeface);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                SettingsWorker.getInstance(getActivity()).setFontType(position);
+
+                if (typeface != null) {
+                    adapter.notifyFontTypeChanged(typeface);
+
+                    for (int i = 0; i < recyclerView.getChildCount(); i++) {
+                        View recyclerViewChildAt = recyclerView.getChildAt(i);
+                        View tv = recyclerViewChildAt.findViewWithTag(getString(R.string.font_size_can_change_key));
+
+                        if (tv != null) {
+                            ((TextView) tv).setTypeface(typeface);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         return view;
     }
@@ -1131,7 +1184,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                         recyclerView.setAnimation(animation);
                         recyclerView.animate();
 
-                        loadingProgressBar.setVisibility(View.GONE);
+                        loadingProgressBar.setVisibilityImmediate(View.GONE);
                     }
 
                     @Override

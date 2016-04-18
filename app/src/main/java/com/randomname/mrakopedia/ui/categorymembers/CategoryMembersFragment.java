@@ -737,7 +737,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                     }
                                     recyclerView.setVisibility(View.GONE);
                                 } else {
-                                    Toast.makeText(getActivity(), getString(R.string.error_loading_category) + " " + getString(R.string.no_internet_text), Toast.LENGTH_SHORT).show();
                                     adapter.setDescriptionSections(new ArrayList<TextSection>());
                                 }
                             }

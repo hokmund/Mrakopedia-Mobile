@@ -74,88 +74,92 @@
             android:orientation="vertical"
             >
 
-            <LinearLayout
+            <carbon.widget.TextView
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/font_size_text"
+                android:textColor="@color/save_color"
+                app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                android:textSize="14sp"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal" />
+
+            <SeekBar
+                android:id="@+id/font_size_seek_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
+                android:layout_margin="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:max="36"
+                android:theme="@style/Theme.AppCompat"
+                />
 
-                <carbon.widget.TextView
-                    android:layout_marginTop="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/font_size_text"
-                    android:textColor="@color/save_color"
-                    app:carbon_fontPath="carbon/Roboto-Regular.ttf"
-                    android:textSize="14sp"
-                    android:gravity="center_horizontal"
-                    android:layout_gravity="center_horizontal" />
+            <carbon.widget.TextView
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/font_type_text"
+                android:textColor="@color/save_color"
+                app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                android:textSize="14sp"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal" />
 
-                <SeekBar
-                    android:id="@+id/font_size_seek_bar"
+            <com.randomname.mrakopedia.ui.views.CarbonSpinner
+                android:id="@+id/font_type_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:textColor="@color/save_color"
+                app:carbon_tint="?attr/colorPrimary"/>
+
+            <carbon.widget.TextView
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/color_scheme_text"
+                android:textColor="@color/save_color"
+                app:carbon_fontPath="carbon/Roboto-Regular.ttf"
+                android:textSize="14sp"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/color_scheme_recycler_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
+                    android:layout_height="50dp"
+                    android:background="@color/listColor"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_toLeftOf="@+id/add_color_scheme_button"
+                    android:layout_toStartOf="@+id/add_color_scheme_button" />
+
+
+
+                <ImageView
+                    android:id="@+id/add_color_scheme_button"
+                    android:src="@drawable/ic_plus_white_48dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:clickable="true"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:max="36"
-                    android:theme="@style/Theme.AppCompat"
+                    android:background="@android:color/transparent"
+                    android:paddingLeft="@dimen/search_icon_padding"
+                    android:paddingRight="@dimen/search_icon_padding"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     />
-            </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-
-                <carbon.widget.TextView
-                    android:layout_marginTop="8dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/color_scheme_text"
-                    android:textColor="@color/save_color"
-                    app:carbon_fontPath="carbon/Roboto-Regular.ttf"
-                    android:textSize="14sp"
-                    android:gravity="center_horizontal"
-                    android:layout_gravity="center_horizontal" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/color_scheme_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:background="@color/listColor"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_toLeftOf="@+id/add_color_scheme_button"
-                        android:layout_toStartOf="@+id/add_color_scheme_button" />
-
-
-
-                    <ImageView
-                        android:id="@+id/add_color_scheme_button"
-                        android:src="@drawable/ic_plus_white_48dp"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:clickable="true"
-                        android:background="@android:color/transparent"
-                        android:paddingLeft="@dimen/search_icon_padding"
-                        android:paddingRight="@dimen/search_icon_padding"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
-                        />
-
-                </RelativeLayout>
-
-            </LinearLayout>
+            </RelativeLayout>
 
         </LinearLayout>
 
