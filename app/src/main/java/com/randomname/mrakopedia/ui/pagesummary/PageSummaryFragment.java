@@ -556,39 +556,43 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             setMenuReadStatus(menu.findItem(R.id.action_read_page));
 
 
-            final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
-            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    View favoriteMenu = getActivity().findViewById(R.id.action_favorite_page);
-                    View readPage = getActivity().findViewById(R.id.action_read_page);
+            try {
+                final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        View favoriteMenu = getActivity().findViewById(R.id.action_favorite_page);
+                        View readPage = getActivity().findViewById(R.id.action_read_page);
 
-                    optionsMenuButton = getActivity().findViewById(R.id.action_settings);
+                        optionsMenuButton = getActivity().findViewById(R.id.action_settings);
 
-                    if (favoriteMenu != null && !Utils.checkForLollipop()) {
-                        Utils.setRippleToMenuItem(favoriteMenu, getActivity());
+                        if (favoriteMenu != null && !Utils.checkForLollipop()) {
+                            Utils.setRippleToMenuItem(favoriteMenu, getActivity());
+                        }
+
+                        if (readPage != null && !Utils.checkForLollipop()) {
+                            Utils.setRippleToMenuItem(readPage, getActivity());
+                        }
+
+                        if (optionsMenuButton != null) {
+                            optionsMenuButton.setRotation(optionsMenuButtonRotation);
+                        }
+
+                        if (optionsMenuButton != null && !Utils.checkForLollipop()) {
+                            Utils.setRippleToMenuItem(optionsMenuButton, getActivity());
+                        }
+
+
+                        if (Build.VERSION.SDK_INT < 16) {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        } else {
+                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
                     }
-
-                    if (readPage != null && !Utils.checkForLollipop()) {
-                        Utils.setRippleToMenuItem(readPage, getActivity());
-                    }
-
-                    if (optionsMenuButton != null) {
-                        optionsMenuButton.setRotation(optionsMenuButtonRotation);
-                    }
-
-                    if (optionsMenuButton != null && !Utils.checkForLollipop()) {
-                        Utils.setRippleToMenuItem(optionsMenuButton, getActivity());
-                    }
-
-
-                    if (Build.VERSION.SDK_INT < 16) {
-                        getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    } else {
-                        getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-                }
-            });
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }
 
