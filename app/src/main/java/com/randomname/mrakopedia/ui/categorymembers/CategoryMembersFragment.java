@@ -800,8 +800,6 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                 return aBoolean;
                             }
                         })
-                        .subscribeOn(Schedulers.newThread())
-                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<Boolean>() {
                             @Override
                             public void onCompleted() {

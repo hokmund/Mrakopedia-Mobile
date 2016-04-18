@@ -155,6 +155,10 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         mEmptyBtn = (ProportionalImageView) mSearchLayout.findViewById(R.id.action_empty_btn);
         mTintView = mSearchLayout.findViewById(R.id.transparent_view);
 
+        mEmptyBtn.setRotation(-180);
+        mEmptyBtn.setScaleX(0f);
+        mEmptyBtn.setScaleY(0f);
+
         try {
             mBackBtn.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getResources(), R.drawable.ripple, getContext().getTheme()));
             mEmptyBtn.setBackgroundDrawable(LollipopDrawablesCompat.getDrawable(getResources(), R.drawable.ripple, getContext().getTheme()));

@@ -93,6 +93,10 @@ public class MrakopediaApiWorker {
     }
 
     public Call<ResponseBody> getCategoryRating(String categoryName) {
+        if (categoryName.toLowerCase().equals("крипи")) {
+            return getMrakopediaAPI().getCategoryRating("Общий_рейтинг");
+        }
+
         return getMrakopediaAPI().getCategoryRating(categoryName);
     }
 }
