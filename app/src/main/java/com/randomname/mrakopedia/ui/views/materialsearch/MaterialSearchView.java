@@ -21,6 +21,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -261,10 +262,22 @@ public class MaterialSearchView extends FrameLayout implements Filter.FilterList
         mUserQuery = text;
         boolean hasText = !TextUtils.isEmpty(text);
         if (hasText) {
-            mEmptyBtn.setVisibility(VISIBLE);
+            mEmptyBtn.animate()
+                    .rotation(0)
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setInterpolator(new LinearInterpolator())
+                    .setDuration(200);
+
             showVoice(false);
         } else {
-            mEmptyBtn.setVisibility(GONE);
+            mEmptyBtn.animate()
+                    .rotation(-180)
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .setInterpolator(new LinearInterpolator())
+                    .setDuration(200);
+
             showVoice(true);
         }
 

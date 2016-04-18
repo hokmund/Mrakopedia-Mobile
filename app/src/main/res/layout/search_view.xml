@@ -74,7 +74,6 @@
                     android:clickable="true"
                     android:scaleType="center"
                     android:background="@android:color/transparent"
-                    android:visibility="gone"
                     android:paddingLeft="@dimen/search_icon_padding"
                     android:paddingRight="@dimen/search_icon_padding"
                     />
