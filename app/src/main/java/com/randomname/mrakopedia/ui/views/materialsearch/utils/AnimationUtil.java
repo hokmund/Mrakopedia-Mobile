@@ -85,9 +85,6 @@ public class AnimationUtil {
 
                 @Override
                 public void onAnimationCancel() {
-                    if (!listener.onAnimationCancel(view)) {
-                        //execute Parent MEthod
-                    }
                 }
 
                 @Override
@@ -118,9 +115,6 @@ public class AnimationUtil {
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
-                    if (!listener.onAnimationCancel(view)) {
-                        //execute Parent MEthod
-                    }
                 }
 
                 @Override
@@ -233,9 +227,6 @@ public class AnimationUtil {
 
                 @Override
                 public void onAnimationCancel() {
-                    if (listener == null || !listener.onAnimationCancel(view)) {
-                        //execute Parent MEthod
-                    }
                 }
 
                 @Override
@@ -268,9 +259,6 @@ public class AnimationUtil {
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
-                    if (listener == null || !listener.onAnimationCancel(view)) {
-                        //execute Parent MEthod
-                    }
                 }
 
                 @Override

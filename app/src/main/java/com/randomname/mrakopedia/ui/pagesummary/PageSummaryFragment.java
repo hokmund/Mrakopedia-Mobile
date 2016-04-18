@@ -1118,7 +1118,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                             return Observable.from(textSections);
                         }
 
-                        TextSection textSection = null;
+                        TextSection textSection;
 
                         for (TextSectionRealm textSectionRealm : pageSummaryRealm.getTextSections()) {
                             textSection = null;

@@ -54,7 +54,7 @@
                     android:id="@+id/reveal_view"
                     >
 
-                    <TextView
+                    <com.randomname.mrakopedia.ui.views.selection.SelectableTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/preview_reveal_text_view"

@@ -814,14 +814,12 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                             @Override
                             public void onNext(Boolean aBoolean) {
-                                if (aBoolean) {
-                                    adapter.getDisplayedData()
-                                            .get(adapter.getDisplayedData()
-                                                    .indexOf(categorymember))
-                                            .setIsViewed(aBoolean);
+                                adapter.getDisplayedData()
+                                        .get(adapter.getDisplayedData()
+                                                .indexOf(categorymember))
+                                        .setIsViewed(aBoolean);
 
-                                    adapter.notifyItemChanged(categorymembersArrayList.indexOf(categorymember) + adapter.getDescriptionSections().size());
-                                }
+                                adapter.notifyItemChanged(categorymembersArrayList.indexOf(categorymember) + adapter.getDescriptionSections().size());
                             }
                         });
 

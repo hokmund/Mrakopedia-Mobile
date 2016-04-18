@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initDrawer() {
-        int headerId = 0;
+        int headerId;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             headerId = R.layout.drawer_header_lollipop;

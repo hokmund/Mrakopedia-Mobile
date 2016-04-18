@@ -431,13 +431,11 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
             if (position != 0) {
                 Allcategories category = categoriesArrayList.get(position - 1);
 
-                String categorySize = new StringBuilder()
-                        .append(category.getPages())
-                        .append(" ")
-                        .append(StringUtils.declarationOfNum(Integer.parseInt(category.getPages()), pages))
-                        .append(" ")
-                        .append(getString(R.string.in_this_category))
-                        .toString();
+                String categorySize = category.getPages() +
+                        " " +
+                        StringUtils.declarationOfNum(Integer.parseInt(category.getPages()), pages) +
+                        " " +
+                        getString(R.string.in_this_category);
 
                         ((ViewHolder) holder).titleTextView.setText(category.getTitle());
                 ((ViewHolder)holder).membersCountTextView.setText(categorySize);

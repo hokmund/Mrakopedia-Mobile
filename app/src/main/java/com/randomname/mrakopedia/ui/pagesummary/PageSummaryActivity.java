@@ -195,7 +195,7 @@ public class PageSummaryActivity extends AppCompatActivity implements  PageSumma
             }
         });
 
-        TextView titleTextView = null;
+        TextView titleTextView;
 
         try {
             Field f = toolbar.getClass().getDeclaredField("mTitleTextView");
