@@ -239,6 +239,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
             categorymembersArrayList.clear();
             adapter.notifyDataSetChanged();
+            continueString = "";
+
             loadCategoryMembers();
 
             setShowRatingStatus(item);
