@@ -8,7 +8,9 @@ import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
 import com.randomname.mrakopedia.models.api.search.SearchResult;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Call;
 import retrofit2.GsonConverterFactory;
 import retrofit2.Retrofit;
 import retrofit2.RxJavaCallAdapterFactory;
@@ -88,5 +90,9 @@ public class MrakopediaApiWorker {
 
     public Observable<SearchResult> searchInTitle(String searchString, String offset) {
         return getMrakopediaAPI().search(searchString, offset, "nearmatch");
+    }
+
+    public Call<ResponseBody> getCategoryRating(String categoryName) {
+        return getMrakopediaAPI().getCategoryRating(categoryName);
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -16,8 +17,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
@@ -62,6 +65,9 @@ import java.util.regex.Pattern;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import carbon.widget.ProgressBar;
+import okhttp3.ResponseBody;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -134,6 +140,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
             }
         }
 
+        setHasOptionsMenu(true);
+
         MrakopediaApplication application = (MrakopediaApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
     }
@@ -155,14 +163,20 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
                 selectedPosition = position;
                 Intent intent = new Intent(getActivity(), PageSummaryActivity.class);
-                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, adapter.getDisplayedData().get(position).getTitle());
-                intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(position).getPageid());
+                Categorymembers categoryMember = adapter.getDisplayedData().get(position);
+
+                intent.putExtra(PageSummaryActivity.PAGE_NAME_EXTRA, categoryMember.getTitle());
+
+                if (categoryMember.getPageid() != null && !categoryMember.getPageid().isEmpty()) {
+                    intent.putExtra(PageSummaryActivity.PAGE_ID_EXTRA, adapter.getDisplayedData().get(position).getPageid());
+                }
 
                 startActivityForResult(intent, PAGE_SUMMARY_ACTIVITY_CODE);
             }
         });
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        manager.setSmoothScrollbarEnabled(true);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
         recyclerView.addOnScrollListener(new EndlessRecyclerOnScrollListener(manager) {
@@ -190,10 +204,61 @@ public class CategoryMembersFragment extends RxBaseFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_category_members, menu);
+        setShowRatingStatus(menu.findItem(R.id.action_show_rating));
 
-        ((CategoryMembersActivity) getActivity()).setSearchMenuItem(menu.findItem(R.id.action_search));
+        if(Build.VERSION.SDK_INT < 21) {
+            final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    View menuItem = getActivity().findViewById(R.id.action_show_rating);
+
+                    if (menuItem != null) {
+                        Utils.setRippleToMenuItem(menuItem, getActivity());
+                    }
+
+                    if (Build.VERSION.SDK_INT < 16) {
+                        getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    } else {
+                        getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+            });
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_show_rating) {
+            SettingsWorker settingsWorker = SettingsWorker.getInstance(getActivity());
+
+            boolean showByRating = settingsWorker.showByRating();
+            settingsWorker.setShowByRating(!showByRating);
+
+            categorymembersArrayList.clear();
+            adapter.notifyDataSetChanged();
+            loadCategoryMembers();
+
+            setShowRatingStatus(item);
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setShowRatingStatus(MenuItem menuItem) {
+        boolean showByRating = SettingsWorker.getInstance(getActivity()).showByRating();
+
+        if (showByRating) {
+            menuItem.setIcon(R.drawable.ic_sort_descending_white_24dp);
+            menuItem.setTitle(R.string.show_ratings);
+        } else {
+            menuItem.setIcon(R.drawable.ic_sort_alphabetical_white_24dp);
+            menuItem.setTitle(R.string.show_alphabetical);
+        }
     }
 
     @Override
@@ -239,8 +304,132 @@ public class CategoryMembersFragment extends RxBaseFragment {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+    private void loadCategoryMembersRating() {
+        if (!categorymembersArrayList.isEmpty()) {
+            return;
+        }
+
+        isLoading = true;
+
+        MrakopediaApiWorker.getInstance().getCategoryRating(categoryTitle).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Response<ResponseBody> response) {
+                String htmlString;
+
+                try {
+                    htmlString = response.body().string();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    htmlString = null;
+                    isLoading = false;
+                }
+
+                if (htmlString != null) {
+                    parseRatingPage(htmlString);
+                } else {
+                    isLoading = false;
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                t.printStackTrace();
+                isLoading = false;
+            }
+        });
+    }
+
+    private void parseRatingPage(String html) {
+        Subscription subscription =
+                Observable.just(html)
+                .flatMap(new Func1<String, Observable<Categorymembers>>() {
+                    @Override
+                    public Observable<Categorymembers> call(String s) {
+                        Document document = Jsoup.parse(s);
+                        Element ratingTable = document.select("table.w4g_rb-ratinglist-table").first();
+
+                        if (ratingTable == null) {
+                            return Observable.empty();
+                        }
+
+                        ArrayList<Categorymembers> categorymembers = new ArrayList<Categorymembers>();
+                        Elements rows = ratingTable.select("tr");
+
+                        Categorymembers categorymember;
+                        Elements td;
+                        Element tempElement;
+
+                        for (Element row : rows) {
+
+                            td = row.select("td");
+
+                            if (td.isEmpty()) {
+                                continue;
+                            }
+
+                            tempElement = td.get(0);
+                            tempElement = tempElement.select("a").first();
+
+                            if (tempElement == null) {
+                                continue;
+                            }
+
+                            categorymember = new Categorymembers();
+
+                            categorymember.setTitle(Html.fromHtml(tempElement.html()).toString());
+                            categorymember.setNs("");
+                            categorymember.setType("");
+                            categorymember.setPageid("");
+                            categorymember.setIsViewed(false);
+
+                            tempElement = td.get(1);
+
+                            if (tempElement != null) {
+                                categorymember.setRating(tempElement.html());
+                            }
+
+                            categorymembers.add(categorymember);
+                        }
+
+                        return Observable.from(categorymembers);
+                    }
+                })
+                .subscribe(new Subscriber<Categorymembers>() {
+                    @Override
+                    public void onCompleted() {
+                        isLoading = false;
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+
+                        isLoading = false;
+
+                        if (categorymembersArrayList.isEmpty()) {
+                            getCategoryMembersFromRealm();
+                        }
+                    }
+
+                    @Override
+                    public void onNext(Categorymembers categorymembers) {
+                        categorymembersArrayList.add(categorymembers);
+                        adapter.notifyItemInserted(categorymembersArrayList.indexOf(categorymembers) + adapter.getDescriptionSections().size());
+
+                        checkIfPageWasRead(categorymembers);
+                    }
+                });
+
+        bindToLifecycle(subscription);
+    }
+
     private void loadCategoryMembers() {
         if ((continueString == null && !categorymembersArrayList.isEmpty()) || (isLoading)) {
+            return;
+        }
+
+        if (SettingsWorker.getInstance(getActivity()).showByRating()) {
+            loadCategoryMembersRating();
             return;
         }
 
@@ -792,12 +981,20 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
             position -= descriptionSections.size();
 
-            ((ListItemViewHolder)holder).titleTextView.setText(categorymembersArrayList.get(position).getTitle());
+            ListItemViewHolder listHolder = (ListItemViewHolder)holder;
+            Categorymembers categorymember = categorymembersArrayList.get(position);
+
+            if (categorymember.getRating().isEmpty()) {
+                listHolder.titleTextView.setText(categorymember.getTitle());
+            } else {
+                listHolder.titleTextView.setText(categorymember.getTitle() + " - " + categorymember.getRating());
+            }
+
 
             if (categorymembersArrayList.get(position).getIsViewed()) {
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
+                listHolder.titleTextView.setTextColor(getResources().getColor(R.color.colorPrimary));
             } else {
-                ((ListItemViewHolder)holder).titleTextView.setTextColor(Color.parseColor("#D9000000"));
+                listHolder.titleTextView.setTextColor(Color.parseColor("#D9000000"));
             }
         }
 

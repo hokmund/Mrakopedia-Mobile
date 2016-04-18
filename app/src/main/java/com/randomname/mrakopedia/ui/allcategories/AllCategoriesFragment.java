@@ -135,7 +135,7 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_category_members, menu);
+        inflater.inflate(R.menu.menu_all_categories, menu);
 
         if(Build.VERSION.SDK_INT < 21) {
             final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();

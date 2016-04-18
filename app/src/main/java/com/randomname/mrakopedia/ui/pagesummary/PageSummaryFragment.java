@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -32,6 +33,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.util.Util;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -98,6 +100,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     private static final String PAGE_ID_KEY = "pageIdKey";
 
     private static final String IS_OPTIONS_SHOWN_KEY = "isOptionsShownKey";
+    private static final String OPTIONS_MENU_BUTTON_ROTATION_KEY = "options_menu_button_rotation_key";
     private static final String TEXT_SECTIONS_KEY = "textSectionsKey";
 
     private static final int COLOR_SCHEME_EDITOR_RESULT = 42;
@@ -110,7 +113,10 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     private boolean pageIsFavorite = false;
     private boolean pageIsRead = false;
     private boolean isLoading = false;
+
     private boolean isOptionsShown = false;
+    private View optionsMenuButton = null;
+    private float optionsMenuButtonRotation = 0f;
 
     private Tracker mTracker;
 
@@ -173,6 +179,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                 textSections = new ArrayList<>();
             }
             isOptionsShown = savedInstanceState.getBoolean(IS_OPTIONS_SHOWN_KEY);
+            optionsMenuButtonRotation = savedInstanceState.getFloat(OPTIONS_MENU_BUTTON_ROTATION_KEY, 0f);
         } else {
             textSections = new ArrayList<>();
         }
@@ -228,6 +235,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
         adapter.setHasStableIds(true);
         SelectableLayoutManager manager = new SelectableLayoutManager(getActivity());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
+        manager.setSmoothScrollbarEnabled(true);
 
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
@@ -494,36 +502,41 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             setMenuFavoriteStatus(menu.findItem(R.id.action_favorite_page));
             setMenuReadStatus(menu.findItem(R.id.action_read_page));
 
-            if(Build.VERSION.SDK_INT < 21) {
-                final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
-                viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        View favoriteMenu = getActivity().findViewById(R.id.action_favorite_page);
-                        View readPage = getActivity().findViewById(R.id.action_read_page);
-                        View settingsAction = getActivity().findViewById(R.id.action_settings);
 
-                        if (favoriteMenu != null) {
-                            Utils.setRippleToMenuItem(favoriteMenu, getActivity());
-                        }
+            final ViewTreeObserver viewTreeObserver = getActivity().getWindow().getDecorView().getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    View favoriteMenu = getActivity().findViewById(R.id.action_favorite_page);
+                    View readPage = getActivity().findViewById(R.id.action_read_page);
 
-                        if (readPage != null) {
-                            Utils.setRippleToMenuItem(readPage, getActivity());
-                        }
+                    optionsMenuButton = getActivity().findViewById(R.id.action_settings);
 
-                        if (settingsAction != null) {
-                            Utils.setRippleToMenuItem(settingsAction, getActivity());
-                        }
-
-
-                        if (Build.VERSION.SDK_INT < 16) {
-                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        } else {
-                            getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
+                    if (favoriteMenu != null && !Utils.checkForLollipop()) {
+                        Utils.setRippleToMenuItem(favoriteMenu, getActivity());
                     }
-                });
-            }
+
+                    if (readPage != null && !Utils.checkForLollipop()) {
+                        Utils.setRippleToMenuItem(readPage, getActivity());
+                    }
+
+                    if (optionsMenuButton != null) {
+                        optionsMenuButton.setRotation(optionsMenuButtonRotation);
+                    }
+
+                    if (optionsMenuButton != null && !Utils.checkForLollipop()) {
+                        Utils.setRippleToMenuItem(optionsMenuButton, getActivity());
+                    }
+
+
+                    if (Build.VERSION.SDK_INT < 16) {
+                        getActivity().getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    } else {
+                        getActivity().getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                }
+            });
+
         }
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -570,6 +583,13 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                 .setInterpolator(new LinearInterpolator())
                 .setDuration(180);
 
+        if (optionsMenuButton != null) {
+            optionsMenuButton.animate()
+                    .rotation(180)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .setDuration(300);
+        }
+
         isOptionsShown = true;
     }
 
@@ -578,6 +598,13 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                 .translationY(-optionsLayout.getHeight())
                 .setInterpolator(new LinearInterpolator())
                 .setDuration(180);
+
+        if (optionsMenuButton != null) {
+            optionsMenuButton.animate()
+                    .rotation(0)
+                    .setInterpolator(new AccelerateInterpolator())
+                    .setDuration(300);
+        }
 
         isOptionsShown = false;
     }
@@ -608,6 +635,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
             outState.putParcelableArrayList(TEXT_SECTIONS_KEY, textSections);
         }
         outState.putBoolean(IS_OPTIONS_SHOWN_KEY, isOptionsShown);
+        outState.putFloat(OPTIONS_MENU_BUTTON_ROTATION_KEY, optionsMenuButton == null ? 0f : optionsMenuButton.getRotation());
         super.onSaveInstanceState(outState);
     }
 

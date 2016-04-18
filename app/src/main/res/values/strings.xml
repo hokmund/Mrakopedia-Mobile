@@ -16,6 +16,9 @@
     <string name="search_drawer">Поиск</string>
     <string name="settings_drawer">Настройки</string>
 
+    <string name="show_ratings">Сортировать по рейтингу</string>
+    <string name="show_alphabetical">Сортировать по имени</string>
+
     <string name="access_storage_permission_not_granted">Разрешение на сохранение фото не предоставленно. Включите его в настройках.</string>
 
     <string name="caching_photo_option">Кэшировать фото</string>

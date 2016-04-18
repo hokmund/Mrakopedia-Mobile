@@ -18,6 +18,8 @@ public class Categorymembers implements Parcelable {
 
     private boolean isViewed;
 
+    private String rating = "";
+
     public Categorymembers() {
     }
 
@@ -27,6 +29,7 @@ public class Categorymembers implements Parcelable {
         type = in.readString();
         pageid = in.readString();
         isViewed = in.readByte() != 0;
+        rating = in.readString();
     }
 
     public String getTitle ()
@@ -77,6 +80,14 @@ public class Categorymembers implements Parcelable {
         this.isViewed = isViewed;
     }
 
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
     @Override
     public String toString() {
         return "class Categorymembers [\ntitle = "+title+",\n ns = "+ns+",\n type = "+type+",\n pageid = "+pageid+"]";
@@ -94,6 +105,7 @@ public class Categorymembers implements Parcelable {
         dest.writeString(type);
         dest.writeString(pageid);
         dest.writeByte((byte) (isViewed ? 1 : 0));
+        dest.writeString(rating);
     }
 
     public static final Parcelable.Creator<Categorymembers> CREATOR = new Parcelable.Creator<Categorymembers>() {

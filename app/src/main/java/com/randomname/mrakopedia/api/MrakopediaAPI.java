@@ -7,7 +7,10 @@ import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.recentchanges.RecentChangesResult;
 import com.randomname.mrakopedia.models.api.search.SearchResult;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -57,4 +60,7 @@ public interface MrakopediaAPI {
         @Query("sroffset") String offset,
         @Query("srwhat") String whatToSearch
     );
+
+    @GET("/wiki/рейтинг:{path}")
+    Call<ResponseBody> getCategoryRating(@Path("path") String path);
 }
