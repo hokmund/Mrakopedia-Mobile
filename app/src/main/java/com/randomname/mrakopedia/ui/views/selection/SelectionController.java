@@ -470,7 +470,6 @@ public class SelectionController {
             needReplace = !needReplace;
             setHandleCoordinate(rightHandle);
             setHandleCoordinate(leftHandle);
-            return;
         }
     }
 

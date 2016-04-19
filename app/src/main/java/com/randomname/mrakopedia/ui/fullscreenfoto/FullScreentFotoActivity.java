@@ -117,7 +117,11 @@ public class FullScreentFotoActivity extends AppCompatActivity {
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         getSupportActionBar().setTitle("");
 
         if (Utils.checkForLollipop()) {

@@ -2,14 +2,10 @@ package com.randomname.mrakopedia.ui.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
-import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
-
-import java.util.prefs.Preferences;
 
 /**
  * Created by vgrigoryev on 11.02.2016.

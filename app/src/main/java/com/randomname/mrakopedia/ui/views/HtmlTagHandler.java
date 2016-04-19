@@ -12,8 +12,6 @@ import org.xml.sax.XMLReader;
 
 import java.util.Stack;
 
-import carbon.drawable.RippleDrawable;
-
 public class HtmlTagHandler implements TagHandler {
     Stack<String> lists = new Stack();
     Stack<Integer> olNextIndex = new Stack();

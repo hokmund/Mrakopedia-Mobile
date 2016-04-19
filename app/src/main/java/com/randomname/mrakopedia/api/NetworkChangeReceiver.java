@@ -26,8 +26,8 @@ public abstract class NetworkChangeReceiver extends BroadcastReceiver {
         if (connectivity != null) {
             NetworkInfo[] info = connectivity.getAllNetworkInfo();
             if (info != null) {
-                for (int i = 0; i < info.length; i++) {
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                for (NetworkInfo anInfo : info) {
+                    if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
                         if (!isConnected) {
                             Log.v(LOG_TAG, "Now you are connected to Internet!");
                             isConnected = true;

@@ -5,24 +5,19 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-import com.randomname.mrakopedia.MainActivity;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesActivity;
-import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemesFragment;
 import com.randomname.mrakopedia.ui.settings.Feedback.FeedbackActivity;
-import com.randomname.mrakopedia.utils.StringUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

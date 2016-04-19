@@ -16,10 +16,4 @@ public class Query
     {
         this.categorymembers = categorymembers;
     }
-
-    @Override
-    public String toString()
-    {
-        return "class Query [\ncategorymembers = "+categorymembers.toString()+"]";
-    }
 }

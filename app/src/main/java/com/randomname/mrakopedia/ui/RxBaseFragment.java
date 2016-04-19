@@ -46,7 +46,6 @@ public abstract class RxBaseFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.e(TAG, "onDestroyView");
         for (Subscription subscription : subscriptions) {
             subscription.unsubscribe();
         }

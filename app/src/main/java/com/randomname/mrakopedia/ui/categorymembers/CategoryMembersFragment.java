@@ -25,7 +25,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -99,6 +98,8 @@ public class CategoryMembersFragment extends RxBaseFragment {
 
     private boolean isLoading = false;
     private CategoryMembersAdapter adapter;
+    private LinearLayoutManager manager;
+
     private ArrayList<Categorymembers> categorymembersArrayList;
     private ArrayList<TextSection> descriptionSections;
     private String continueString = "";
@@ -175,7 +176,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
             }
         });
 
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity());
+        manager = new LinearLayoutManager(getActivity());
         manager.setSmoothScrollbarEnabled(true);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
@@ -354,7 +355,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                             return Observable.empty();
                         }
 
-                        ArrayList<Categorymembers> categorymembers = new ArrayList<Categorymembers>();
+                        ArrayList<Categorymembers> categorymembers = new ArrayList<>();
                         Elements rows = ratingTable.select("tr");
 
                         Categorymembers categorymember;
@@ -819,7 +820,11 @@ public class CategoryMembersFragment extends RxBaseFragment {
                                                 .indexOf(categorymember))
                                         .setIsViewed(aBoolean);
 
-                                adapter.notifyItemChanged(categorymembersArrayList.indexOf(categorymember) + adapter.getDescriptionSections().size());
+                                int childIndex = categorymembersArrayList.indexOf(categorymember) + adapter.getDescriptionSections().size();
+
+                                if (childIndex <= manager.findLastVisibleItemPosition()) {
+                                    adapter.notifyItemChanged(childIndex);
+                                }
                             }
                         });
 

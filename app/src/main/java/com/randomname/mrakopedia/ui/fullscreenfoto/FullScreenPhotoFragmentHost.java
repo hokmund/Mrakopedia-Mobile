@@ -135,9 +135,8 @@ public class FullScreenPhotoFragmentHost extends Fragment {
         public Fragment getItem(int position) {
             Bundle data = new Bundle();
             data.putString(FullScreenPhotoFragment.IMAGE_URL_KEY, wallPhotos.get(position));
-            Fragment fragment = FullScreenPhotoFragment.getInstance(data);
 
-            return fragment;
+            return FullScreenPhotoFragment.getInstance(data);
         }
 
     }

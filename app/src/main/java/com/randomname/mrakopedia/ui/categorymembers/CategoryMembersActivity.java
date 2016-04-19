@@ -106,7 +106,11 @@ public class CategoryMembersActivity extends AppCompatActivity {
 
     private void initToolbar(String categoryTitle) {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         if (categoryTitle != null) {
             getSupportActionBar().setTitle(categoryTitle);
         } else {

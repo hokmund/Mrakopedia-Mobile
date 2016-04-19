@@ -27,10 +27,4 @@ public class Query {
     {
         this.searchinfo = searchinfo;
     }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [search = "+search+", searchinfo = "+searchinfo+"]";
-    }
 }

@@ -187,9 +187,4 @@ public class Parse {
         this.langlinks = langlinks;
     }
 
-    @Override
-    public String toString()
-    {
-        return "Class Parse [externallinks = "+externallinks+", displaytitle = "+displaytitle+", text = "+text+", links = "+links+", properties = "+properties+", title = "+title+", sections = "+sections+", images = "+images+", categories = "+categories+", iwlinks = "+iwlinks+", revid = "+revid+", langlinks = "+langlinks+"]";
-    }
 }

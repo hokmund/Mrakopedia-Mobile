@@ -16,6 +16,18 @@
         <item name="android:textSelectHandleRight">@drawable/text_select_handle_right_mtrl_alpha</item>
     </style>
 
+    <style name="BlackTheme" parent="AppTheme">
+        <item name="android:background">#000000</item>
+    </style>
+
+    <style name="WhiteTheme" parent="AppTheme">
+        <item name="android:background">@color/iconsColor</item>
+    </style>
+
+    <style name="PrimaryTheme" parent="AppTheme">
+        <item name="android:background">@color/primary</item>
+    </style>
+
     <style name="MyCustomTheme" parent="@style/AppTheme">
         <item name="android:textSelectHandle">@drawable/text_select_handle_middle_mtrl_alpha</item>
         <item name="android:textSelectHandleLeft">@drawable/text_select_handle_left_mtrl_alpha</item>

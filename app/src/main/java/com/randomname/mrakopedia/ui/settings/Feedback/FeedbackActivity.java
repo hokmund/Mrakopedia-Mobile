@@ -1,18 +1,14 @@
 package com.randomname.mrakopedia.ui.settings.Feedback;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.models.realm.ColorScheme;
-import com.randomname.mrakopedia.realm.DBWorker;
-import com.randomname.mrakopedia.ui.settings.ColorSchemes.ColorSchemeEditorFragment;
 import com.randomname.mrakopedia.utils.Utils;
 
 import butterknife.Bind;
@@ -61,7 +57,10 @@ public class FeedbackActivity extends AppCompatActivity {
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         setTitle(R.string.feedback);
 

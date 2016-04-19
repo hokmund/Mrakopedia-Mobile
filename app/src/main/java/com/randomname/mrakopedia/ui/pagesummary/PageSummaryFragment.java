@@ -9,10 +9,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,21 +30,19 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.util.Util;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.api.MrakopediaApiWorker;
-import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.Templates;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;
 import com.randomname.mrakopedia.realm.DBWorker;
@@ -83,7 +78,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import carbon.internal.TypefaceUtils;
 import carbon.widget.ProgressBar;
-import carbon.widget.Spinner;
 import codetail.graphics.drawables.LollipopDrawablesCompat;
 import io.codetail.animation.SupportAnimator;
 import io.codetail.animation.ViewAnimationUtils;
@@ -527,19 +521,19 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
     private ArrayList<View> getAllChildren(View v) {
 
         if (!(v instanceof ViewGroup)) {
-            ArrayList<View> viewArrayList = new ArrayList<View>();
+            ArrayList<View> viewArrayList = new ArrayList<>();
             viewArrayList.add(v);
             return viewArrayList;
         }
 
-        ArrayList<View> result = new ArrayList<View>();
+        ArrayList<View> result = new ArrayList<>();
 
         ViewGroup vg = (ViewGroup) v;
         for (int i = 0; i < vg.getChildCount(); i++) {
 
             View child = vg.getChildAt(i);
 
-            ArrayList<View> viewArrayList = new ArrayList<View>();
+            ArrayList<View> viewArrayList = new ArrayList<>();
             viewArrayList.add(v);
             viewArrayList.addAll(getAllChildren(child));
 
@@ -756,37 +750,13 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
 
                         Document doc = Jsoup.parse(htmlText);
 
-                        Elements ratingSpan = doc.select("span#w4g_rb_area-1");
+                        Elements elementsToRemove = doc.select("span#w4g_rb_area-1");
+                        elementsToRemove.addAll(doc.select("div.w4g_rb_nojs"));
+                        elementsToRemove.addAll(doc.select("script"));
+                        elementsToRemove.addAll(doc.select("a.spoilerLink"));
+                        elementsToRemove.addAll(doc.select("span.spoilers-button"));
 
-                        if (!ratingSpan.isEmpty()) {
-                            ratingSpan.remove();
-                        }
-
-                        Elements noJsDiv = doc.select("div.w4g_rb_nojs");
-
-                        if (!noJsDiv.isEmpty()) {
-                            noJsDiv.remove();
-                        }
-
-                        Elements scriptTags = doc.select("script");
-
-                        if (!scriptTags.isEmpty()) {
-                            scriptTags.remove();
-                        }
-
-                        if (htmlText.contains("spoilerLink")) {
-                            Elements spoilerLinks = doc.select("a.spoilerLink");
-                            if (!spoilerLinks.isEmpty()) {
-                                spoilerLinks.remove();
-                            }
-                        }
-
-                        if (htmlText.contains("spoilers-button")) {
-                            Elements spoilersButtons = doc.select("span.spoilers-button");
-                            if (!spoilersButtons.isEmpty()) {
-                                spoilersButtons.remove();
-                            }
-                        }
+                        elementsToRemove.remove();
 
                         if (htmlText.contains("del")) {
                             Elements delTag = doc.select("del");
@@ -838,21 +808,9 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                             }
                         }
 
-                        if (htmlText.contains("box")) {
-                            Elements boxDivs = doc.select("div.box");
-
-                            if (!boxDivs.isEmpty()) {
-                                boxDivs.remove();
-                            }
-                        }
-
-                        if (htmlText.contains("mw-editsection")) {
-                            Elements editSections = doc.select("span.mw-editsection");
-
-                            if (!editSections.isEmpty()) {
-                                editSections.remove();
-                            }
-                        }
+                        elementsToRemove = doc.select("div.box");
+                        elementsToRemove.addAll(doc.select("span.mw-editsection"));
+                        elementsToRemove.remove();
 
                         if (htmlText.contains("h2")) {
                             Elements h2 = doc.select("h2");
@@ -979,7 +937,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                 .map(new Func1<PageSummaryResult, PageSummaryResult>() {
                     @Override
                     public PageSummaryResult call(PageSummaryResult pageSummaryResult) {
-                        ArrayList<TextSection> newSections = new ArrayList<TextSection>();
+                        ArrayList<TextSection> newSections = new ArrayList<>();
 
                         for (TextSection textSection : pageSummaryResult.getParse().getTextSections()) {
                             if (textSection.getType() == TextSection.TEXT_TYPE) {
@@ -1113,7 +1071,7 @@ public class PageSummaryFragment extends RxBaseFragment implements OnPageSummary
                         if (pageSummaryRealm == null) {
                             return Observable.empty();
                         }
-                        ArrayList<TextSection> textSections = new ArrayList<TextSection>();
+                        ArrayList<TextSection> textSections = new ArrayList<>();
                         if (pageSummaryRealm.getTextSections() == null) {
                             return Observable.from(textSections);
                         }

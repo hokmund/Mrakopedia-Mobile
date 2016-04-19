@@ -15,10 +15,4 @@ public class Query {
     {
         this.allcategories = allcategories;
     }
-
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [allcategories = "+allcategories+"]";
-    }
 }

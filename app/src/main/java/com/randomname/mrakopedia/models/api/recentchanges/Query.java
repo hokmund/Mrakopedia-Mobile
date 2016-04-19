@@ -16,9 +16,4 @@ public class Query {
         this.recentchanges = recentchanges;
     }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [recentchanges = "+recentchanges+"]";
-    }
 }

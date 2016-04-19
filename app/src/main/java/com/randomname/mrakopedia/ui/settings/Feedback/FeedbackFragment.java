@@ -1,32 +1,26 @@
 package com.randomname.mrakopedia.ui.settings.Feedback;
 
-import com.randomname.mrakopedia.ui.RxBaseFragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.randomname.mrakopedia.R;
+import com.randomname.mrakopedia.ui.RxBaseFragment;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import codetail.graphics.drawables.LollipopDrawablesCompat;
 
 /**
  * Created by vgrigoryev on 24.02.2016.
@@ -38,11 +32,6 @@ public class FeedbackFragment extends RxBaseFragment {
     EditText editTxtYourNameFeedbackFragment;
     @Bind(R.id.editTxtYourMessageFeedbackFragment)
     EditText editTxtYourMessageFeedbackFragment;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

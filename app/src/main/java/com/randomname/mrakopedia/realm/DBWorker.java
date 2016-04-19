@@ -5,14 +5,13 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.randomname.mrakopedia.R;
-import com.randomname.mrakopedia.models.api.categorymembers.Continue;
-import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.api.categorydescription.CategoryDescription;
 import com.randomname.mrakopedia.models.api.pagesummary.Categories;
 import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.PageSummaryResult;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.CategoryRealm;
+import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.models.realm.PageSummaryRealm;
 import com.randomname.mrakopedia.models.realm.RealmString;
 import com.randomname.mrakopedia.models.realm.TextSectionRealm;

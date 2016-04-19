@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +26,8 @@ import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
-import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
 import com.randomname.mrakopedia.ui.views.ProportionalImageView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
-import com.randomname.mrakopedia.utils.StringUtils;
 
 import java.util.ArrayList;
 
@@ -153,7 +150,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
         switch (holder.getItemViewType()) {
             case TextSection.TEXT_TYPE:
@@ -222,7 +219,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 ((YoutubeViewHolder)holder).thumbnailView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + sections.get(position).getText())));
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + sections.get(holder.getAdapterPosition()).getText())));
                     }
                 });
                 break;
@@ -389,12 +386,12 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         @Override
-        public void onBindViewHolder(LinkViewHolder holder, final int position) {
+        public void onBindViewHolder(final LinkViewHolder holder, int position) {
             holder.textView.setText(categoriesTitles.get(position));
             holder.textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onCategoryClickListener.OnCategoryClick(categoriesTitles.get(position));
+                    onCategoryClickListener.OnCategoryClick(categoriesTitles.get(holder.getAdapterPosition()));
                 }
             });
         }

@@ -3,8 +3,6 @@ package com.randomname.mrakopedia.ui.allcategories;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.view.menu.ActionMenuItemView;
-import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -37,15 +34,9 @@ import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import carbon.drawable.RippleDrawable;
-import carbon.drawable.RippleDrawableCompat;
-import carbon.drawable.RippleDrawableLollipop;
-import codetail.graphics.drawables.LollipopDrawablesCompat;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
@@ -81,7 +72,13 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             resultArrayList = savedInstanceState.getParcelableArrayList(RESULT_ARRAY_LIST_KEY);
-            copiedArrayList = new ArrayList<>(resultArrayList);
+
+            if (resultArrayList != null) {
+                copiedArrayList = new ArrayList<>(resultArrayList);
+            } else {
+                copiedArrayList = new ArrayList<>();
+            }
+
         } else {
             resultArrayList = new ArrayList<>();
             copiedArrayList = new ArrayList<>();

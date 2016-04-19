@@ -179,7 +179,11 @@ public class PageSummaryActivity extends AppCompatActivity implements  PageSumma
 
     private void initToolbar(String categoryTitle) {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         if (categoryTitle != null) {
             getSupportActionBar().setTitle(categoryTitle);
         } else {

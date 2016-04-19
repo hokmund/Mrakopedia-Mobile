@@ -8,8 +8,6 @@ import android.graphics.Rect;
 import android.text.Layout;
 import android.util.AttributeSet;
 
-import com.randomname.mrakopedia.R;
-
 
 /**
  * Created by a.kapitonov on 25.12.2014.

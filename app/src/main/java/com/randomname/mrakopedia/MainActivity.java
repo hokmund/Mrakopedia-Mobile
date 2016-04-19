@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private SecondaryDrawerItem createDrawerItem(int name, int index, int icon, int selectedIcon) {
-        SecondaryDrawerItem item = new SecondaryDrawerItem()
+        return new SecondaryDrawerItem()
                 .withName(name)
                 .withIdentifier(index)
                 .withIcon(icon)
@@ -256,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
                 .withSelectedColorRes(R.color.colorPrimaryDark)
                 .withTextColorRes(R.color.iconsColor)
                 .withSelectedTextColorRes(R.color.colorPrimaryLight);
-
-        return item;
     }
 
     private void setAllCategoriesFragment() {

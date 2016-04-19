@@ -3,15 +3,12 @@ package com.randomname.mrakopedia.ui.views;
 /**
  * Created by vgrigoryev on 15.02.2016.
  */
+
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
-import com.bumptech.glide.util.Util;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.utils.Utils;
 
