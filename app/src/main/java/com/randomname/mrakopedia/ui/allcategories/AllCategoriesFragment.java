@@ -52,6 +52,7 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
 
     private static final String TAG = "AllCategoriesFragment";
     private static final String RESULT_ARRAY_LIST_KEY = "resultArrayListKey";
+    private static final String CONTINUE_STRING_KEY = "continueStringKey";
 
     @Bind(R.id.all_categories_recycler_view)
     RecyclerView recyclerView;
@@ -71,6 +72,7 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
+            continueString = savedInstanceState.getString(CONTINUE_STRING_KEY);
             resultArrayList = savedInstanceState.getParcelableArrayList(RESULT_ARRAY_LIST_KEY);
 
             if (resultArrayList != null) {
@@ -185,12 +187,13 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(RESULT_ARRAY_LIST_KEY, copiedArrayList);
+        outState.putString(CONTINUE_STRING_KEY, continueString);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onConnectedToInternet() {
-        if (continueString.isEmpty()) {
+        if (continueString != null && continueString.isEmpty()) {
             copiedArrayList.clear();
             resultArrayList.clear();
             loadCategoryMembersViaNetwork();
