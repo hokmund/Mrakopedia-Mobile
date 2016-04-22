@@ -190,8 +190,10 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
 
     @Override
     public void onConnectedToInternet() {
-        if (resultArrayList.size() <= 1) {
-           loadCategoryMembersViaNetwork();
+        if (continueString.isEmpty()) {
+            copiedArrayList.clear();
+            resultArrayList.clear();
+            loadCategoryMembersViaNetwork();
         }
     }
 
@@ -239,6 +241,7 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
                         .subscribe(new Subscriber<Allcategories>() {
                             @Override
                             public void onCompleted() {
+                                adapter.notifyDataSetChanged();
                                 isLoading = false;
 
                                 loadCategoryMembersViaNetwork();
@@ -267,7 +270,6 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
                             public void onNext(Allcategories category) {
                                 adapter.getDisplayedData().add(category);
                                 copiedArrayList.add(category);
-                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(category) + 1);
                             }
                         });
 
@@ -315,6 +317,8 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
                                         errorTextView.setText(getString(R.string.error_loading_categories) + " " + getString(R.string.no_internet_text));
                                     }
                                     recyclerView.setVisibility(View.GONE);
+                                } else {
+                                    adapter.notifyDataSetChanged();
                                 }
                             }
 
@@ -338,7 +342,6 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
                             public void onNext(Allcategories allcategories) {
                                 adapter.getDisplayedData().add(allcategories);
                                 copiedArrayList.add(allcategories);
-                                adapter.notifyItemInserted(adapter.getDisplayedData().indexOf(allcategories) + 1);
                             }
                         });
 
@@ -390,6 +393,17 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
         public AllCategoriesAdapter(ArrayList<Allcategories> categoriesArrayList, View.OnClickListener onClickListener) {
             this.categoriesArrayList = categoriesArrayList;
             this.onClickListener = onClickListener;
+
+            setHasStableIds(true);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            if (categoriesArrayList.size() <= position) {
+                return super.getItemId(position);
+            }
+
+            return categoriesArrayList.get(position).getId();
         }
 
         public ArrayList<Allcategories> getDisplayedData() {

@@ -20,7 +20,11 @@ public class Allcategories implements Parcelable {
 
     private String size;
 
+    private int id;
+    private static int globalId = 0;
+
     public Allcategories() {
+        id = globalId++;
     }
 
     public Allcategories(Parcel in) {
@@ -29,6 +33,11 @@ public class Allcategories implements Parcelable {
         title = in.readString();
         subcats = in.readString();
         size = in.readString();
+        id = in.readInt();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getFiles ()
@@ -99,6 +108,7 @@ public class Allcategories implements Parcelable {
         dest.writeString(title);
         dest.writeString(subcats);
         dest.writeString(size);
+        dest.writeInt(id);
     }
 
     public static final Parcelable.Creator<Allcategories> CREATOR = new Parcelable.Creator<Allcategories>() {
