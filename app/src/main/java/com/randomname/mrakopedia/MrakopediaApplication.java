@@ -1,7 +1,6 @@
 package com.randomname.mrakopedia;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -22,8 +21,6 @@ import io.realm.rx.RealmObservableFactory;
 public class MrakopediaApplication extends Application {
     private Tracker mTracker;
 
-    private static Context context;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -42,12 +39,6 @@ public class MrakopediaApplication extends Application {
         ImageLoader.getInstance().init(imageConfig);
 
         DBWorker.generateDefaultColorSchemes(this);
-
-        context = this;
-    }
-
-    public static Context getContext() {
-        return context;
     }
 
     synchronized public Tracker getDefaultTracker() {

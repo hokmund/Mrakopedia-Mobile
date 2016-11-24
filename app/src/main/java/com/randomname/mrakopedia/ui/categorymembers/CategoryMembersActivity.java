@@ -53,7 +53,7 @@ public class CategoryMembersActivity extends AppCompatActivity {
 
         String categoryTitle = getIntent().getStringExtra(CATEGORY_NAME_EXTRA);
 
-        if (categoryTitle == null && getIntent() != null && getIntent().getData() != null) {
+        if (categoryTitle == null) {
             categoryTitle = getIntent().getData().getQueryParameter("categoryTitle");
         }
 

@@ -102,17 +102,9 @@ public class AllCategoriesFragment extends RxBaseFragment implements SearchCallb
             @Override
             public void onClick(View v) {
                 int position = recyclerView.getChildAdapterPosition(v) - 1;
-
-                if (adapter.getDisplayedData().size() < position || getActivity() == null) {
-                    return;
-                }
-
                 Intent intent = new Intent(getActivity(), CategoryMembersActivity.class);
                 intent.putExtra(CategoryMembersActivity.CATEGORY_NAME_EXTRA, adapter.getDisplayedData().get(position).getTitle());
-                try {
-                    startActivity(intent);
-                } catch (Exception e) {
-                }
+                startActivity(intent);
             }
         });
 

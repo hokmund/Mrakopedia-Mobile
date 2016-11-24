@@ -3,7 +3,6 @@ package com.randomname.mrakopedia.ui.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.randomname.mrakopedia.MrakopediaApplication;
 import com.randomname.mrakopedia.R;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.realm.DBWorker;
@@ -43,10 +42,6 @@ public class SettingsWorker {
     }
 
     protected SharedPreferences open() {
-        if (context == null) {
-            context = MrakopediaApplication.getContext();
-        }
-
         return context.getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
     }
 

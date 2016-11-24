@@ -9,7 +9,6 @@ import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by vgrigoryev on 28.01.2016.
@@ -71,14 +70,6 @@ public class CustomMovementMethod extends LinkMovementMethod {
             }
         }
 
-        try {
-            return super.onTouchEvent( widget, buffer, event ) ;
-        } catch( Exception ex ) {
-            if (widget.getContext() == null) {
-                return true;
-            }
-            Toast.makeText( widget.getContext(), "Не удалось открыть страницу", Toast.LENGTH_SHORT ).show();
-            return true;
-        }
+        return Touch.onTouchEvent(widget, buffer, event);
     }
 }
