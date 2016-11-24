@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import com.randomname.mrakopedia.models.api.pagesummary.CategoriesTextSection;
 import com.randomname.mrakopedia.models.api.pagesummary.TextSection;
 import com.randomname.mrakopedia.models.realm.ColorScheme;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
+import com.randomname.mrakopedia.ui.views.LinkCheckMovementMethod;
 import com.randomname.mrakopedia.ui.views.ProportionalImageView;
 import com.randomname.mrakopedia.ui.views.selection.SelectableTextView;
 
@@ -156,7 +156,7 @@ public class PageSummaryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             case TextSection.TEXT_TYPE:
 
                 ((TextViewHolder) holder).textView.setText(sections.get(position).getText());
-                ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
+                ((TextViewHolder) holder).textView.setMovementMethod(new LinkCheckMovementMethod());
                 ((TextViewHolder) holder).textView.setKey(" pos: " + position + sections.get(position).getText().toString());
                 ((TextViewHolder) holder).textView.setTextColor(colorScheme.getTextColor());
                 ((TextViewHolder) holder).textView.setTextSize(fontSize);

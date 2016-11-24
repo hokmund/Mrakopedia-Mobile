@@ -4,11 +4,23 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.randomname.mrakopedia.MrakopediaApplication;
+
 /**
  * Created by vgrigoryev on 22.01.2016.
  */
 public class NetworkUtils {
-    public static boolean isInternetAvailable(Context context) {
+    public static boolean isInternetAvailable(Context c) {
+        Context context = c;
+        if (context == null) {
+            context = MrakopediaApplication.getContext();
+        }
+
+        if (context == null) {
+            return false;
+        }
+
+
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
 

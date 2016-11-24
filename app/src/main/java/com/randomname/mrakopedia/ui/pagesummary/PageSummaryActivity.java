@@ -69,7 +69,7 @@ public class PageSummaryActivity extends AppCompatActivity implements  PageSumma
         String pageTitle = getIntent().getStringExtra(PAGE_NAME_EXTRA);
         String pageId = getIntent().getStringExtra(PAGE_ID_EXTRA);
 
-        if (pageTitle == null && pageId == null) {
+        if (pageTitle == null && pageId == null && getIntent() != null && getIntent().getData() != null) {
             pageTitle = getIntent().getData().getQueryParameter("pageTitle");
         }
 

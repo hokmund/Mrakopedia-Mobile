@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,6 +45,7 @@ import com.randomname.mrakopedia.ui.pagesummary.PageSummaryActivity;
 import com.randomname.mrakopedia.ui.settings.SettingsWorker;
 import com.randomname.mrakopedia.ui.views.EndlessRecyclerOnScrollListener;
 import com.randomname.mrakopedia.ui.views.HtmlTagHandler;
+import com.randomname.mrakopedia.ui.views.LinkCheckMovementMethod;
 import com.randomname.mrakopedia.utils.NetworkUtils;
 import com.randomname.mrakopedia.utils.StringUtils;
 import com.randomname.mrakopedia.utils.Utils;
@@ -974,7 +974,7 @@ public class CategoryMembersFragment extends RxBaseFragment {
                     Spannable span = (Spannable) Html.fromHtml(descriptionSections.get(position).getText().toString().replaceAll("&nbsp", ""), null, new HtmlTagHandler());
                     span = (Spannable) StringUtils.trimTrailingWhitespace(span);
                     ((TextViewHolder) holder).textView.setText(span);
-                    ((TextViewHolder) holder).textView.setMovementMethod(new LinkMovementMethod());
+                    ((TextViewHolder) holder).textView.setMovementMethod(new LinkCheckMovementMethod());
                 } else if (holder.getItemViewType() == IMAGE_TYPE) {
                     ImageLoader.getInstance().displayImage(descriptionSections.get(position).getText().toString(), ((ImageViewHolder)holder).imageView, options, new AnimateFirstDisplayListener(descriptionSections.get(position).getText().toString(), ((ImageViewHolder)holder).imageView));
                 }
